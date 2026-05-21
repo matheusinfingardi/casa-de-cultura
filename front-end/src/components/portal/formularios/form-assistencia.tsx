@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -24,103 +25,207 @@ const DIAS = [
   "Domingo",
 ]
 
+// =====================
+// TIPOS
+// =====================
+
+type RecorrenciaUnica = {
+  tipo: "unica"
+  data: string
+  horarioInicio: string
+  horarioFim: string
+}
+
+type RecorrenciaSemanal = {
+  tipo: "semanal"
+  dias: string[]
+  horarios: Record<
+    string,
+    {
+      horarioInicio: string
+      horarioFim: string
+    }
+  >
+}
+
+type FormData = {
+  nome: string
+  descricao: string
+  tipo: string
+  profissional: string
+  local: string
+  image: File | null
+}
+
 export default function FormAssistencia() {
-  const [form, setForm] = useState({
+  const [tipoRecorrencia, setTipoRecorrencia] =
+    useState<"unica" | "semanal">("unica")
+
+  const [recorrenciaUnica, setRecorrenciaUnica] =
+    useState<RecorrenciaUnica>({
+      tipo: "unica",
+      data: "",
+      horarioInicio: "",
+      horarioFim: "",
+    })
+
+  const [recorrenciaSemanal, setRecorrenciaSemanal] =
+    useState<RecorrenciaSemanal>({
+      tipo: "semanal",
+      dias: [],
+      horarios: {},
+    })
+
+  const [form, setForm] = useState<FormData>({
     nome: "",
     descricao: "",
     tipo: "",
     profissional: "",
     local: "",
-
-    recorrencia: {
-      tipo: "unica",
-      data: "",
-      horario: "",
-
-      dias: [] as string[],
-      horarios: {} as Record<string, { inicio: string; fim: string }>,
-    },
-
-    image: null as File | null,
+    image: null,
   })
 
   const [preview, setPreview] = useState<string | null>(null)
 
-  function toggleDia(dia: string) {
-    const exists = form.recorrencia.dias.includes(dia)
+  const isSemanal = tipoRecorrencia === "semanal"
 
-    setForm({
-      ...form,
-      recorrencia: {
-        ...form.recorrencia,
-        dias: exists
-          ? form.recorrencia.dias.filter((d) => d !== dia)
-          : [...form.recorrencia.dias, dia],
-      },
+  // =====================
+  // FUNÇÕES SEMANAIS
+  // =====================
+
+  function toggleDia(dia: string) {
+    const exists = recorrenciaSemanal.dias.includes(dia)
+
+    setRecorrenciaSemanal({
+      ...recorrenciaSemanal,
+      dias: exists
+        ? recorrenciaSemanal.dias.filter((d) => d !== dia)
+        : [...recorrenciaSemanal.dias, dia],
     })
   }
 
-  function setHorario(dia: string, key: "inicio" | "fim", value: string) {
-    setForm({
-      ...form,
-      recorrencia: {
-        ...form.recorrencia,
-        horarios: {
-          ...form.recorrencia.horarios,
-          [dia]: {
-            ...form.recorrencia.horarios[dia],
-            [key]: value,
-          },
+  function setHorario(
+    dia: string,
+    field: "horarioInicio" | "horarioFim",
+    value: string
+  ) {
+    const atual = recorrenciaSemanal.horarios[dia] || {
+      horarioInicio: "",
+      horarioFim: "",
+    }
+
+    setRecorrenciaSemanal({
+      ...recorrenciaSemanal,
+      horarios: {
+        ...recorrenciaSemanal.horarios,
+        [dia]: {
+          ...atual,
+          [field]: value,
         },
       },
     })
   }
 
+  // =====================
+  // SUBMIT
+  // =====================
+
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    console.log(form)
+
+    const recorrencia =
+      tipoRecorrencia === "unica"
+        ? recorrenciaUnica
+        : recorrenciaSemanal
+
+    console.log({
+      ...form,
+      recorrencia,
+    })
   }
+
+  // =====================
+  // UI
+  // =====================
 
   return (
     <div className="space-y-6 max-w-3xl mx-auto">
-      <h1 className="text-2xl font-bold">Cadastro de Assistência</h1>
+
+      <h1 className="text-2xl font-bold">
+        Cadastro de Assistência
+      </h1>
 
       <Card className="p-6 space-y-6">
+
         <form onSubmit={handleSubmit} className="space-y-6">
 
-          <div className="space-y-2">
+          {/* NOME */}
+          <div>
             <Label>Nome</Label>
             <Input
               value={form.nome}
-              onChange={(e) => setForm({ ...form, nome: e.target.value })}
+              onChange={(e) =>
+                setForm({ ...form, nome: e.target.value })
+              }
             />
           </div>
 
-          <div className="space-y-2">
+          {/* DESCRIÇÃO */}
+          <div>
             <Label>Descrição</Label>
             <Textarea
               value={form.descricao}
-              onChange={(e) => setForm({ ...form, descricao: e.target.value })}
+              onChange={(e) =>
+                setForm({ ...form, descricao: e.target.value })
+              }
             />
           </div>
 
-          <div className="space-y-2">
+          {/* TIPO */}
+          <div>
+            <Label>Tipo</Label>
+            <Input
+              value={form.tipo}
+              onChange={(e) =>
+                setForm({ ...form, tipo: e.target.value })
+              }
+            />
+          </div>
+
+          {/* PROFISSIONAL */}
+          <div>
+            <Label>Profissional</Label>
+            <Input
+              value={form.profissional}
+              onChange={(e) =>
+                setForm({ ...form, profissional: e.target.value })
+              }
+            />
+          </div>
+
+          {/* LOCAL */}
+          <div>
+            <Label>Local</Label>
+            <Input
+              value={form.local}
+              onChange={(e) =>
+                setForm({ ...form, local: e.target.value })
+              }
+            />
+          </div>
+
+          {/* RECORRÊNCIA */}
+          <div>
             <Label>Recorrência</Label>
 
             <Select
-              value={form.recorrencia.tipo}
-              onValueChange={(value) =>
-                setForm({
-                  ...form,
-                  recorrencia: {
-                    ...form.recorrencia,
-                    tipo: value,
-                  },
-                })
+              value={tipoRecorrencia}
+              onValueChange={(value: "unica" | "semanal") =>
+                setTipoRecorrencia(value)
               }
             >
               <SelectTrigger>
-                <SelectValue placeholder="Tipo" />
+                <SelectValue />
               </SelectTrigger>
 
               <SelectContent>
@@ -130,48 +235,49 @@ export default function FormAssistencia() {
             </Select>
           </div>
 
-          {form.recorrencia.tipo === "unica" && (
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label>Data</Label>
-                <Input
-                  type="date"
-                  value={form.recorrencia.data}
-                  onChange={(e) =>
-                    setForm({
-                      ...form,
-                      recorrencia: {
-                        ...form.recorrencia,
-                        data: e.target.value,
-                      },
-                    })
-                  }
-                />
-              </div>
+          {/* ================= UNICA ================= */}
+          {tipoRecorrencia === "unica" && (
+            <div className="grid grid-cols-3 gap-3">
 
-              <div>
-                <Label>Horário</Label>
-                <Input
-                  type="time"
-                  value={form.recorrencia.horario}
-                  onChange={(e) =>
-                    setForm({
-                      ...form,
-                      recorrencia: {
-                        ...form.recorrencia,
-                        horario: e.target.value,
-                      },
-                    })
-                  }
-                />
-              </div>
+              <Input
+                type="date"
+                value={recorrenciaUnica.data}
+                onChange={(e) =>
+                  setRecorrenciaUnica({
+                    ...recorrenciaUnica,
+                    data: e.target.value,
+                  })
+                }
+              />
+
+              <Input
+                type="time"
+                value={recorrenciaUnica.horarioInicio}
+                onChange={(e) =>
+                  setRecorrenciaUnica({
+                    ...recorrenciaUnica,
+                    horarioInicio: e.target.value,
+                  })
+                }
+              />
+
+              <Input
+                type="time"
+                value={recorrenciaUnica.horarioFim}
+                onChange={(e) =>
+                  setRecorrenciaUnica({
+                    ...recorrenciaUnica,
+                    horarioFim: e.target.value,
+                  })
+                }
+              />
+
             </div>
           )}
 
-          {form.recorrencia.tipo === "semanal" && (
+          {/* ================= SEMANAL ================= */}
+          {isSemanal && (
             <div className="space-y-4">
-
-              <Label>Dias da semana</Label>
 
               <div className="flex flex-wrap gap-2">
                 {DIAS.map((dia) => (
@@ -179,7 +285,7 @@ export default function FormAssistencia() {
                     key={dia}
                     type="button"
                     variant={
-                      form.recorrencia.dias.includes(dia)
+                      recorrenciaSemanal.dias.includes(dia)
                         ? "default"
                         : "outline"
                     }
@@ -190,56 +296,56 @@ export default function FormAssistencia() {
                 ))}
               </div>
 
-              <div className="space-y-4">
-                {form.recorrencia.dias.map((dia) => (
-                  <div key={dia} className="space-y-2 border p-3 rounded-md">
-                    <Label className="font-bold">{dia}</Label>
+              {recorrenciaSemanal.dias.map((dia) => (
+                <div key={dia} className="border p-4 rounded-lg">
 
-                    <div className="grid grid-cols-2 gap-3">
-                      <div>
-                        <Label>Início</Label>
-                        <Input
-                          type="time"
-                          value={
-                            form.recorrencia.horarios[dia]?.inicio || ""
-                          }
-                          onChange={(e) =>
-                            setHorario(dia, "inicio", e.target.value)
-                          }
-                        />
-                      </div>
+                  <Label>{dia}</Label>
 
-                      <div>
-                        <Label>Fim</Label>
-                        <Input
-                          type="time"
-                          value={
-                            form.recorrencia.horarios[dia]?.fim || ""
-                          }
-                          onChange={(e) =>
-                            setHorario(dia, "fim", e.target.value)
-                          }
-                        />
-                      </div>
-                    </div>
+                  <div className="grid grid-cols-2 gap-3">
+
+                    <Input
+                      type="time"
+                      value={
+                        recorrenciaSemanal.horarios[dia]?.horarioInicio || ""
+                      }
+                      onChange={(e) =>
+                        setHorario(dia, "horarioInicio", e.target.value)
+                      }
+                    />
+
+                    <Input
+                      type="time"
+                      value={
+                        recorrenciaSemanal.horarios[dia]?.horarioFim || ""
+                      }
+                      onChange={(e) =>
+                        setHorario(dia, "horarioFim", e.target.value)
+                      }
+                    />
+
                   </div>
-                ))}
-              </div>
+
+                </div>
+              ))}
+
             </div>
           )}
 
-          <div>
-            <Input
-              type="file"
-              accept="image/*"
-              onChange={(e) => {
-                const file = e.target.files?.[0]
-                if (!file) return
-                setForm({ ...form, image: file })
-                setPreview(URL.createObjectURL(file))
-              }}
-            />
-          </div>
+          <Input
+            type="file"
+            accept="image/*"
+            onChange={(e) => {
+              const file = e.target.files?.[0]
+              if (!file) return
+
+              setForm({
+                ...form,
+                image: file,
+              })
+
+              setPreview(URL.createObjectURL(file))
+            }}
+          />
 
           {preview && (
             <img
@@ -249,8 +355,9 @@ export default function FormAssistencia() {
           )}
 
           <Button type="submit" className="w-full">
-            Salvar
+            Salvar Assistência
           </Button>
+
         </form>
       </Card>
     </div>

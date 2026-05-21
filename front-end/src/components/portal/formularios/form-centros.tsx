@@ -51,7 +51,6 @@ export default function FormCentros({
 
         <form onSubmit={handleSubmit} className="space-y-6">
 
-          {/* NOME */}
           <div className="space-y-2">
             <Label>Nome do Centro</Label>
             <Input
@@ -62,7 +61,6 @@ export default function FormCentros({
             />
           </div>
 
-          {/* ENDEREÇO */}
           <div className="space-y-2">
             <Label>Endereço</Label>
             <Input
@@ -73,7 +71,6 @@ export default function FormCentros({
             />
           </div>
 
-          {/* RESPONSÁVEL */}
           <div className="space-y-2">
             <Label>Responsável</Label>
             <Input
@@ -84,7 +81,6 @@ export default function FormCentros({
             />
           </div>
 
-          {/* TELEFONE */}
           <div className="space-y-2">
             <Label>Telefone</Label>
             <Input
@@ -95,18 +91,6 @@ export default function FormCentros({
             />
           </div>
 
-          {/* FUNCIONAMENTO */}
-          <div className="space-y-2">
-            <Label>Horário de Funcionamento</Label>
-            <Input
-              value={form.funcionamento}
-              onChange={(e) =>
-                setForm({ ...form, funcionamento: e.target.value })
-              }
-            />
-          </div>
-
-          {/* DESCRIÇÃO */}
           <div className="space-y-2">
             <Label>Descrição</Label>
             <Textarea
@@ -117,7 +101,6 @@ export default function FormCentros({
             />
           </div>
 
-          {/* IMAGEM */}
           <div className="space-y-2">
             <Label>Imagem</Label>
             <Input

@@ -1,11 +1,13 @@
 "use client"
 
 import { useState } from "react"
+
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
+
 import {
   Select,
   SelectContent,
@@ -14,65 +16,105 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 
-type Recorrencia = {
-  tipo: "nenhuma" | "semanal" | "quinzenal" | "mensal"
-  dias: string[]
-  horarios: Record<string, string[]>
+type Horario = {
+  horarioInicio: string
+  horarioFim: string
 }
 
 type FormData = {
   nome: string
   descricao: string
-  instrutor: string
-  nivel: string
-  vagas: number | ""
+  responsavel: string
   local: string
-  recorrencia: Recorrencia
+
+  recorrencia: {
+    tipo: "unica" | "semanal"
+
+    // única
+    data: string
+    horarioInicio: string
+    horarioFim: string
+
+    // semanal
+    dias: string[]
+    horarios: Record<string, Horario>
+  }
+
   image: File | null
 }
 
-const DIAS = ["Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado", "Domingo"]
+const DIAS = [
+  "Segunda",
+  "Terça",
+  "Quarta",
+  "Quinta",
+  "Sexta",
+  "Sábado",
+  "Domingo",
+]
 
-export default function FormOficinas() {
+export default function FormAtividades() {
   const [form, setForm] = useState<FormData>({
     nome: "",
     descricao: "",
-    instrutor: "",
-    nivel: "",
-    vagas: "",
+    responsavel: "",
     local: "",
-    image: null,
+
     recorrencia: {
-      tipo: "nenhuma",
+      tipo: "unica",
+      data: "",
+      horarioInicio: "",
+      horarioFim: "",
       dias: [],
       horarios: {},
     },
+
+    image: null,
   })
 
   const [preview, setPreview] = useState<string | null>(null)
 
   function toggleDia(dia: string) {
-    const exists = form.recorrencia.dias.includes(dia)
+    if (form.recorrencia.tipo !== "semanal") return
+
+    const dias = form.recorrencia.dias
+
+    const exists = dias.includes(dia)
 
     setForm({
       ...form,
       recorrencia: {
         ...form.recorrencia,
         dias: exists
-          ? form.recorrencia.dias.filter((d) => d !== dia)
-          : [...form.recorrencia.dias, dia],
+          ? dias.filter((d) => d !== dia)
+          : [...dias, dia],
       },
     })
   }
 
-  function setHorario(dia: string, horario: string) {
+  function setHorario(
+    dia: string,
+    field: "horarioInicio" | "horarioFim",
+    value: string
+  ) {
+    if (form.recorrencia.tipo !== "semanal") return
+
+    const atual =
+      form.recorrencia.horarios?.[dia] || {
+        horarioInicio: "",
+        horarioFim: "",
+      }
+
     setForm({
       ...form,
       recorrencia: {
         ...form.recorrencia,
         horarios: {
           ...form.recorrencia.horarios,
-          [dia]: [horario],
+          [dia]: {
+            ...atual,
+            [field]: value,
+          },
         },
       },
     })
@@ -87,102 +129,159 @@ export default function FormOficinas() {
     <div className="space-y-6 max-w-3xl mx-auto">
 
       <h1 className="text-2xl font-bold">
-        Cadastro de Oficina
+        Cadastro de Atividade
       </h1>
 
       <Card className="p-6 space-y-6">
 
         <form onSubmit={handleSubmit} className="space-y-6">
 
+          {/* NOME */}
           <div className="space-y-2">
             <Label>Nome</Label>
             <Input
               value={form.nome}
-              onChange={(e) => setForm({ ...form, nome: e.target.value })}
+              onChange={(e) =>
+                setForm({ ...form, nome: e.target.value })
+              }
             />
           </div>
 
+          {/* DESCRIÇÃO */}
           <div className="space-y-2">
             <Label>Descrição</Label>
             <Textarea
               value={form.descricao}
-              onChange={(e) => setForm({ ...form, descricao: e.target.value })}
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label>Instrutor</Label>
-            <Input
-              value={form.instrutor}
-              onChange={(e) => setForm({ ...form, instrutor: e.target.value })}
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label>Nível</Label>
-            <Select
-              value={form.nivel}
-              onValueChange={(value) =>
-                setForm({ ...form, nivel: value })
+              onChange={(e) =>
+                setForm({ ...form, descricao: e.target.value })
               }
+            />
+          </div>
+
+          {/* RESPONSÁVEL */}
+          <div className="space-y-2">
+            <Label>Responsável</Label>
+            <Input
+              value={form.responsavel}
+              onChange={(e) =>
+                setForm({ ...form, responsavel: e.target.value })
+              }
+            />
+          </div>
+
+          {/* LOCAL */}
+          <div className="space-y-2">
+            <Label>Local</Label>
+            <Input
+              value={form.local}
+              onChange={(e) =>
+                setForm({ ...form, local: e.target.value })
+              }
+            />
+          </div>
+
+          {/* RECORRÊNCIA */}
+          <div className="space-y-2">
+            <Label>Recorrência</Label>
+
+            <Select
+              value={form.recorrencia.tipo}
+              onValueChange={(value: "unica" | "semanal") => {
+                if (value === "unica") {
+                  setForm({
+                    ...form,
+                    recorrencia: {
+                      tipo: "unica",
+                      data: "",
+                      horarioInicio: "",
+                      horarioFim: "",
+                      dias: [],
+                      horarios: {},
+                    },
+                  })
+                } else {
+                  setForm({
+                    ...form,
+                    recorrencia: {
+                      tipo: "semanal",
+                      data: "",
+                      horarioInicio: "",
+                      horarioFim: "",
+                      dias: [],
+                      horarios: {},
+                    },
+                  })
+                }
+              }}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Selecione" />
               </SelectTrigger>
 
               <SelectContent>
-                <SelectItem value="Iniciante">Iniciante</SelectItem>
-                <SelectItem value="Intermediário">Intermediário</SelectItem>
-                <SelectItem value="Avançado">Avançado</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="space-y-2">
-            <Label>Vagas</Label>
-            <Input
-              type="number"
-              value={form.vagas}
-              onChange={(e) =>
-                setForm({ ...form, vagas: Number(e.target.value) })
-              }
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label>Local</Label>
-            <Input
-              value={form.local}
-              onChange={(e) => setForm({ ...form, local: e.target.value })}
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label>Recorrência</Label>
-
-            <Select
-              value={form.recorrencia.tipo}
-              onValueChange={(value: any) =>
-                setForm({
-                  ...form,
-                  recorrencia: { ...form.recorrencia, tipo: value },
-                })
-              }
-            >
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-
-              <SelectContent>
-                <SelectItem value="nenhuma">Única</SelectItem>
+                <SelectItem value="unica">Única</SelectItem>
                 <SelectItem value="semanal">Semanal</SelectItem>
-                <SelectItem value="quinzenal">Quinzenal</SelectItem>
-                <SelectItem value="mensal">Mensal</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
-          {form.recorrencia.tipo !== "nenhuma" && (
+          {/* ÚNICA */}
+          {form.recorrencia.tipo === "unica" && (
+            <div className="space-y-4 border p-4 rounded-lg">
+
+              <div className="space-y-2">
+                <Label>Data</Label>
+                <Input
+                  type="date"
+                  value={form.recorrencia.data}
+                  onChange={(e) =>
+                    setForm({
+                      ...form,
+                      recorrencia: {
+                        ...form.recorrencia,
+                        data: e.target.value,
+                      },
+                    })
+                  }
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+
+                <Input
+                  type="time"
+                  value={form.recorrencia.horarioInicio}
+                  onChange={(e) =>
+                    setForm({
+                      ...form,
+                      recorrencia: {
+                        ...form.recorrencia,
+                        horarioInicio: e.target.value,
+                      },
+                    })
+                  }
+                />
+
+                <Input
+                  type="time"
+                  value={form.recorrencia.horarioFim}
+                  onChange={(e) =>
+                    setForm({
+                      ...form,
+                      recorrencia: {
+                        ...form.recorrencia,
+                        horarioFim: e.target.value,
+                      },
+                    })
+                  }
+                />
+
+              </div>
+            </div>
+          )}
+
+          {/* SEMANAL */}
+          {form.recorrencia.tipo === "semanal" && (
             <div className="space-y-4">
 
               <Label>Dias da semana</Label>
@@ -192,7 +291,11 @@ export default function FormOficinas() {
                   <Button
                     key={dia}
                     type="button"
-                    variant={form.recorrencia.dias.includes(dia) ? "default" : "outline"}
+                    variant={
+                      form.recorrencia.dias.includes(dia)
+                        ? "default"
+                        : "outline"
+                    }
                     onClick={() => toggleDia(dia)}
                   >
                     {dia}
@@ -200,28 +303,56 @@ export default function FormOficinas() {
                 ))}
               </div>
 
-              <div className="space-y-3">
+              <div className="space-y-4">
                 {form.recorrencia.dias.map((dia) => (
-                  <div key={dia} className="space-y-1">
-                    <Label>{dia} horário</Label>
-                    <Input
-                      type="time"
-                      value={form.recorrencia.horarios[dia]?.[0] || ""}
-                      onChange={(e) => setHorario(dia, e.target.value)}
-                    />
+                  <div key={dia} className="border p-4 rounded-lg">
+
+                    <Label className="font-semibold">
+                      {dia}
+                    </Label>
+
+                    <div className="grid grid-cols-2 gap-4 mt-2">
+
+                      <Input
+                        type="time"
+                        value={
+                          form.recorrencia.horarios[dia]?.horarioInicio || ""
+                        }
+                        onChange={(e) =>
+                          setHorario(dia, "horarioInicio", e.target.value)
+                        }
+                      />
+
+                      <Input
+                        type="time"
+                        value={
+                          form.recorrencia.horarios[dia]?.horarioFim || ""
+                        }
+                        onChange={(e) =>
+                          setHorario(dia, "horarioFim", e.target.value)
+                        }
+                      />
+
+                    </div>
                   </div>
                 ))}
               </div>
             </div>
           )}
 
+          {/* IMAGEM */}
           <Input
             type="file"
             accept="image/*"
             onChange={(e) => {
               const file = e.target.files?.[0]
               if (!file) return
-              setForm({ ...form, image: file })
+
+              setForm({
+                ...form,
+                image: file,
+              })
+
               setPreview(URL.createObjectURL(file))
             }}
           />
@@ -234,10 +365,11 @@ export default function FormOficinas() {
           )}
 
           <Button className="w-full">
-            Salvar Oficina
+            Salvar Atividade
           </Button>
 
         </form>
+
       </Card>
     </div>
   )
