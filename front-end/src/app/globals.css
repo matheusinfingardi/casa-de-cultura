@@ -193,4 +193,8 @@
   .border-soft {
     @apply border border-slate-200;
   }
+
+  button {
+    @apply cursor-pointer;
+  }
 }
