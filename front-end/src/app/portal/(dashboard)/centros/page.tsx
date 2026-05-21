@@ -1,27 +1,36 @@
 "use client"
 
 import { useRouter } from "next/navigation"
-import CrudTable from "@/components/portal/crud-table"
+import CrudPage from "@/components/portal/crud/crud-page"
 
-export default function CentersPage() {
+export default function CentrosPage() {
   const router = useRouter()
 
   const data = [
-    { id: "1", name: "Centro Norte", address: "Juiz de Fora - MG" },
-    { id: "2", name: "Centro Sul", address: "Juiz de Fora - MG" },
+    {
+      id: "1",
+      nome: "Centro Norte",
+      responsavel: "Carlos",
+      telefone: "(32) 99999-0000",
+      endereco: "Rua A, 123",
+    },
   ]
+  
+  const columns = [
+  "nome",
+  "responsavel",
+  "telefone",
+  "endereco",
+]
 
   return (
-    <CrudTable
+    <CrudPage
       title="Centros"
-      columns={[
-        { label: "Nome", key: "name" },
-        { label: "Endereço", key: "address" },
-      ]}
       data={data}
+      columns={columns}
       onCreate={() => router.push("/portal/centros/novo")}
       onEdit={(item) => router.push(`/portal/centros/${item.id}`)}
-      onDelete={(id) => console.log("delete center", id)}
+      onDelete={(id) => console.log(id)}
     />
   )
 }

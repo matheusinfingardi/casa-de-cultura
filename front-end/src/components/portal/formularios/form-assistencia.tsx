@@ -1,7 +1,6 @@
 "use client"
 
 import { useState } from "react"
-
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -15,233 +14,244 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 
-type AssistenciaFormData = {
-  nome: string
-  descricao: string
-  tipo: string
-  profissional: string
-  local: string
-  recorrente: boolean
-  data?: string
-  horario?: string
-  diaSemana?: string
-  image: File | null
-}
+const DIAS = [
+  "Segunda",
+  "Terça",
+  "Quarta",
+  "Quinta",
+  "Sexta",
+  "Sábado",
+  "Domingo",
+]
 
-export default function FormAssistencia({
-  onSubmit,
-}: {
-  onSubmit?: (data: AssistenciaFormData) => void
-}) {
-  const [form, setForm] = useState<AssistenciaFormData>({
+export default function FormAssistencia() {
+  const [form, setForm] = useState({
     nome: "",
     descricao: "",
     tipo: "",
     profissional: "",
     local: "",
-    recorrente: false,
-    image: null,
+
+    recorrencia: {
+      tipo: "unica",
+      data: "",
+      horario: "",
+
+      dias: [] as string[],
+      horarios: {} as Record<string, { inicio: string; fim: string }>,
+    },
+
+    image: null as File | null,
   })
 
   const [preview, setPreview] = useState<string | null>(null)
 
+  function toggleDia(dia: string) {
+    const exists = form.recorrencia.dias.includes(dia)
+
+    setForm({
+      ...form,
+      recorrencia: {
+        ...form.recorrencia,
+        dias: exists
+          ? form.recorrencia.dias.filter((d) => d !== dia)
+          : [...form.recorrencia.dias, dia],
+      },
+    })
+  }
+
+  function setHorario(dia: string, key: "inicio" | "fim", value: string) {
+    setForm({
+      ...form,
+      recorrencia: {
+        ...form.recorrencia,
+        horarios: {
+          ...form.recorrencia.horarios,
+          [dia]: {
+            ...form.recorrencia.horarios[dia],
+            [key]: value,
+          },
+        },
+      },
+    })
+  }
+
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-
-    onSubmit?.(form)
+    console.log(form)
   }
 
   return (
     <div className="space-y-6 max-w-3xl mx-auto">
+      <h1 className="text-2xl font-bold">Cadastro de Assistência</h1>
 
-      <h1 className="text-2xl font-bold">
-        Cadastro de Assistência
-      </h1>
-
-      <Card className="p-6 rounded-2xl shadow-sm">
-
+      <Card className="p-6 space-y-6">
         <form onSubmit={handleSubmit} className="space-y-6">
 
-          {/* NOME */}
           <div className="space-y-2">
-            <Label>Nome do Atendimento</Label>
+            <Label>Nome</Label>
             <Input
               value={form.nome}
-              onChange={(e) =>
-                setForm({ ...form, nome: e.target.value })
-              }
+              onChange={(e) => setForm({ ...form, nome: e.target.value })}
             />
           </div>
 
-          {/* DESCRIÇÃO */}
           <div className="space-y-2">
             <Label>Descrição</Label>
             <Textarea
               value={form.descricao}
-              onChange={(e) =>
-                setForm({ ...form, descricao: e.target.value })
-              }
+              onChange={(e) => setForm({ ...form, descricao: e.target.value })}
             />
           </div>
 
-          {/* TIPO */}
           <div className="space-y-2">
-            <Label>Tipo de Atendimento</Label>
+            <Label>Recorrência</Label>
 
             <Select
-              value={form.tipo}
+              value={form.recorrencia.tipo}
               onValueChange={(value) =>
-                setForm({ ...form, tipo: value })
+                setForm({
+                  ...form,
+                  recorrencia: {
+                    ...form.recorrencia,
+                    tipo: value,
+                  },
+                })
               }
             >
               <SelectTrigger>
-                <SelectValue placeholder="Selecione o tipo" />
+                <SelectValue placeholder="Tipo" />
               </SelectTrigger>
 
               <SelectContent>
-                <SelectItem value="psicologia">Psicologia</SelectItem>
-                <SelectItem value="fonoaudiologia">Fonoaudiologia</SelectItem>
-                <SelectItem value="nutricao">Nutrição</SelectItem>
-                <SelectItem value="social">Serviço Social</SelectItem>
+                <SelectItem value="unica">Única</SelectItem>
+                <SelectItem value="semanal">Semanal</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
-          {/* PROFISSIONAL */}
-          <div className="space-y-2">
-            <Label>Profissional Responsável</Label>
-            <Input
-              value={form.profissional}
-              onChange={(e) =>
-                setForm({ ...form, profissional: e.target.value })
-              }
-            />
-          </div>
-
-          {/* LOCAL */}
-          <div className="space-y-2">
-            <Label>Local</Label>
-            <Input
-              value={form.local}
-              onChange={(e) =>
-                setForm({ ...form, local: e.target.value })
-              }
-            />
-          </div>
-
-          {/* RECORRÊNCIA */}
-          <div className="flex items-center gap-3">
-            <input
-              type="checkbox"
-              checked={form.recorrente}
-              onChange={(e) =>
-                setForm({ ...form, recorrente: e.target.checked })
-              }
-            />
-
-            <Label>Atendimento recorrente</Label>
-          </div>
-
-          {/* CAMPOS DINÂMICOS */}
-          {form.recorrente ? (
+          {form.recorrencia.tipo === "unica" && (
             <div className="grid grid-cols-2 gap-4">
-
-              <div className="space-y-2">
-                <Label>Dia da Semana</Label>
-                <Select
-                  value={form.diaSemana}
-                  onValueChange={(value) =>
-                    setForm({ ...form, diaSemana: value })
-                  }
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecione" />
-                  </SelectTrigger>
-
-                  <SelectContent>
-                    <SelectItem value="segunda">Segunda</SelectItem>
-                    <SelectItem value="terca">Terça</SelectItem>
-                    <SelectItem value="quarta">Quarta</SelectItem>
-                    <SelectItem value="quinta">Quinta</SelectItem>
-                    <SelectItem value="sexta">Sexta</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label>Horário</Label>
-                <Input
-                  type="time"
-                  value={form.horario || ""}
-                  onChange={(e) =>
-                    setForm({ ...form, horario: e.target.value })
-                  }
-                />
-              </div>
-
-            </div>
-          ) : (
-            <div className="grid grid-cols-2 gap-4">
-
-              <div className="space-y-2">
+              <div>
                 <Label>Data</Label>
                 <Input
                   type="date"
-                  value={form.data || ""}
+                  value={form.recorrencia.data}
                   onChange={(e) =>
-                    setForm({ ...form, data: e.target.value })
+                    setForm({
+                      ...form,
+                      recorrencia: {
+                        ...form.recorrencia,
+                        data: e.target.value,
+                      },
+                    })
                   }
                 />
               </div>
 
-              <div className="space-y-2">
+              <div>
                 <Label>Horário</Label>
                 <Input
                   type="time"
-                  value={form.horario || ""}
+                  value={form.recorrencia.horario}
                   onChange={(e) =>
-                    setForm({ ...form, horario: e.target.value })
+                    setForm({
+                      ...form,
+                      recorrencia: {
+                        ...form.recorrencia,
+                        horario: e.target.value,
+                      },
+                    })
                   }
                 />
               </div>
-
             </div>
           )}
 
-          {/* IMAGEM */}
-          <div className="space-y-2">
-            <Label>Imagem (opcional)</Label>
+          {form.recorrencia.tipo === "semanal" && (
+            <div className="space-y-4">
 
+              <Label>Dias da semana</Label>
+
+              <div className="flex flex-wrap gap-2">
+                {DIAS.map((dia) => (
+                  <Button
+                    key={dia}
+                    type="button"
+                    variant={
+                      form.recorrencia.dias.includes(dia)
+                        ? "default"
+                        : "outline"
+                    }
+                    onClick={() => toggleDia(dia)}
+                  >
+                    {dia}
+                  </Button>
+                ))}
+              </div>
+
+              <div className="space-y-4">
+                {form.recorrencia.dias.map((dia) => (
+                  <div key={dia} className="space-y-2 border p-3 rounded-md">
+                    <Label className="font-bold">{dia}</Label>
+
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <Label>Início</Label>
+                        <Input
+                          type="time"
+                          value={
+                            form.recorrencia.horarios[dia]?.inicio || ""
+                          }
+                          onChange={(e) =>
+                            setHorario(dia, "inicio", e.target.value)
+                          }
+                        />
+                      </div>
+
+                      <div>
+                        <Label>Fim</Label>
+                        <Input
+                          type="time"
+                          value={
+                            form.recorrencia.horarios[dia]?.fim || ""
+                          }
+                          onChange={(e) =>
+                            setHorario(dia, "fim", e.target.value)
+                          }
+                        />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <div>
             <Input
               type="file"
               accept="image/*"
               onChange={(e) => {
                 const file = e.target.files?.[0]
                 if (!file) return
-
                 setForm({ ...form, image: file })
                 setPreview(URL.createObjectURL(file))
               }}
             />
           </div>
 
-          {/* PREVIEW */}
           {preview && (
-            <div className="overflow-hidden rounded-xl border">
-              <img
-                src={preview}
-                className="w-full h-52 object-cover"
-              />
-            </div>
+            <img
+              src={preview}
+              className="w-full h-52 object-cover rounded-xl"
+            />
           )}
 
-          {/* BOTÃO */}
           <Button type="submit" className="w-full">
-            Salvar Assistência
+            Salvar
           </Button>
-
         </form>
-
       </Card>
     </div>
   )

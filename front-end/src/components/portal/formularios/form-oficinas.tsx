@@ -1,7 +1,6 @@
 "use client"
 
 import { useState } from "react"
-
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -15,41 +14,73 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 
-type OficinaFormData = {
+type Recorrencia = {
+  tipo: "nenhuma" | "semanal" | "quinzenal" | "mensal"
+  dias: string[]
+  horarios: Record<string, string[]>
+}
+
+type FormData = {
   nome: string
   descricao: string
   instrutor: string
-  local: string
   nivel: string
-  vagas: number | null
-  recorrente: boolean
-  data?: string
-  horario?: string
-  diaSemana?: string
+  vagas: number | ""
+  local: string
+  recorrencia: Recorrencia
   image: File | null
 }
 
-export default function FormOficinas({
-  onSubmit,
-}: {
-  onSubmit?: (data: OficinaFormData) => void
-}) {
-  const [form, setForm] = useState<OficinaFormData>({
+const DIAS = ["Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado", "Domingo"]
+
+export default function FormOficinas() {
+  const [form, setForm] = useState<FormData>({
     nome: "",
     descricao: "",
     instrutor: "",
-    local: "",
     nivel: "",
-    vagas: null,
-    recorrente: false,
+    vagas: "",
+    local: "",
     image: null,
+    recorrencia: {
+      tipo: "nenhuma",
+      dias: [],
+      horarios: {},
+    },
   })
 
   const [preview, setPreview] = useState<string | null>(null)
 
+  function toggleDia(dia: string) {
+    const exists = form.recorrencia.dias.includes(dia)
+
+    setForm({
+      ...form,
+      recorrencia: {
+        ...form.recorrencia,
+        dias: exists
+          ? form.recorrencia.dias.filter((d) => d !== dia)
+          : [...form.recorrencia.dias, dia],
+      },
+    })
+  }
+
+  function setHorario(dia: string, horario: string) {
+    setForm({
+      ...form,
+      recorrencia: {
+        ...form.recorrencia,
+        horarios: {
+          ...form.recorrencia.horarios,
+          [dia]: [horario],
+        },
+      },
+    })
+  }
+
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    onSubmit?.(form)
+    console.log(form)
   }
 
   return (
@@ -63,43 +94,32 @@ export default function FormOficinas({
 
         <form onSubmit={handleSubmit} className="space-y-6">
 
-          {/* NOME */}
           <div className="space-y-2">
-            <Label>Nome da Oficina</Label>
+            <Label>Nome</Label>
             <Input
               value={form.nome}
-              onChange={(e) =>
-                setForm({ ...form, nome: e.target.value })
-              }
+              onChange={(e) => setForm({ ...form, nome: e.target.value })}
             />
           </div>
 
-          {/* DESCRIÇÃO */}
           <div className="space-y-2">
             <Label>Descrição</Label>
             <Textarea
               value={form.descricao}
-              onChange={(e) =>
-                setForm({ ...form, descricao: e.target.value })
-              }
+              onChange={(e) => setForm({ ...form, descricao: e.target.value })}
             />
           </div>
 
-          {/* INSTRUTOR */}
           <div className="space-y-2">
             <Label>Instrutor</Label>
             <Input
               value={form.instrutor}
-              onChange={(e) =>
-                setForm({ ...form, instrutor: e.target.value })
-              }
+              onChange={(e) => setForm({ ...form, instrutor: e.target.value })}
             />
           </div>
 
-          {/* NÍVEL */}
           <div className="space-y-2">
             <Label>Nível</Label>
-
             <Select
               value={form.nivel}
               onValueChange={(value) =>
@@ -107,135 +127,117 @@ export default function FormOficinas({
               }
             >
               <SelectTrigger>
-                <SelectValue placeholder="Selecione o nível" />
+                <SelectValue placeholder="Selecione" />
               </SelectTrigger>
 
               <SelectContent>
-                <SelectItem value="iniciante">Iniciante</SelectItem>
-                <SelectItem value="intermediario">Intermediário</SelectItem>
-                <SelectItem value="avancado">Avançado</SelectItem>
+                <SelectItem value="Iniciante">Iniciante</SelectItem>
+                <SelectItem value="Intermediário">Intermediário</SelectItem>
+                <SelectItem value="Avançado">Avançado</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
-          {/* VAGAS */}
           <div className="space-y-2">
             <Label>Vagas</Label>
             <Input
               type="number"
-              value={form.vagas ?? ""}
+              value={form.vagas}
               onChange={(e) =>
                 setForm({ ...form, vagas: Number(e.target.value) })
               }
             />
           </div>
 
-          {/* LOCAL */}
           <div className="space-y-2">
             <Label>Local</Label>
             <Input
               value={form.local}
-              onChange={(e) =>
-                setForm({ ...form, local: e.target.value })
-              }
+              onChange={(e) => setForm({ ...form, local: e.target.value })}
             />
           </div>
 
-          {/* RECORRÊNCIA */}
-          <div className="flex items-center gap-3">
-            <input
-              type="checkbox"
-              checked={form.recorrente}
-              onChange={(e) =>
-                setForm({ ...form, recorrente: e.target.checked })
+          <div className="space-y-2">
+            <Label>Recorrência</Label>
+
+            <Select
+              value={form.recorrencia.tipo}
+              onValueChange={(value: any) =>
+                setForm({
+                  ...form,
+                  recorrencia: { ...form.recorrencia, tipo: value },
+                })
               }
-            />
-            <Label>Oficina recorrente</Label>
+            >
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+
+              <SelectContent>
+                <SelectItem value="nenhuma">Única</SelectItem>
+                <SelectItem value="semanal">Semanal</SelectItem>
+                <SelectItem value="quinzenal">Quinzenal</SelectItem>
+                <SelectItem value="mensal">Mensal</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
 
-          {/* CAMPOS DINÂMICOS */}
-          {form.recorrente ? (
-            <div className="grid grid-cols-2 gap-4">
+          {form.recorrencia.tipo !== "nenhuma" && (
+            <div className="space-y-4">
 
-              <div className="space-y-2">
-                <Label>Dia da Semana</Label>
-                <Input
-                  value={form.diaSemana || ""}
-                  onChange={(e) =>
-                    setForm({ ...form, diaSemana: e.target.value })
-                  }
-                />
+              <Label>Dias da semana</Label>
+
+              <div className="flex flex-wrap gap-2">
+                {DIAS.map((dia) => (
+                  <Button
+                    key={dia}
+                    type="button"
+                    variant={form.recorrencia.dias.includes(dia) ? "default" : "outline"}
+                    onClick={() => toggleDia(dia)}
+                  >
+                    {dia}
+                  </Button>
+                ))}
               </div>
 
-              <div className="space-y-2">
-                <Label>Horário</Label>
-                <Input
-                  type="time"
-                  value={form.horario || ""}
-                  onChange={(e) =>
-                    setForm({ ...form, horario: e.target.value })
-                  }
-                />
+              <div className="space-y-3">
+                {form.recorrencia.dias.map((dia) => (
+                  <div key={dia} className="space-y-1">
+                    <Label>{dia} horário</Label>
+                    <Input
+                      type="time"
+                      value={form.recorrencia.horarios[dia]?.[0] || ""}
+                      onChange={(e) => setHorario(dia, e.target.value)}
+                    />
+                  </div>
+                ))}
               </div>
-
-            </div>
-          ) : (
-            <div className="grid grid-cols-2 gap-4">
-
-              <div className="space-y-2">
-                <Label>Data</Label>
-                <Input
-                  type="date"
-                  value={form.data || ""}
-                  onChange={(e) =>
-                    setForm({ ...form, data: e.target.value })
-                  }
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label>Horário</Label>
-                <Input
-                  type="time"
-                  value={form.horario || ""}
-                  onChange={(e) =>
-                    setForm({ ...form, horario: e.target.value })
-                  }
-                />
-              </div>
-
             </div>
           )}
 
-          {/* IMAGEM */}
-          <div className="space-y-2">
-            <Label>Imagem</Label>
-            <Input
-              type="file"
-              accept="image/*"
-              onChange={(e) => {
-                const file = e.target.files?.[0]
-                if (!file) return
-
-                setForm({ ...form, image: file })
-                setPreview(URL.createObjectURL(file))
-              }}
-            />
-          </div>
+          <Input
+            type="file"
+            accept="image/*"
+            onChange={(e) => {
+              const file = e.target.files?.[0]
+              if (!file) return
+              setForm({ ...form, image: file })
+              setPreview(URL.createObjectURL(file))
+            }}
+          />
 
           {preview && (
             <img
               src={preview}
-              className="w-full h-52 object-cover rounded-xl border"
+              className="w-full h-52 object-cover rounded-xl"
             />
           )}
 
-          <Button className="w-full" type="submit">
+          <Button className="w-full">
             Salvar Oficina
           </Button>
 
         </form>
-
       </Card>
     </div>
   )

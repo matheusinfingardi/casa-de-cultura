@@ -1,30 +1,40 @@
 "use client"
 
 import { useRouter } from "next/navigation"
-import CrudTable from "@/components/portal/crud-table"
+import CrudPage from "@/components/portal/crud/crud-page"
 
-export default function EventsPage() {
+export default function EventosPage() {
   const router = useRouter()
 
   const data = [
     {
       id: "1",
-      name: "Ação Social Centro Norte",
-      date: "2025-05-10",
+      nome: "Evento Social",
+      local: "Centro Norte",
+      tipo: "social",
+      data: "10/06/2026",
+      horarioInicio: "12:00",
+      horarioFim: "14:00",
     },
   ]
 
+  const columns = [
+  "nome",
+  "local",
+  "tipo",
+  "data",
+  "horarioInicio",
+  "horarioFim",
+]
+
   return (
-    <CrudTable
+    <CrudPage
       title="Eventos"
-      columns={[
-        { label: "Nome", key: "name" },
-        { label: "Data", key: "date" },
-      ]}
       data={data}
+      columns={columns}
       onCreate={() => router.push("/portal/eventos/novo")}
       onEdit={(item) => router.push(`/portal/eventos/${item.id}`)}
-      onDelete={(id) => console.log("delete", id)}
+      onDelete={(id) => console.log(id)}
     />
   )
 }

@@ -19,7 +19,8 @@ type EventoFormData = {
   nome: string
   descricao: string
   data: string
-  horario: string
+  horarioInicio: string
+  horarioFim: string
   local: string
   tipo: string
   image: File | null
@@ -34,7 +35,8 @@ export default function FormEvento({
     nome: "",
     descricao: "",
     data: "",
-    horario: "",
+    horarioInicio: "",
+    horarioFim: "",
     local: "",
     tipo: "",
     image: null,
@@ -59,7 +61,6 @@ export default function FormEvento({
 
         <form onSubmit={handleSubmit} className="space-y-6">
 
-          {/* NOME */}
           <div className="space-y-2">
             <Label>Nome do Evento</Label>
             <Input
@@ -70,7 +71,6 @@ export default function FormEvento({
             />
           </div>
 
-          {/* DESCRIÇÃO */}
           <div className="space-y-2">
             <Label>Descrição</Label>
             <Textarea
@@ -81,7 +81,6 @@ export default function FormEvento({
             />
           </div>
 
-          {/* DATA / HORÁRIO */}
           <div className="grid grid-cols-2 gap-4">
 
             <div className="space-y-2">
@@ -95,15 +94,30 @@ export default function FormEvento({
               />
             </div>
 
-            <div className="space-y-2">
-              <Label>Horário</Label>
-              <Input
-                type="time"
-                value={form.horario}
-                onChange={(e) =>
-                  setForm({ ...form, horario: e.target.value })
-                }
-              />
+            <div className="grid grid-cols-2 gap-4">
+
+              <div className="space-y-2">
+                <Label>Horário Início</Label>
+                <Input
+                  type="time"
+                  value={form.horarioInicio}
+                  onChange={(e) =>
+                    setForm({ ...form, horarioInicio: e.target.value })
+                  }
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label>Horário Fim</Label>
+                <Input
+                  type="time"
+                  value={form.horarioFim}
+                  onChange={(e) =>
+                    setForm({ ...form, horarioFim: e.target.value })
+                  }
+                />
+              </div>
+
             </div>
 
           </div>
