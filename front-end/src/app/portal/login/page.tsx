@@ -16,12 +16,10 @@ export default function AdminAuth() {
   const [mode, setMode] = useState<Mode>("login")
 
   function handleLogin() {
-    // depois vai validar auth real
     router.push("/portal")
   }
 
   function handleRegister() {
-    // depois vai criar admin real
     router.push("/portal")
   }
 

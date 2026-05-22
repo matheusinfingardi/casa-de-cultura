@@ -11,15 +11,13 @@ type ItemAgenda = {
   tipo: Tipo
 }
 
-// MOCK
 const MOCK: ItemAgenda[] = [
-  { id: "1", titulo: "Aula de Yoga", data: "2026-05-21", tipo: "atividade" },
+  { id: "1", titulo: "Aula de Música", data: "2026-05-21", tipo: "atividade" },
   { id: "2", titulo: "Evento Cultural", data: "2026-05-21", tipo: "evento" },
   { id: "3", titulo: "Oficina Pintura", data: "2026-05-23", tipo: "oficina" },
   { id: "4", titulo: "Assistência Social", data: "2026-05-24", tipo: "assistencia" },
 ]
 
-// CORES
 function cor(tipo: Tipo) {
   switch (tipo) {
     case "evento":
@@ -33,22 +31,19 @@ function cor(tipo: Tipo) {
   }
 }
 
-// GERAR CALENDÁRIO COMPLETO (COM DIAS VAZIOS)
 function gerarCalendario(ano: number, mes: number) {
   const primeiroDia = new Date(ano, mes, 1)
   const ultimoDia = new Date(ano, mes + 1, 0)
 
   const diasNoMes = ultimoDia.getDate()
-  const inicioSemana = primeiroDia.getDay() // 0 domingo
+  const inicioSemana = primeiroDia.getDay()
 
   const dias: (Date | null)[] = []
 
-  // espaços vazios antes do início do mês
   for (let i = 0; i < inicioSemana; i++) {
     dias.push(null)
   }
 
-  // dias do mês
   for (let d = 1; d <= diasNoMes; d++) {
     dias.push(new Date(ano, mes, d))
   }
@@ -104,16 +99,11 @@ export default function PortalDashboard() {
 
   return (
     <div className="space-y-6">
-
-      {/* HEADER */}
       <div className="flex items-center justify-between">
-
         <h1 className="text-3xl font-bold">
           Visão Geral
         </h1>
-
         <div className="flex items-center gap-3">
-
           <button
             onClick={mesAnterior}
             className="px-3 py-1 border rounded"
@@ -131,39 +121,29 @@ export default function PortalDashboard() {
           >
             ▶
           </button>
-
         </div>
       </div>
-
-      {/* CALENDÁRIO */}
       <div className="grid grid-cols-7 gap-2">
-
         {["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"].map((d) => (
           <div key={d} className="text-center text-xs font-semibold text-gray-500">
             {d}
           </div>
         ))}
-
         {dias.map((dia, i) => {
           if (!dia) {
             return <div key={i} />
           }
-
           const dateStr = formatDate(dia)
           const eventos = eventosDoDia(dateStr)
-
           return (
             <div
               key={dateStr}
               className="border rounded-xl p-2 min-h-[90px] bg-white"
             >
-
               <div className="text-xs text-gray-500">
                 {dia.getDate()}
               </div>
-
               <div className="space-y-1 mt-1">
-
                 {eventos.slice(0, 3).map((ev) => (
                   <div
                     key={ev.id}
@@ -178,9 +158,7 @@ export default function PortalDashboard() {
                     +{eventos.length - 3} mais
                   </div>
                 )}
-
               </div>
-
             </div>
           )
         })}

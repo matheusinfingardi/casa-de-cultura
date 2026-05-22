@@ -122,7 +122,6 @@ export default function FormEvento({
 
           </div>
 
-          {/* LOCAL */}
           <div className="space-y-2">
             <Label>Local</Label>
             <Input
@@ -133,7 +132,6 @@ export default function FormEvento({
             />
           </div>
 
-          {/* TIPO */}
           <div className="space-y-2">
             <Label>Tipo de Evento</Label>
 
@@ -156,7 +154,6 @@ export default function FormEvento({
             </Select>
           </div>
 
-          {/* IMAGEM */}
           <div className="space-y-2">
             <Label>Imagem (opcional)</Label>
 
@@ -173,7 +170,6 @@ export default function FormEvento({
             />
           </div>
 
-          {/* PREVIEW */}
           {preview && (
             <div className="overflow-hidden rounded-xl border">
               <img
@@ -183,13 +179,10 @@ export default function FormEvento({
             </div>
           )}
 
-          {/* BOTÕES */}
           <Button type="submit" className="w-full">
             Criar Evento
           </Button>
-
         </form>
-
       </Card>
     </div>
   )

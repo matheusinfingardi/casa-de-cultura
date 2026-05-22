@@ -136,7 +136,6 @@ export default function FormAtividades() {
 
         <form onSubmit={handleSubmit} className="space-y-6">
 
-          {/* NOME */}
           <div className="space-y-2">
             <Label>Nome</Label>
             <Input
@@ -147,7 +146,6 @@ export default function FormAtividades() {
             />
           </div>
 
-          {/* DESCRIÇÃO */}
           <div className="space-y-2">
             <Label>Descrição</Label>
             <Textarea
@@ -158,7 +156,6 @@ export default function FormAtividades() {
             />
           </div>
 
-          {/* RESPONSÁVEL */}
           <div className="space-y-2">
             <Label>Responsável</Label>
             <Input
@@ -169,7 +166,6 @@ export default function FormAtividades() {
             />
           </div>
 
-          {/* LOCAL */}
           <div className="space-y-2">
             <Label>Local</Label>
             <Input
@@ -180,7 +176,6 @@ export default function FormAtividades() {
             />
           </div>
 
-          {/* RECORRÊNCIA */}
           <div className="space-y-2">
             <Label>Recorrência</Label>
 
@@ -225,7 +220,6 @@ export default function FormAtividades() {
             </Select>
           </div>
 
-          {/* ÚNICA */}
           {form.recorrencia.tipo === "unica" && (
             <div className="space-y-4 border p-4 rounded-lg">
 
@@ -280,7 +274,6 @@ export default function FormAtividades() {
             </div>
           )}
 
-          {/* SEMANAL */}
           {form.recorrencia.tipo === "semanal" && (
             <div className="space-y-4">
 
@@ -340,7 +333,6 @@ export default function FormAtividades() {
             </div>
           )}
 
-          {/* IMAGEM */}
           <Input
             type="file"
             accept="image/*"

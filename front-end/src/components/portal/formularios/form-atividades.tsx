@@ -143,7 +143,6 @@ export default function FormAtividades() {
           className="space-y-6"
         >
 
-          {/* NOME */}
           <div className="space-y-2">
             <Label>Nome</Label>
 
@@ -158,7 +157,6 @@ export default function FormAtividades() {
             />
           </div>
 
-          {/* DESCRIÇÃO */}
           <div className="space-y-2">
             <Label>Descrição</Label>
 
@@ -173,7 +171,6 @@ export default function FormAtividades() {
             />
           </div>
 
-          {/* RESPONSÁVEL */}
           <div className="space-y-2">
             <Label>Responsável</Label>
 
@@ -188,7 +185,6 @@ export default function FormAtividades() {
             />
           </div>
 
-          {/* LOCAL */}
           <div className="space-y-2">
             <Label>Local</Label>
 
@@ -203,7 +199,6 @@ export default function FormAtividades() {
             />
           </div>
 
-          {/* RECORRÊNCIA */}
           <div className="space-y-2">
 
             <Label>Recorrência</Label>
@@ -254,7 +249,6 @@ export default function FormAtividades() {
             </Select>
           </div>
 
-          {/* ÚNICA */}
           {form.recorrencia.tipo === "unica" && (
             <div className="space-y-4 border rounded-lg p-4">
 
@@ -321,7 +315,6 @@ export default function FormAtividades() {
             </div>
           )}
 
-          {/* SEMANAL */}
           {form.recorrencia.tipo === "semanal" && (
             <div className="space-y-4">
 
@@ -410,7 +403,6 @@ export default function FormAtividades() {
             </div>
           )}
 
-          {/* IMAGEM */}
           <div className="space-y-2">
 
             <Label>Imagem</Label>
@@ -436,7 +428,6 @@ export default function FormAtividades() {
             />
           </div>
 
-          {/* PREVIEW */}
           {preview && (
             <img
               src={preview}
@@ -445,7 +436,6 @@ export default function FormAtividades() {
             />
           )}
 
-          {/* BOTÃO */}
           <Button
             type="submit"
             className="w-full"

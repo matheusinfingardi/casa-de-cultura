@@ -20,10 +20,8 @@ function formatHeader(col: string) {
         horarioInicio: "HORÁRIO INÍCIO",
         horarioFim: "HORÁRIO FIM",
     }
-
     return map[col] ?? col.toUpperCase()
 }
-
 function formatCell(value: any) {
   if (value === null || value === undefined) return "-"
 
@@ -35,7 +33,6 @@ function formatCell(value: any) {
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
     .join(" ")
 }
-
 
 export default function CrudTable({
     data,
@@ -50,7 +47,6 @@ export default function CrudTable({
             </Card>
         )
     }
-
     return (
         <Card className="p-4 overflow-x-auto">
             <table className="w-full text-sm">
