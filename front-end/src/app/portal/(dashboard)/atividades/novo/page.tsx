@@ -1,5 +1,6 @@
 "use client"
 
+<<<<<<< HEAD
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 
@@ -146,4 +147,14 @@ export default function NovaAtividadePage() {
             </form>
         </div>
     )
+=======
+
+import FormAtividades from "@/components/portal/formularios/form-atividades"
+
+
+export default function NovaAtividade() {
+  return (
+    <FormAtividades />
+  )
+>>>>>>> 53261b57bdd70ca5ae292e37bb110ba71b42eac8
 }
