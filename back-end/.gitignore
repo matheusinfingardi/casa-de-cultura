@@ -1,5 +1,15 @@
-node_modules
-# Keep environment variables out of version control
+# Python
+__pycache__/
+*.py[cod]
+venv/
 .env
+*.db
+*.db-journal
+main_backup.py
 
+# Node
+node_modules/
+.next/
+
+# Prisma
 /generated/prisma

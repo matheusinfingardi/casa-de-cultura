@@ -1,6 +1,5 @@
 "use client"
 
-<<<<<<< HEAD
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 
@@ -69,33 +68,33 @@ export default function NovaAtividadePage() {
             
             <form onSubmit={handleSubmit} className="space-y-4 bg-white p-6 shadow rounded-lg text-black">
                 <div>
-                    <label className="block text-sm font-medium text-gray-700">Nome da Atividade</label>
+                    <label htmlFor="nome" className="block text-sm font-medium text-gray-700">Nome da Atividade</label>
                     <input 
-                        type="text" required className="mt-1 block w-full border border-gray-300 rounded-md p-2"
+                        id="nome" type="text" required className="mt-1 block w-full border border-gray-300 rounded-md p-2"
                         value={nome} onChange={(e) => setNome(e.target.value)}
                     />
                 </div>
 
                 <div>
-                    <label className="block text-sm font-medium text-gray-700">Responsável</label>
+                    <label htmlFor="responsável" className="block text-sm font-medium text-gray-700">Responsável</label>
                     <input 
-                        type="text" required className="mt-1 block w-full border border-gray-300 rounded-md p-2"
+                         id="responsável"type="text" required className="mt-1 block w-full border border-gray-300 rounded-md p-2"
                         value={responsavel} onChange={(e) => setResponsavel(e.target.value)}
                     />
                 </div>
 
                 <div>
-                    <label className="block text-sm font-medium text-gray-700">Local</label>
+                    <label htmlFor="nome" className="block text-sm font-medium text-gray-700">Local</label>
                     <input 
-                        type="text" required className="mt-1 block w-full border border-gray-300 rounded-md p-2"
+                        id="nome" type="text" required className="mt-1 block w-full border border-gray-300 rounded-md p-2"
                         value={local} onChange={(e) => setLocal(e.target.value)}
                     />
                 </div>
 
                 <div>
-                    <label className="block text-sm font-medium text-gray-700">Tipo de Agendamento</label>
+                    <label htmlFor="tipo de agendamento" className="block text-sm font-medium text-gray-700">Tipo de Agendamento</label>
                     <select 
-                        className="mt-1 block w-full border border-gray-300 rounded-md p-2"
+                        id="tipo de agendamento" className="mt-1 block w-full border border-gray-300 rounded-md p-2"
                         value={tipoRecorrencia} onChange={(e) => setTipoRecorrencia(e.target.value)}
                     >
                         <option value="Unica">Data Única</option>
@@ -105,9 +104,9 @@ export default function NovaAtividadePage() {
 
                 {tipoRecorrencia === "Unica" && (
                     <div>
-                        <label className="block text-sm font-medium text-gray-700">Data do Evento</label>
+                        <label htmlFor="data do evento" className="block text-sm font-medium text-gray-700">Data do Evento</label>
                         <input 
-                            type="date" required className="mt-1 block w-full border border-gray-300 rounded-md p-2"
+                            id="data do evento" type="date" required className="mt-1 block w-full border border-gray-300 rounded-md p-2"
                             value={dataUnica} onChange={(e) => setDataUnica(e.target.value)}
                         />
                     </div>
@@ -115,16 +114,16 @@ export default function NovaAtividadePage() {
 
                 <div className="grid grid-cols-2 gap-4">
                     <div>
-                        <label className="block text-sm font-medium text-gray-700">Horário Início</label>
+                        <label htmlFor="horário início" className="block text-sm font-medium text-gray-700">Horário Início</label>
                         <input 
-                            type="time" required className="mt-1 block w-full border border-gray-300 rounded-md p-2"
+                            id="horário início" type="time" required className="mt-1 block w-full border border-gray-300 rounded-md p-2"
                             value={inicio} onChange={(e) => setInicio(e.target.value)}
                         />
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-gray-700">Horário Fim</label>
+                        <label htmlFor="horário fim" className="block text-sm font-medium text-gray-700">Horário Fim</label>
                         <input 
-                            type="time" required className="mt-1 block w-full border border-gray-300 rounded-md p-2"
+                            id="horário fim" type="time" required className="mt-1 block w-full border border-gray-300 rounded-md p-2"
                             value={fim} onChange={(e) => setFim(e.target.value)}
                         />
                     </div>
@@ -147,14 +146,4 @@ export default function NovaAtividadePage() {
             </form>
         </div>
     )
-=======
-
-import FormAtividades from "@/components/portal/formularios/form-atividades"
-
-
-export default function NovaAtividade() {
-  return (
-    <FormAtividades />
-  )
->>>>>>> 53261b57bdd70ca5ae292e37bb110ba71b42eac8
 }
