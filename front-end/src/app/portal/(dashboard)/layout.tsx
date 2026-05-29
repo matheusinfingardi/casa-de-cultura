@@ -1,9 +1,6 @@
-import {
-  SidebarProvider,
-  SidebarTrigger,
-} from "@/components/ui/sidebar"
-
+import { SidebarProvider } from "@/components/ui/sidebar"
 import AppSidebar from "@/components/portal/app-sidebar"
+import { MobileHeader } from "@/components/portal/mobile-sidebar"
 
 export default function PortalLayout({
   children,
@@ -11,14 +8,13 @@ export default function PortalLayout({
   children: React.ReactNode
 }) {
   return (
-    <SidebarProvider>
-      <div className="flex min-h-screen w-full">
-        <AppSidebar />
+    <SidebarProvider defaultOpen={true}>
+      <AppSidebar />
+      <div className="flex flex-col flex-1 min-h-screen">
+        <MobileHeader />
         <main className="flex-1 p-6 md:p-10">
-          <SidebarTrigger className="mb-4 md:hidden" />
           {children}
         </main>
-
       </div>
     </SidebarProvider>
   )
