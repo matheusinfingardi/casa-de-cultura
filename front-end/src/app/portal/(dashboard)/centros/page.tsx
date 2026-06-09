@@ -1,27 +1,31 @@
 "use client"
 
+import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
+
 import CrudPage from "@/components/portal/crud/crud-page"
+import { buscarCentros } from "@/lib/services/centros"
 
 export default function CentrosPage() {
   const router = useRouter()
 
-  const data = [
-    {
-      id: "1",
-      nome: "Centro Norte",
-      responsavel: "Carlos",
-      telefone: "(32) 99999-0000",
-      endereco: "Rua A, 123",
-    },
-  ]
-  
+  const [data, setData] = useState<any[]>([])
+
+  useEffect(() => {
+    async function carregarCentros() {
+      const centros = await buscarCentros()
+      setData(centros)
+    }
+
+    carregarCentros()
+  }, [])
+
   const columns = [
-  "nome",
-  "responsavel",
-  "telefone",
-  "endereco",
-]
+    "nome",
+    "responsavel",
+    "telefone",
+    "endereco",
+  ]
 
   return (
     <CrudPage
