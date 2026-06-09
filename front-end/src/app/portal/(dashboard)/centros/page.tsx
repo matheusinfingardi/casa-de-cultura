@@ -4,21 +4,38 @@ import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 
 import CrudPage from "@/components/portal/crud/crud-page"
-import { buscarCentros } from "@/lib/services/centros"
+import { buscarCentros, excluirCentro } from "@/lib/services/centros"
 
 export default function CentrosPage() {
   const router = useRouter()
 
   const [data, setData] = useState<any[]>([])
 
-  useEffect(() => {
-    async function carregarCentros() {
-      const centros = await buscarCentros()
-      setData(centros)
-    }
+  async function carregarCentros() {
+    const centros = await buscarCentros()
+    setData(centros)
+  }
 
+  useEffect(() => {
     carregarCentros()
   }, [])
+
+  async function handleDelete(id: string) {
+    const confirmar = window.confirm(
+      "Tem certeza que deseja excluir este centro?"
+    )
+
+    if (!confirmar) return
+
+    try {
+      await excluirCentro(id)
+
+      setData((prev) => prev.filter((item) => item.id !== id))
+    } catch (error) {
+      console.error("Erro ao excluir centro:", error)
+      alert("Erro ao excluir centro")
+    }
+  }
 
   const columns = [
     "nome",
@@ -34,7 +51,7 @@ export default function CentrosPage() {
       columns={columns}
       onCreate={() => router.push("/portal/centros/novo")}
       onEdit={(item) => router.push(`/portal/centros/${item.id}`)}
-      onDelete={(id) => console.log(id)}
+      onDelete={handleDelete}
     />
   )
 }

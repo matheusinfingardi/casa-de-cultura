@@ -31,3 +31,15 @@ export async function criarCentro(centro: {
 
   return data;
 }
+
+export async function excluirCentro(id: string) {
+  const { error } = await supabase
+    .from("centros")
+    .delete()
+    .eq("id", id)
+
+  if (error) {
+    console.error("Erro ao excluir centro:", error)
+    throw error
+  }
+}
