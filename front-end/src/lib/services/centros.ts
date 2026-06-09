@@ -43,3 +43,38 @@ export async function excluirCentro(id: string) {
     throw error
   }
 }
+
+export async function buscarCentroPorId(id: string) {
+  const { data, error } = await supabase
+    .from("centros")
+    .select("*")
+    .eq("id", id)
+    .single()
+
+  if (error) {
+    console.error("Erro ao buscar centro:", error)
+    throw error
+  }
+
+  return data
+}
+
+export async function atualizarCentro(
+  id: string,
+  centro: {
+    nome: string
+    responsavel: string
+    telefone: string
+    endereco: string
+  }
+) {
+  const { error } = await supabase
+    .from("centros")
+    .update(centro)
+    .eq("id", id)
+
+  if (error) {
+    console.error("Erro ao atualizar centro:", error)
+    throw error
+  }
+}

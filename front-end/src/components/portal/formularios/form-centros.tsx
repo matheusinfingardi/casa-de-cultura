@@ -7,7 +7,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { FormWrapper } from "./form-wrapper"
 import { ImageField } from "./image-field"
 
-type FormData = {
+export type FormData = {
   nome: string
   endereco: string
   responsavel: string
@@ -16,10 +16,22 @@ type FormData = {
   image: File | null
 }
 
-export default function FormCentros({ onSubmit }: { onSubmit?: (data: FormData) => void }) {
+type Props = {
+  initialData?: Partial<FormData>
+  onSubmit?: (data: FormData) => void
+}
+
+export default function FormCentros({
+  initialData,
+  onSubmit,
+}: Props) {
   const [form, setForm] = useState<FormData>({
-    nome: "", endereco: "", responsavel: "",
-    telefone: "", descricao: "", image: null,
+    nome: initialData?.nome || "",
+    endereco: initialData?.endereco || "",
+    responsavel: initialData?.responsavel || "",
+    telefone: initialData?.telefone || "",
+    descricao: initialData?.descricao || "",
+    image: null,
   })
 
   function handleSubmit(e: React.FormEvent) {
@@ -28,37 +40,70 @@ export default function FormCentros({ onSubmit }: { onSubmit?: (data: FormData) 
   }
 
   return (
-    <FormWrapper titulo="Cadastro de Centro" submitLabel="Salvar Centro" onSubmit={handleSubmit}>
-
+    <FormWrapper
+      titulo="Cadastro de Centro"
+      submitLabel="Salvar Centro"
+      onSubmit={handleSubmit}
+    >
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
         <div className="space-y-2">
           <Label>Nome do Centro</Label>
-          <Input value={form.nome} onChange={(e) => setForm({ ...form, nome: e.target.value })} />
+          <Input
+            value={form.nome}
+            onChange={(e) =>
+              setForm({ ...form, nome: e.target.value })
+            }
+          />
         </div>
+
         <div className="space-y-2">
           <Label>Responsável</Label>
-          <Input value={form.responsavel} onChange={(e) => setForm({ ...form, responsavel: e.target.value })} />
+          <Input
+            value={form.responsavel}
+            onChange={(e) =>
+              setForm({ ...form, responsavel: e.target.value })
+            }
+          />
         </div>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
         <div className="space-y-2">
           <Label>Endereço</Label>
-          <Input value={form.endereco} onChange={(e) => setForm({ ...form, endereco: e.target.value })} />
+          <Input
+            value={form.endereco}
+            onChange={(e) =>
+              setForm({ ...form, endereco: e.target.value })
+            }
+          />
         </div>
+
         <div className="space-y-2">
           <Label>Telefone</Label>
-          <Input value={form.telefone} onChange={(e) => setForm({ ...form, telefone: e.target.value })} />
+          <Input
+            value={form.telefone}
+            onChange={(e) =>
+              setForm({ ...form, telefone: e.target.value })
+            }
+          />
         </div>
       </div>
 
       <div className="space-y-2">
         <Label>Descrição</Label>
-        <Textarea value={form.descricao} onChange={(e) => setForm({ ...form, descricao: e.target.value })} />
+        <Textarea
+          value={form.descricao}
+          onChange={(e) =>
+            setForm({ ...form, descricao: e.target.value })
+          }
+        />
       </div>
 
-      <ImageField onChange={(image) => setForm({ ...form, image })} />
-
+      <ImageField
+        onChange={(image) =>
+          setForm({ ...form, image })
+        }
+      />
     </FormWrapper>
   )
 }
