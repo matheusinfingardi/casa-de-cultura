@@ -22,12 +22,25 @@ type FormData = {
   image: File | null
 }
 
-export default function FormEvento({ onSubmit }: { onSubmit?: (data: FormData) => void }) {
+type Props = {
+  initialData?: Partial<FormData>
+  onSubmit?: (data: FormData) => void
+}
+
+export default function FormEvento({
+  initialData,
+  onSubmit,
+}: Props) {
   const [form, setForm] = useState<FormData>({
-    nome: "", descricao: "", data: "",
-    horarioInicio: "", horarioFim: "",
-    local: "", tipo: "", image: null,
-  })
+  nome: initialData?.nome || "",
+  descricao: initialData?.descricao || "",
+  data: initialData?.data || "",
+  horarioInicio: initialData?.horarioInicio || "",
+  horarioFim: initialData?.horarioFim || "",
+  local: initialData?.local || "",
+  tipo: initialData?.tipo || "",
+  image: null,
+})
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -35,7 +48,11 @@ export default function FormEvento({ onSubmit }: { onSubmit?: (data: FormData) =
   }
 
   return (
-    <FormWrapper titulo="Criar Evento" submitLabel="Criar Evento" onSubmit={handleSubmit}>
+    <FormWrapper
+  titulo={initialData ? "Editar Evento" : "Criar Evento"}
+  submitLabel={initialData ? "Salvar Alterações" : "Criar Evento"}
+  onSubmit={handleSubmit}
+>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
         <div className="space-y-2">
