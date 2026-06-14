@@ -1,5 +1,7 @@
 "use client"
 
+import { criarAtividade } from "@/lib/services/atividades"
+
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 
@@ -40,26 +42,17 @@ export default function NovaAtividadePage() {
             }
         }
 
-        try {
-            const res = await fetch("http://localhost:8000/activities/", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(payload)
-            })
+            try {
+    await criarAtividade(payload)
 
-            if (res.ok) {
-                // Redireciona de volta para a listagem e força a atualização dos dados
-                router.push("/portal/atividades")
-                router.refresh()
-            } else {
-                alert("Erro ao salvar a atividade no servidor.")
-            }
-        } catch (err) {
-            console.error("Erro de rede:", err)
-            alert("Não foi possível conectar ao servidor Python.")
-        } finally {
-            setLoading(false)
-        }
+    router.push("/portal/atividades")
+    router.refresh()
+} catch (err) {
+    console.error("Erro ao salvar atividade:", err)
+    alert("Erro ao salvar atividade")
+} finally {
+    setLoading(false)
+}
     }
 
     return (
