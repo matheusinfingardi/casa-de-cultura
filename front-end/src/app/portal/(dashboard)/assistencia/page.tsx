@@ -1,27 +1,28 @@
 "use client"
 
+import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
+
 import CrudPage from "@/components/portal/crud/crud-page"
+
+import {
+  buscarAssistencias,
+  excluirAssistencia,
+} from "@/lib/services/assistencia"
 
 export default function AssistenciaPage() {
   const router = useRouter()
 
-  const data = [
-    {
-      id: "1",
-      nome: "Psicologia Infantil",
-      tipo: "Psicologia",
-      responsavel: "Dra. Ana",
-      local: "Centro Sul",
-    },
-    {
-      id: "2",
-      nome: "Nutrição",
-      tipo: "Saúde",
-      responsavel: "Dr. Carlos",
-      local: "Centro Norte",
-    },
-  ]
+  const [data, setData] = useState<any[]>([])
+
+  useEffect(() => {
+    carregarAssistencias()
+  }, [])
+
+  async function carregarAssistencias() {
+    const assistencias = await buscarAssistencias()
+    setData(assistencias)
+  }
 
   const columns = [
     "nome",
@@ -36,8 +37,26 @@ export default function AssistenciaPage() {
       data={data}
       columns={columns}
       onCreate={() => router.push("/portal/assistencia/novo")}
-      onEdit={(item) => router.push(`/portal/assistencia/${item.id}`)}
-      onDelete={(id) => console.log(id)}
+      onEdit={(item) =>
+        router.push(`/portal/assistencia/${item.id}`)
+      }
+      onDelete={async (id) => {
+        try {
+          await excluirAssistencia(id)
+
+          const assistencias =
+            await buscarAssistencias()
+
+          setData(assistencias)
+        } catch (error) {
+          console.error(
+            "Erro ao excluir assistência:",
+            error
+          )
+
+          alert("Erro ao excluir assistência")
+        }
+      }}
     />
   )
 }
