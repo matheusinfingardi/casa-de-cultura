@@ -7,10 +7,22 @@ import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import LoginForm from "./login-form"
 import RegisterForm from "./register-form"
+import { cadastrar, entrar } from "@/lib/services/auth"
 
 type Mode = "login" | "register"
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL
+function traduzirErro(mensagem: string): string {
+  const msg = mensagem.toLowerCase()
+  if (msg.includes("invalid login credentials")) return "E-mail ou senha incorretos"
+  if (msg.includes("email not confirmed")) return "Confirme seu e-mail antes de entrar"
+  if (msg.includes("user already registered")) return "E-mail já cadastrado"
+  if (msg.includes("password should be at least")) return "A senha é muito curta"
+  if (msg.includes("unable to validate email address") || msg.includes("invalid email"))
+    return "E-mail inválido"
+  if (msg.includes("email rate limit") || msg.includes("rate limit"))
+    return "Muitas tentativas. Tente novamente em alguns minutos."
+  return mensagem || "Ocorreu um erro. Tente novamente."
+}
 
 export default function AuthContainer() {
   const searchParams = useSearchParams()
@@ -32,17 +44,11 @@ export default function AuthContainer() {
     setErro("")
     setLoading(true)
     try {
-      const res = await fetch(`${API_URL}/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password: senha }),
-      })
-      const data = await res.json()
-      if (!res.ok) {
-        setErro(data.detail || "Erro ao fazer login")
+      const { error } = await entrar(email, senha)
+      if (error) {
+        setErro(traduzirErro(error.message))
         return
       }
-      localStorage.setItem("user", JSON.stringify(data.user))
       router.push("/portal")
     } catch {
       setErro("Erro de conexão com o servidor")
@@ -55,18 +61,13 @@ export default function AuthContainer() {
     setErro("")
     setLoading(true)
     try {
-      const res = await fetch(`${API_URL}/register`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ nome, email, password: senha }),
-      })
-      const data = await res.json()
-      if (!res.ok) {
-        setErro(data.detail || "Erro ao cadastrar")
+      const { error } = await cadastrar(nome, email, senha)
+      if (error) {
+        setErro(traduzirErro(error.message))
         return
       }
       setMode("login")
-      setErro("✅ Conta criada! Faça login para continuar.")
+      setErro("✅ Conta criada! Verifique seu e-mail para confirmar antes de entrar.")
     } catch {
       setErro("Erro de conexão com o servidor")
     } finally {

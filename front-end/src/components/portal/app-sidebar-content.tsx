@@ -1,9 +1,11 @@
 "use client"
 
 import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import { useSidebar } from "@/components/ui/sidebar"
 import { Separator } from "@/components/ui/separator"
+import { useAuth } from "@/components/auth/auth-provider"
+import { sair } from "@/lib/services/auth"
 
 import {
   LayoutDashboard,
@@ -13,6 +15,7 @@ import {
   HeartHandshake,
   Building2,
   Settings,
+  LogOut,
   type LucideIcon,
 } from "lucide-react"
 
@@ -73,6 +76,39 @@ function NavSection({ title, items }: { title: string; items: NavItem[] }) {
   )
 }
 
+function UserFooter() {
+  const { user } = useAuth()
+  const router = useRouter()
+  const { setOpenMobile } = useSidebar()
+
+  const nome = (user?.user_metadata?.nome as string | undefined) ?? user?.email ?? "Administrador"
+
+  async function handleSair() {
+    await sair()
+    setOpenMobile(false)
+    router.push("/auth?mode=login")
+  }
+
+  return (
+    <div className="mt-auto px-2">
+      <Separator className="mb-3" />
+      <div className="px-3 mb-2">
+        <p className="text-sm font-medium truncate">{nome}</p>
+        {user?.email && (
+          <p className="text-xs text-muted-foreground truncate">{user.email}</p>
+        )}
+      </div>
+      <button
+        onClick={handleSair}
+        className="flex items-center gap-3 px-3 h-12 w-full rounded-xl text-sm font-medium text-foreground hover:bg-muted transition-all cursor-pointer"
+      >
+        <LogOut className="w-5 h-5 shrink-0 text-muted-foreground" />
+        Sair
+      </button>
+    </div>
+  )
+}
+
 export default function AppSidebarContent() {
   return (
     <div className="flex flex-col py-3 gap-4 h-full overflow-y-auto">
@@ -98,6 +134,8 @@ export default function AppSidebarContent() {
       <NavSection title="Gestão" items={managementItems} />
       <Separator />
       <NavSection title="Sistema" items={systemItems} />
+
+      <UserFooter />
     </div>
   )
 }
