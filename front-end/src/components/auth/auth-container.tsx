@@ -8,21 +8,10 @@ import Link from "next/link"
 import LoginForm from "./login-form"
 import RegisterForm from "./register-form"
 import { cadastrar, entrar } from "@/lib/services/auth"
+import { buscarMeuPerfil } from "@/lib/services/usuarios"
+import { traduzirErro } from "./traduzir-erro"
 
 type Mode = "login" | "register"
-
-function traduzirErro(mensagem: string): string {
-  const msg = mensagem.toLowerCase()
-  if (msg.includes("invalid login credentials")) return "E-mail ou senha incorretos"
-  if (msg.includes("email not confirmed")) return "Confirme seu e-mail antes de entrar"
-  if (msg.includes("user already registered")) return "E-mail já cadastrado"
-  if (msg.includes("password should be at least")) return "A senha é muito curta"
-  if (msg.includes("unable to validate email address") || msg.includes("invalid email"))
-    return "E-mail inválido"
-  if (msg.includes("email rate limit") || msg.includes("rate limit"))
-    return "Muitas tentativas. Tente novamente em alguns minutos."
-  return mensagem || "Ocorreu um erro. Tente novamente."
-}
 
 export default function AuthContainer() {
   const searchParams = useSearchParams()
@@ -49,7 +38,8 @@ export default function AuthContainer() {
         setErro(traduzirErro(error.message))
         return
       }
-      router.push("/portal")
+      const perfil = await buscarMeuPerfil()
+      router.push(perfil?.role === "admin" ? "/portal" : "/painel")
     } catch {
       setErro("Erro de conexão com o servidor")
     } finally {
@@ -67,7 +57,7 @@ export default function AuthContainer() {
         return
       }
       setMode("login")
-      setErro("✅ Conta criada! Verifique seu e-mail para confirmar antes de entrar.")
+      setErro("✅ Conta criada! Faça login para continuar.")
     } catch {
       setErro("Erro de conexão com o servidor")
     } finally {
@@ -110,6 +100,13 @@ export default function AuthContainer() {
             Cadastrar
           </Button>
         </div>
+
+        {mode === "register" && (
+          <p className="text-xs text-center text-muted-foreground">
+            O cadastro cria uma conta de <strong>Cliente</strong>. Responsáveis e
+            administradores apenas fazem login.
+          </p>
+        )}
 
         {erro && (
           <p className={`text-sm text-center ${erro.includes("✅") ? "text-green-600" : "text-red-500"}`}>

@@ -1,19 +1,28 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 
 import { FormWrapper } from "./form-wrapper"
 import { RecorrenciaField, type Recorrencia } from "./recorrencia-field"
 import { ImageField } from "./image-field"
+import { listarResponsaveis, type Usuario } from "@/lib/services/usuarios"
 
 export type FormData = {
   nome: string
   descricao?: string
   responsavel: string
+  responsavel_id?: string | null
   local: string
   recorrencia: Recorrencia
   image?: File | null
@@ -28,10 +37,13 @@ export default function FormAtividades({
   initialData,
   onSubmit,
 }: Props) {
+  const [responsaveis, setResponsaveis] = useState<Usuario[]>([])
+
   const [form, setForm] = useState<FormData>({
     nome: initialData?.nome || "",
     descricao: initialData?.descricao || "",
     responsavel: initialData?.responsavel || "",
+    responsavel_id: initialData?.responsavel_id ?? null,
     local: initialData?.local || "",
     recorrencia:
       initialData?.recorrencia || {
@@ -42,6 +54,10 @@ export default function FormAtividades({
       },
     image: initialData?.image || null,
   })
+
+  useEffect(() => {
+    listarResponsaveis().then(setResponsaveis)
+  }, [])
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -70,15 +86,28 @@ export default function FormAtividades({
 
         <div className="space-y-2">
           <Label>Responsável</Label>
-          <Input
-            value={form.responsavel}
-            onChange={(e) =>
+          <Select
+            value={form.responsavel_id ?? ""}
+            onValueChange={(id) => {
+              const sel = responsaveis.find((r) => r.id === id)
               setForm({
                 ...form,
-                responsavel: e.target.value,
+                responsavel_id: id,
+                responsavel: sel?.nome ?? sel?.email ?? "",
               })
-            }
-          />
+            }}
+          >
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Selecione um responsável" />
+            </SelectTrigger>
+            <SelectContent>
+              {responsaveis.map((r) => (
+                <SelectItem key={r.id} value={r.id}>
+                  {r.nome ?? r.email}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
       </div>
 

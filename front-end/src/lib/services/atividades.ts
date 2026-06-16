@@ -1,4 +1,5 @@
 import { supabase } from "@/lib/supabase"
+import { notify } from "@/lib/notify"
 
 export async function buscarAtividades() {
   const { data, error } = await supabase
@@ -7,6 +8,7 @@ export async function buscarAtividades() {
 
   if (error) {
     console.error("Erro ao buscar atividades:", error)
+    notify.error("Erro ao carregar atividades")
     return []
   }
 
@@ -16,6 +18,7 @@ export async function buscarAtividades() {
 export async function criarAtividade(atividade: {
   nome: string
   responsavel: string
+  responsavel_id?: string | null
   local: string
   recorrencia: any
 }) {
@@ -26,6 +29,7 @@ export async function criarAtividade(atividade: {
 
   if (error) {
     console.error("Erro ao criar atividade:", error)
+    notify.error("Erro ao salvar atividade")
     throw error
   }
 
@@ -40,6 +44,7 @@ export async function excluirAtividade(id: string) {
 
   if (error) {
     console.error("Erro ao excluir atividade:", error)
+    notify.error("Erro ao excluir atividade")
     throw error
   }
 }
@@ -53,6 +58,7 @@ export async function buscarAtividadePorId(id: string) {
 
   if (error) {
     console.error("Erro ao buscar atividade:", error)
+    notify.error("Erro ao carregar atividade")
     throw error
   }
 
@@ -64,6 +70,7 @@ export async function atualizarAtividade(
   atividade: {
     nome: string
     responsavel: string
+    responsavel_id?: string | null
     local: string
     recorrencia: any
   }
@@ -75,6 +82,7 @@ export async function atualizarAtividade(
 
   if (error) {
     console.error("Erro ao atualizar atividade:", error)
+    notify.error("Erro ao salvar atividade")
     throw error
   }
 }

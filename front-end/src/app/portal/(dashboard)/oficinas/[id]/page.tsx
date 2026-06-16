@@ -47,7 +47,7 @@ export default function EditarOficina() {
       router.push("/portal/oficinas")
     } catch (error) {
       console.error("Erro ao atualizar oficina:", error)
-      alert("Erro ao atualizar oficina")
+      // erro exibido via toast
     }
   }
 

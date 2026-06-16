@@ -33,7 +33,6 @@ export default function CentrosPage() {
       setData((prev) => prev.filter((item) => item.id !== id))
     } catch (error) {
       console.error("Erro ao excluir centro:", error)
-      alert("Erro ao excluir centro")
     }
   }
 

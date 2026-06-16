@@ -1,4 +1,5 @@
 import { supabase } from "@/lib/supabase"
+import { notify } from "@/lib/notify"
 
 export async function buscarOficinas() {
   const { data, error } = await supabase
@@ -7,6 +8,7 @@ export async function buscarOficinas() {
 
   if (error) {
     console.error("Erro ao buscar oficinas:", error)
+    notify.error("Erro ao carregar oficinas")
     return []
   }
 
@@ -16,6 +18,7 @@ export async function buscarOficinas() {
 export async function criarOficina(oficina: {
   nome: string
   responsavel: string
+  responsavel_id?: string | null
   vagas: number
   nivel: string
   local: string
@@ -28,11 +31,9 @@ export async function criarOficina(oficina: {
     .insert([oficina])
     .select()
 
-  console.log("DATA:", data)
-  console.log("ERROR:", error)
-
   if (error) {
     console.error("Erro ao criar oficina:", error)
+    notify.error("Erro ao salvar oficina")
     throw error
   }
 
@@ -47,6 +48,7 @@ export async function excluirOficina(id: string) {
 
   if (error) {
     console.error("Erro ao excluir oficina:", error)
+    notify.error("Erro ao excluir oficina")
     throw error
   }
 }
@@ -60,6 +62,7 @@ export async function buscarOficinaPorId(id: string) {
 
   if (error) {
     console.error("Erro ao buscar oficina:", error)
+    notify.error("Erro ao carregar oficina")
     throw error
   }
 
@@ -71,6 +74,7 @@ export async function atualizarOficina(
   oficina: {
     nome: string
     responsavel: string
+    responsavel_id?: string | null
     vagas: number
     nivel: string
     local: string
@@ -86,6 +90,7 @@ export async function atualizarOficina(
 
   if (error) {
     console.error("Erro ao atualizar oficina:", error)
+    notify.error("Erro ao salvar oficina")
     throw error
   }
 }

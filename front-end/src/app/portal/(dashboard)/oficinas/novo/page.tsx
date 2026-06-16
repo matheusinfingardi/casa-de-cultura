@@ -16,6 +16,7 @@ export default function NovaOficina() {
       await criarOficina({
         nome: data.nome,
         responsavel: data.responsavel,
+        responsavel_id: data.responsavel_id ?? null,
         vagas: data.vagas,
         nivel: data.nivel,
         local: data.local,
@@ -27,7 +28,7 @@ export default function NovaOficina() {
       router.push("/portal/oficinas")
     } catch (error) {
       console.error("Erro ao salvar oficina:", error)
-      alert("Erro ao salvar oficina")
+      // erro exibido via toast
     }
   }
 

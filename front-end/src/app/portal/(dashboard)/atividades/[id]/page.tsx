@@ -45,6 +45,7 @@ export default function EditarAtividadePage() {
         {
           nome: data.nome,
           responsavel: data.responsavel,
+          responsavel_id: data.responsavel_id ?? null,
           local: data.local,
           recorrencia: data.recorrencia,
         }
@@ -57,7 +58,7 @@ export default function EditarAtividadePage() {
         error
       )
 
-      alert("Erro ao atualizar atividade")
+      // erro exibido via toast
     }
   }
 

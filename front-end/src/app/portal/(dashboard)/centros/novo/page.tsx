@@ -2,17 +2,10 @@
 
 import { useRouter } from "next/navigation"
 
-import FormCentros from "@/components/portal/formularios/form-centros"
+import FormCentros, {
+  FormData,
+} from "@/components/portal/formularios/form-centros"
 import { criarCentro } from "@/lib/services/centros"
-
-type FormData = {
-  nome: string
-  endereco: string
-  responsavel: string
-  telefone: string
-  descricao: string
-  image: File | null
-}
 
 export default function NovaCentro() {
   const router = useRouter()
@@ -22,6 +15,7 @@ export default function NovaCentro() {
       await criarCentro({
         nome: data.nome,
         responsavel: data.responsavel,
+        responsavel_id: data.responsavel_id ?? null,
         telefone: data.telefone,
         endereco: data.endereco,
       })
@@ -29,7 +23,7 @@ export default function NovaCentro() {
       router.push("/portal/centros")
     } catch (error) {
       console.error("Erro ao salvar centro:", error)
-      alert("Erro ao salvar centro")
+      // erro exibido via toast
     }
   }
 

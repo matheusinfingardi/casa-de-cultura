@@ -46,13 +46,15 @@ export default function EditarEvento() {
           data: data.data,
           horarioInicio: data.horarioInicio,
           horarioFim: data.horarioFim,
+          responsavel: data.responsavel,
+          responsavel_id: data.responsavel_id ?? null,
         }
       )
 
       router.push("/portal/eventos")
     } catch (error) {
       console.error("Erro ao atualizar evento:", error)
-      alert("Erro ao atualizar evento")
+      // erro exibido via toast
     }
   }
 

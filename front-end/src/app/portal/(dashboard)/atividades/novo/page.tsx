@@ -1,18 +1,24 @@
 "use client"
 
 import { criarAtividade } from "@/lib/services/atividades"
+import { listarResponsaveis, type Usuario } from "@/lib/services/usuarios"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 
 export default function NovaAtividadePage() {
     const router = useRouter()
     const [loading, setLoading] = useState(false)
-    
+
     // Estados dos campos simples
     const [nome, setNome] = useState("")
-    const [responsavel, setResponsavel] = useState("")
+    const [responsavelId, setResponsavelId] = useState("")
+    const [responsaveis, setResponsaveis] = useState<Usuario[]>([])
     const [local, setLocal] = useState("")
+
+    useEffect(() => {
+        listarResponsaveis().then(setResponsaveis)
+    }, [])
     const [tipoRecorrencia, setTipoRecorrencia] = useState("Unica")
     
     // Estados para os detalhes de horário/data
@@ -24,10 +30,13 @@ export default function NovaAtividadePage() {
         e.preventDefault()
         setLoading(true)
 
+        const responsavelSelecionado = responsaveis.find((r) => r.id === responsavelId)
+
         // Monta o objeto de recorrência conforme a lógica do expandRecorrencia
         const payload = {
             nome,
-            responsavel,
+            responsavel: responsavelSelecionado?.nome ?? "",
+            responsavel_id: responsavelId || null,
             local,
             recorrencia: tipoRecorrencia === "Unica" ? {
                 tipo: "Unica",
@@ -49,7 +58,6 @@ export default function NovaAtividadePage() {
     router.refresh()
 } catch (err) {
     console.error("Erro ao salvar atividade:", err)
-    alert("Erro ao salvar atividade")
 } finally {
     setLoading(false)
 }
@@ -69,11 +77,23 @@ export default function NovaAtividadePage() {
                 </div>
 
                 <div>
-                    <label htmlFor="responsável" className="block text-sm font-medium text-gray-700">Responsável</label>
-                    <input 
-                         id="responsável"type="text" required className="mt-1 block w-full border border-gray-300 rounded-md p-2"
-                        value={responsavel} onChange={(e) => setResponsavel(e.target.value)}
-                    />
+                    <label htmlFor="responsavel" className="block text-sm font-medium text-gray-700">Responsável</label>
+                    <select
+                        id="responsavel" required className="mt-1 block w-full border border-gray-300 rounded-md p-2"
+                        value={responsavelId} onChange={(e) => setResponsavelId(e.target.value)}
+                    >
+                        <option value="" disabled>Selecione um responsável</option>
+                        {responsaveis.map((r) => (
+                            <option key={r.id} value={r.id}>
+                                {r.nome ?? r.email}
+                            </option>
+                        ))}
+                    </select>
+                    {responsaveis.length === 0 && (
+                        <p className="mt-1 text-xs text-gray-500">
+                            Nenhum responsável cadastrado. Defina o papel &quot;Responsável&quot; a um usuário em Usuários.
+                        </p>
+                    )}
                 </div>
 
                 <div>

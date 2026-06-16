@@ -9,7 +9,7 @@ export default function PortalLayout({
   children: React.ReactNode
 }) {
   return (
-    <AuthGuard>
+    <AuthGuard allow={["admin"]} redirectTo="/painel">
       <SidebarProvider defaultOpen={true}>
         <AppSidebar />
         <div className="flex flex-col flex-1 min-h-screen">

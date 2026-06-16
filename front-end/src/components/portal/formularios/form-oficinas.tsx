@@ -14,10 +14,12 @@ import {
 } from "@/components/ui/select"
 
 import { FormWrapper } from "./form-wrapper"
+import { ResponsavelField } from "./responsavel-field"
 
 export type FormData = {
   nome: string
   responsavel: string
+  responsavel_id?: string | null
   vagas: number
   nivel: string
   local: string
@@ -38,6 +40,7 @@ export default function FormOficinas({
   const [form, setForm] = useState<FormData>({
     nome: initialData?.nome || "",
     responsavel: initialData?.responsavel || "",
+    responsavel_id: initialData?.responsavel_id ?? null,
     vagas: initialData?.vagas || 0,
     nivel: initialData?.nivel || "",
     local: initialData?.local || "",
@@ -68,18 +71,12 @@ export default function FormOficinas({
           />
         </div>
 
-        <div className="space-y-2">
-          <Label>Responsável</Label>
-          <Input
-            value={form.responsavel}
-            onChange={(e) =>
-              setForm({
-                ...form,
-                responsavel: e.target.value,
-              })
-            }
-          />
-        </div>
+        <ResponsavelField
+          value={form.responsavel_id}
+          onChange={(id, nome) =>
+            setForm({ ...form, responsavel_id: id, responsavel: nome })
+          }
+        />
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">

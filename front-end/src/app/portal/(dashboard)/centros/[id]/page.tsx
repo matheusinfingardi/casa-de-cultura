@@ -29,6 +29,7 @@ export default function EditarCentroPage() {
           nome: data.nome || "",
           endereco: data.endereco || "",
           responsavel: data.responsavel || "",
+          responsavel_id: data.responsavel_id ?? null,
           telefone: data.telefone || "",
           descricao: "",
           image: null,
@@ -46,6 +47,7 @@ export default function EditarCentroPage() {
       await atualizarCentro(params.id as string, {
         nome: data.nome,
         responsavel: data.responsavel,
+        responsavel_id: data.responsavel_id ?? null,
         telefone: data.telefone,
         endereco: data.endereco,
       })
@@ -53,7 +55,7 @@ export default function EditarCentroPage() {
       router.push("/portal/centros")
     } catch (error) {
       console.error(error)
-      alert("Erro ao atualizar centro")
+      // erro exibido via toast
     }
   }
 

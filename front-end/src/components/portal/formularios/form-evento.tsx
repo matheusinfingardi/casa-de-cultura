@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/select"
 import { FormWrapper } from "./form-wrapper"
 import { ImageField } from "./image-field"
+import { ResponsavelField } from "./responsavel-field"
 
 type FormData = {
   nome: string
@@ -19,6 +20,8 @@ type FormData = {
   horarioFim: string
   local: string
   tipo: string
+  responsavel: string
+  responsavel_id?: string | null
   image: File | null
 }
 
@@ -39,6 +42,8 @@ export default function FormEvento({
   horarioFim: initialData?.horarioFim || "",
   local: initialData?.local || "",
   tipo: initialData?.tipo || "",
+  responsavel: initialData?.responsavel || "",
+  responsavel_id: initialData?.responsavel_id ?? null,
   image: null,
 })
 
@@ -93,9 +98,18 @@ export default function FormEvento({
         </div>
       </div>
 
-      <div className="space-y-2">
-        <Label>Local</Label>
-        <Input value={form.local} onChange={(e) => setForm({ ...form, local: e.target.value })} />
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+        <div className="space-y-2">
+          <Label>Local</Label>
+          <Input value={form.local} onChange={(e) => setForm({ ...form, local: e.target.value })} />
+        </div>
+
+        <ResponsavelField
+          value={form.responsavel_id}
+          onChange={(id, nome) =>
+            setForm({ ...form, responsavel_id: id, responsavel: nome })
+          }
+        />
       </div>
 
       <ImageField onChange={(image) => setForm({ ...form, image })} />

@@ -103,12 +103,7 @@ export default function AtividadesPage() {
 
           setData(expanded)
         } catch (error) {
-          console.error(
-            "Erro ao excluir atividade:",
-            error
-          )
-
-          alert("Erro ao excluir atividade")
+          console.error("Erro ao excluir atividade:", error)
         }
       }}
     />

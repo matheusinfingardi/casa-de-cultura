@@ -50,7 +50,7 @@ export default function EditarAssistenciaPage() {
         error
       )
 
-      alert("Erro ao atualizar assistência")
+      // erro exibido via toast
     }
   }
 

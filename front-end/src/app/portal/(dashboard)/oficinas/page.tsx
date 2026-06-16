@@ -39,7 +39,6 @@ export default function OficinasPage() {
       )
     } catch (error) {
       console.error("Erro ao excluir oficina:", error)
-      alert("Erro ao excluir oficina")
     }
   }
 

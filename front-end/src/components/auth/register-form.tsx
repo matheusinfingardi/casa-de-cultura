@@ -20,7 +20,7 @@ export default function RegisterForm({ onSubmit, loading }: Props) {
       <div className="space-y-2">
         <Label>Nome</Label>
         <Input
-          placeholder="Nome do administrador"
+          placeholder="Seu nome"
           value={nome}
           onChange={(e) => setNome(e.target.value)}
         />

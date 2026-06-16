@@ -12,23 +12,14 @@ export default function NovaAssistencia() {
   const router = useRouter()
 
   async function handleSubmit(data: any) {
-  console.log("CHEGOU NA PAGINA", data)
-
-  try {
-    console.log("ANTES DO INSERT")
-
-    const resultado = await criarAssistencia(data)
-
-    console.log("DEPOIS DO INSERT", resultado)
-
-    router.push("/portal/assistencia")
-    router.refresh()
-
-  } catch (error) {
-    console.error("ERRO COMPLETO:", error)
-    alert("Erro ao criar assistência")
+    try {
+      await criarAssistencia(data)
+      router.push("/portal/assistencia")
+      router.refresh()
+    } catch (error) {
+      console.error("Erro ao criar assistência:", error)
+    }
   }
-}
 
   return (
     <FormAssistencia

@@ -1,4 +1,5 @@
 import { supabase } from "@/lib/supabase"
+import { notify } from "@/lib/notify"
 
 export async function buscarEventos() {
   const { data, error } = await supabase
@@ -7,6 +8,7 @@ export async function buscarEventos() {
 
   if (error) {
     console.error("Erro ao buscar eventos:", error)
+    notify.error("Erro ao carregar eventos")
     return []
   }
 
@@ -20,6 +22,8 @@ export async function criarEvento(evento: {
   data: string
   horarioInicio: string
   horarioFim: string
+  responsavel?: string
+  responsavel_id?: string | null
 }) {
   const { data, error } = await supabase
     .from("eventos")
@@ -28,6 +32,7 @@ export async function criarEvento(evento: {
 
   if (error) {
     console.error("Erro ao criar evento:", error)
+    notify.error("Erro ao salvar evento")
     throw error
   }
 
@@ -42,6 +47,7 @@ export async function excluirEvento(id: string) {
 
   if (error) {
     console.error("Erro ao excluir evento:", error)
+    notify.error("Erro ao excluir evento")
     throw error
   }
 }
@@ -55,6 +61,7 @@ export async function buscarEventoPorId(id: string) {
 
   if (error) {
     console.error("Erro ao buscar evento:", error)
+    notify.error("Erro ao carregar evento")
     throw error
   }
 
@@ -70,6 +77,8 @@ export async function atualizarEvento(
     data: string
     horarioInicio: string
     horarioFim: string
+    responsavel?: string
+    responsavel_id?: string | null
   }
 ) {
   const { error } = await supabase
@@ -79,6 +88,7 @@ export async function atualizarEvento(
 
   if (error) {
     console.error("Erro ao atualizar evento:", error)
+    notify.error("Erro ao salvar evento")
     throw error
   }
 }

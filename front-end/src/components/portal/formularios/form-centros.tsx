@@ -6,11 +6,13 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { FormWrapper } from "./form-wrapper"
 import { ImageField } from "./image-field"
+import { ResponsavelField } from "./responsavel-field"
 
 export type FormData = {
   nome: string
   endereco: string
   responsavel: string
+  responsavel_id?: string | null
   telefone: string
   descricao: string
   image: File | null
@@ -29,6 +31,7 @@ export default function FormCentros({
     nome: initialData?.nome || "",
     endereco: initialData?.endereco || "",
     responsavel: initialData?.responsavel || "",
+    responsavel_id: initialData?.responsavel_id ?? null,
     telefone: initialData?.telefone || "",
     descricao: initialData?.descricao || "",
     image: null,
@@ -56,15 +59,12 @@ export default function FormCentros({
           />
         </div>
 
-        <div className="space-y-2">
-          <Label>Responsável</Label>
-          <Input
-            value={form.responsavel}
-            onChange={(e) =>
-              setForm({ ...form, responsavel: e.target.value })
-            }
-          />
-        </div>
+        <ResponsavelField
+          value={form.responsavel_id}
+          onChange={(id, nome) =>
+            setForm({ ...form, responsavel_id: id, responsavel: nome })
+          }
+        />
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">

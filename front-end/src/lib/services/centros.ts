@@ -1,4 +1,5 @@
 import { supabase } from "@/lib/supabase";
+import { notify } from "@/lib/notify";
 
 export async function buscarCentros() {
   const { data, error } = await supabase
@@ -7,6 +8,7 @@ export async function buscarCentros() {
 
   if (error) {
     console.error("Erro ao buscar centros:", error);
+    notify.error("Erro ao carregar centros");
     return [];
   }
 
@@ -16,6 +18,7 @@ export async function buscarCentros() {
 export async function criarCentro(centro: {
   nome: string;
   responsavel: string;
+  responsavel_id?: string | null;
   telefone: string;
   endereco: string;
 }) {
@@ -26,6 +29,7 @@ export async function criarCentro(centro: {
 
   if (error) {
     console.error("Erro ao criar centro:", error);
+    notify.error("Erro ao salvar centro");
     throw error;
   }
 
@@ -40,6 +44,7 @@ export async function excluirCentro(id: string) {
 
   if (error) {
     console.error("Erro ao excluir centro:", error)
+    notify.error("Erro ao excluir centro")
     throw error
   }
 }
@@ -53,6 +58,7 @@ export async function buscarCentroPorId(id: string) {
 
   if (error) {
     console.error("Erro ao buscar centro:", error)
+    notify.error("Erro ao carregar centro")
     throw error
   }
 
@@ -64,6 +70,7 @@ export async function atualizarCentro(
   centro: {
     nome: string
     responsavel: string
+    responsavel_id?: string | null
     telefone: string
     endereco: string
   }
@@ -75,6 +82,7 @@ export async function atualizarCentro(
 
   if (error) {
     console.error("Erro ao atualizar centro:", error)
+    notify.error("Erro ao salvar centro")
     throw error
   }
 }

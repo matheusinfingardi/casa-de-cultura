@@ -1,4 +1,5 @@
 import { supabase } from "@/lib/supabase"
+import { notify } from "@/lib/notify"
 
 export async function buscarAssistencias() {
   const { data, error } = await supabase
@@ -7,6 +8,7 @@ export async function buscarAssistencias() {
 
   if (error) {
     console.error("Erro ao buscar assistências:", error)
+    notify.error("Erro ao carregar assistências")
     return []
   }
 
@@ -17,6 +19,7 @@ export async function criarAssistencia(assistencia: {
   nome: string
   tipo: string
   responsavel: string
+  responsavel_id?: string | null
   local: string
 }) {
   const { data, error } = await supabase
@@ -26,6 +29,7 @@ export async function criarAssistencia(assistencia: {
 
   if (error) {
     console.error("Erro ao criar assistência:", error)
+    notify.error("Erro ao salvar assistência")
     throw error
   }
 
@@ -40,6 +44,7 @@ export async function excluirAssistencia(id: string) {
 
   if (error) {
     console.error("Erro ao excluir assistência:", error)
+    notify.error("Erro ao excluir assistência")
     throw error
   }
 }
@@ -53,6 +58,7 @@ export async function buscarAssistenciaPorId(id: string) {
 
   if (error) {
     console.error("Erro ao buscar assistência:", error)
+    notify.error("Erro ao carregar assistência")
     throw error
   }
 
@@ -65,6 +71,7 @@ export async function atualizarAssistencia(
     nome: string
     tipo: string
     responsavel: string
+    responsavel_id?: string | null
     local: string
   }
 ) {
@@ -75,6 +82,7 @@ export async function atualizarAssistencia(
 
   if (error) {
     console.error("Erro ao atualizar assistência:", error)
+    notify.error("Erro ao salvar assistência")
     throw error
   }
 }

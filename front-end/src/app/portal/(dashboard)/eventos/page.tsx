@@ -48,7 +48,6 @@ export default function EventosPage() {
           setData(eventos)
         } catch (error) {
           console.error("Erro ao excluir evento:", error)
-          alert("Erro ao excluir evento")
         }
       }}
     />

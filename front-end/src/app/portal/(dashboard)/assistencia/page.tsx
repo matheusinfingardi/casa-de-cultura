@@ -49,12 +49,7 @@ export default function AssistenciaPage() {
 
           setData(assistencias)
         } catch (error) {
-          console.error(
-            "Erro ao excluir assistência:",
-            error
-          )
-
-          alert("Erro ao excluir assistência")
+          console.error("Erro ao excluir assistência:", error)
         }
       }}
     />

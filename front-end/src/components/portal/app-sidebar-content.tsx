@@ -15,6 +15,7 @@ import {
   HeartHandshake,
   Building2,
   Settings,
+  Users,
   LogOut,
   type LucideIcon,
 } from "lucide-react"
@@ -38,6 +39,7 @@ const managementItems: NavItem[] = [
 ]
 
 const systemItems: NavItem[] = [
+  { title: "Usuários", url: "/portal/usuarios", icon: Users },
   { title: "Configurações", url: "/portal/settings", icon: Settings },
 ]
 
