@@ -21,6 +21,29 @@ export function calcularAssiduidade(regs: Pick<Registro, "data" | "status">[]): 
   }
 }
 
+/** Maior número de presenças seguidas, para reconhecer quem está firme. */
+export function maiorSequencia(regs: Pick<Registro, "data" | "status">[]): number {
+  let maior = 0, atual = 0
+  for (const r of [...regs].sort((a, b) => a.data.localeCompare(b.data))) {
+    atual = r.status === "presente" ? atual + 1 : 0
+    maior = Math.max(maior, atual)
+  }
+  return maior
+}
+
+/** Faltou 3 vezes seguidas em algum momento e voltou a vir. */
+export function voltouAVir(regs: Pick<Registro, "data" | "status">[]): boolean {
+  const ordenados = [...regs].sort((a, b) => a.data.localeCompare(b.data))
+  if (ordenados[ordenados.length - 1]?.status !== "presente") return false
+  let faltas = 0
+  for (const r of ordenados) {
+    if (r.status === "ausente") faltas++
+    else if (faltas >= 3) return true
+    else faltas = 0
+  }
+  return false
+}
+
 export type SituacaoAssiduidade = { rotulo: string; classe: string }
 export function situacao(a: Assiduidade): SituacaoAssiduidade {
   if (a.taxa === null) return { rotulo: "Sem registros", classe: "bg-muted text-muted-foreground" }

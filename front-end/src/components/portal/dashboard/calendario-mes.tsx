@@ -5,6 +5,12 @@ import { Button } from "@/components/ui/button"
 import { chaveData } from "@/lib/formatar"
 import { gradeDoMes, TIPO_AGENDA_INFO, type Ocorrencia, type TipoAgenda } from "@/lib/agenda"
 
+/** Tira a última semana quando ela só tem dias do mês seguinte. */
+function semanasDoMes(ano: number, mes: number) {
+  const g = gradeDoMes(ano, mes)
+  return g[35].doMes ? g : g.slice(0, 35)
+}
+
 const SEMANA = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"]
 
 export default function CalendarioMes({
@@ -57,10 +63,10 @@ export default function CalendarioMes({
       </div>
 
       <div className="grid grid-cols-7 text-center text-sm font-medium text-muted-foreground" aria-hidden>
-        {SEMANA.map((d) => <div key={d} className="pb-2">{d}</div>)}
+        {SEMANA.map((d) => <div key={d} className="pb-2 text-base">{d}</div>)}
       </div>
       <div className="grid grid-cols-7 gap-px overflow-hidden rounded-xl border bg-border">
-        {gradeDoMes(ano, mes).map(({ data, doMes }) => {
+        {semanasDoMes(ano, mes).map(({ data, doMes }) => {
           const k = chaveData(data)
           const itens = porDia.get(k) ?? []
           const ehHoje = k === hoje
@@ -72,7 +78,7 @@ export default function CalendarioMes({
               onClick={() => onSelecionar(k)}
               aria-pressed={sel}
               aria-label={`${data.toLocaleDateString("pt-BR", { day: "numeric", month: "long" })}${ehHoje ? ", hoje" : ""}, ${itens.length ? `${itens.length} compromisso${itens.length > 1 ? "s" : ""}` : "sem compromissos"}`}
-              className={`flex min-h-14 flex-col items-stretch gap-1 bg-card p-1.5 text-left transition-colors hover:bg-muted sm:min-h-24 sm:p-2 ${doMes ? "" : "bg-muted/40 text-muted-foreground"} ${sel ? "outline outline-2 -outline-offset-2 outline-primary" : ""}`}
+              className={`flex min-h-14 flex-col items-stretch gap-1 bg-card p-1.5 text-left transition-colors hover:bg-muted sm:min-h-32 sm:p-2 xl:min-h-40 ${doMes ? "" : "bg-muted/40 text-muted-foreground"} ${sel ? "outline outline-2 -outline-offset-2 outline-primary" : ""}`}
             >
               <span className={`flex h-7 w-7 items-center justify-center rounded-full text-sm font-medium ${ehHoje ? "bg-primary text-primary-foreground" : ""}`}>{data.getDate()}</span>
               {/* celular: pontos */}
@@ -81,12 +87,12 @@ export default function CalendarioMes({
               </span>
               {/* computador: títulos */}
               <span className="hidden min-w-0 flex-col gap-0.5 sm:flex" aria-hidden>
-                {itens.slice(0, 2).map((o) => (
-                  <span key={o.chave} className={`truncate rounded px-1 py-0.5 text-xs leading-tight ${TIPO_AGENDA_INFO[o.tipo].chip}`}>
+                {itens.slice(0, 3).map((o) => (
+                  <span key={o.chave} title={`${o.inicio.slice(0, 5)} ${o.titulo}`} className={`truncate rounded-md px-1.5 py-1 text-sm leading-tight ${TIPO_AGENDA_INFO[o.tipo].chip}`}>
                     {o.inicio && <span className="font-semibold">{o.inicio.slice(0, 5)} </span>}{o.titulo}
                   </span>
                 ))}
-                {itens.length > 2 && <span className="px-1 text-xs text-muted-foreground">+{itens.length - 2} mais</span>}
+                {itens.length > 3 && <span className="px-1.5 text-sm font-medium text-muted-foreground">+{itens.length - 3} mais</span>}
               </span>
             </button>
           )

@@ -1,6 +1,7 @@
 "use client"
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
+import Link from "next/link"
 import { useSearchParams } from "next/navigation"
 import { CheckCircle2, CircleAlert, Clock, MapPin, QrCode, Search, UserPlus, Users } from "lucide-react"
 
@@ -8,6 +9,7 @@ import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Skeleton } from "@/components/ui/skeleton"
+import { usePessoasInfo } from "@/hooks/use-pessoas-info"
 import { lerCodigo } from "@/lib/checkin"
 import { marcarPresencaDia } from "@/lib/fila-offline"
 import { chaveData, dataExtenso, faixaHorario, iniciais, paraData } from "@/lib/formatar"
@@ -20,6 +22,7 @@ import AvisoOffline from "./aviso-offline"
 import Confirmar from "./confirmar"
 import EstadoVazio from "./estado-vazio"
 import LeitorQr from "./leitor-qr"
+import LiberarCertificado from "./liberar-certificado"
 import PageHeader from "./page-header"
 
 type Dia = { data: string; inicio: string; fim: string }
@@ -42,6 +45,8 @@ export default function Chamada({ tipo, itemId, voltarHref, voltarLabel }: { tip
   const [retorno, setRetorno] = useState<Retorno>(null)
   const [remover, setRemover] = useState<PresencaDoItem | null>(null)
   const seletor = useRef<HTMLDivElement>(null)
+  const admin = voltarHref.startsWith("/portal")
+  const info = usePessoasInfo({ comSaude: admin })
 
   const buscarTudo = useCallback(() => Promise.all([carregarItem(tipo, itemId), listarPresencasDoItem(tipo, itemId), registrosDoItem(tipo, itemId), listarClientes()]), [tipo, itemId])
   const aplicar = useCallback(([i, p, r, c]: Awaited<ReturnType<typeof buscarTudo>>) => { setItem(i); setInscritos(p); setRegistros(r); setClientes(c) }, [])
@@ -225,7 +230,10 @@ export default function Chamada({ tipo, itemId, voltarHref, voltarLabel }: { tip
                     <Card className="flex flex-col gap-3 p-3 sm:flex-row sm:items-center sm:justify-between">
                       <div className="flex min-w-0 items-center gap-3">
                         <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-sm font-semibold text-primary" aria-hidden>{iniciais(p.profiles?.nome)}</span>
-                        <div className="min-w-0"><p className="truncate font-medium">{p.profiles?.nome ?? "Sem nome"}</p><p className="truncate text-sm text-muted-foreground">{p.profiles?.email}</p></div>
+                        <div className="min-w-0">
+                          <Link href={`${admin ? "/portal/assistidos" : "/painel/assistidos"}/${p.profiles?.dependente_de ?? p.cliente_id}`} className="block truncate font-medium hover:underline">{p.profiles?.nome ?? "Sem nome"}</Link>
+                          <p className="truncate text-sm text-muted-foreground">{[info(p.cliente_id).subtitulo, info(p.cliente_id).familia && `Dependentes: ${info(p.cliente_id).familia}`, info(p.cliente_id).cuidados[0]].filter(Boolean).join(" · ") || p.profiles?.email}</p>
+                        </div>
                       </div>
                       {!futuro && (
                         <div className="flex items-center gap-2">
@@ -244,6 +252,8 @@ export default function Chamada({ tipo, itemId, voltarHref, voltarLabel }: { tip
           </>
         )}
       </section>
+
+      <LiberarCertificado item={item} presentes={new Set(registros.filter((r) => r.status === "presente").map((r) => r.cliente_id)).size} aoMudar={carregar} />
 
       {/* 4. Adicionar */}
       <section className="space-y-3 rounded-2xl border bg-card p-5 shadow-sm">

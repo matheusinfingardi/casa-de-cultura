@@ -3,7 +3,7 @@
 import { criarBanco, USUARIOS_DEMO, type BancoDemo } from "./dados"
 import { definirDemo } from "./modo"
 
-const CHAVE_BANCO = "cc-demo-banco-v4"
+const CHAVE_BANCO = "cc-demo-banco-v8"
 const CHAVE_USUARIO = "cc-demo-usuario"
 
 type Linha = Record<string, unknown>
@@ -83,7 +83,9 @@ function projetar(linha: Linha, select: string): Linha {
     if (parte === "*") Object.assign(out, linha)
     else if (parte.startsWith("profiles(")) {
       const p = banco().profiles.find((x) => x.id === linha.cliente_id)
-      out.profiles = p ? { nome: p.nome, email: p.email } : null
+      // Dependentes não têm conta: entram na lista pelo próprio cadastro, ligados a quem cuida deles.
+      const d = p ? null : banco().dependentes?.find((x) => x.id === linha.cliente_id)
+      out.profiles = p ? { nome: p.nome, email: p.email } : d ? { nome: d.nome, email: "", dependente_de: d.responsavel_id } : null
     } else if (parte.includes(":")) {
       const [alias, col] = parte.split(":")
       out[alias] = linha[col]

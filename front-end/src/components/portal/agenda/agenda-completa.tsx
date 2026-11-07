@@ -17,6 +17,7 @@ import CalendarioMes from "@/components/portal/dashboard/calendario-mes"
 
 export type Fontes = { eventos: Evento[]; atividades: Atividade[]; oficinas: Oficina[]; meusIds?: string[] }
 type Visao = "mes" | "semana" | "lista"
+const SEM_RESPONSAVEL = "__sem"
 
 function ListaDias({ itens }: { itens: Ocorrencia[] }) {
   const grupos = new Map<string, Ocorrencia[]>()
@@ -77,13 +78,15 @@ function Semana({ inicio, itens }: { inicio: Date; itens: Ocorrencia[] }) {
 
 /** Agenda em mês, semana ou lista, com filtros por tipo e exportação para o calendário do celular. */
 export default function AgendaCompleta({
-  titulo, descricao, migalhas, carregar, transformar,
+  titulo, descricao, migalhas, carregar, transformar, gestao,
 }: {
   titulo: string
   descricao: string
   migalhas?: Migalha[]
   carregar: () => Promise<Fontes>
   transformar?: (o: Ocorrencia) => Ocorrencia
+  /** Administração: resumo, filtro por responsável, inscritos e atalho para a chamada de cada dia. */
+  gestao?: { inscritos: (o: Ocorrencia) => number; hrefChamada: (o: Ocorrencia) => string }
 }) {
   const hoje = new Date()
   const [fontes, setFontes] = useState<Fontes | null>(null)
@@ -93,6 +96,7 @@ export default function AgendaCompleta({
   const [selecionado, setSelecionado] = useState(chaveData(hoje))
   const [tipos, setTipos] = useState<Set<TipoAgenda>>(new Set(["evento", "atividade", "oficina"]))
   const [escopo, setEscopo] = useState<"meus" | "todos">("meus")
+  const [resp, setResp] = useState("")
   const [refSemana, setRefSemana] = useState(() => { const d = new Date(); d.setDate(d.getDate() - d.getDay()); return d })
 
   useEffect(() => {
@@ -105,12 +109,12 @@ export default function AgendaCompleta({
   const noPeriodo = (de: Date, ate: Date) => {
     if (!fontes) return []
     const meus = fontes.meusIds
-    const l = ocorrenciasNoPeriodo(fontes, de, ate).filter((o) => tipos.has(o.tipo) && (!meus || escopo === "todos" || meus.includes(o.itemId)))
+    const l = ocorrenciasNoPeriodo(fontes, de, ate).filter((o) => tipos.has(o.tipo) && (!meus || escopo === "todos" || meus.includes(o.itemId)) && (!resp || (resp === SEM_RESPONSAVEL ? !o.responsavel : o.responsavel === resp)))
     return transformar ? l.map(transformar) : l
   }
-  const doMes = useMemo(() => noPeriodo(new Date(ano, mes, 1), new Date(ano, mes + 1, 0)), [fontes, ano, mes, tipos, escopo]) // eslint-disable-line react-hooks/exhaustive-deps
-  const daSemana = useMemo(() => noPeriodo(refSemana, new Date(refSemana.getFullYear(), refSemana.getMonth(), refSemana.getDate() + 6)), [fontes, refSemana, tipos, escopo]) // eslint-disable-line react-hooks/exhaustive-deps
-  const proximos = useMemo(() => { const a = new Date(); a.setDate(a.getDate() + 30); return noPeriodo(new Date(), a) }, [fontes, tipos, escopo]) // eslint-disable-line react-hooks/exhaustive-deps
+  const doMes = useMemo(() => noPeriodo(new Date(ano, mes, 1), new Date(ano, mes + 1, 0)), [fontes, ano, mes, tipos, escopo, resp]) // eslint-disable-line react-hooks/exhaustive-deps
+  const daSemana = useMemo(() => noPeriodo(refSemana, new Date(refSemana.getFullYear(), refSemana.getMonth(), refSemana.getDate() + 6)), [fontes, refSemana, tipos, escopo, resp]) // eslint-disable-line react-hooks/exhaustive-deps
+  const proximos = useMemo(() => { const a = new Date(); a.setDate(a.getDate() + 30); return noPeriodo(new Date(), a) }, [fontes, tipos, escopo, resp]) // eslint-disable-line react-hooks/exhaustive-deps
 
   function mudarMes(delta: number) {
     const d = new Date(ano, mes + delta, 1)
@@ -118,6 +122,17 @@ export default function AgendaCompleta({
     const a = new Date()
     setSelecionado(d.getFullYear() === a.getFullYear() && d.getMonth() === a.getMonth() ? chaveData(a) : chaveData(d))
   }
+
+  // Resumo da gestão: sempre o quadro completo, sem os filtros, para não esconder o que falta resolver.
+  const resumo = useMemo(() => {
+    if (!gestao || !fontes) return null
+    const a = new Date()
+    const domingo = new Date(a.getFullYear(), a.getMonth(), a.getDate() - a.getDay())
+    const todas = ocorrenciasNoPeriodo(fontes, new Date(a.getFullYear(), a.getMonth(), 1), new Date(a.getFullYear(), a.getMonth() + 1, 0))
+    const semana = ocorrenciasNoPeriodo(fontes, domingo, new Date(domingo.getFullYear(), domingo.getMonth(), domingo.getDate() + 6))
+    const nomes = [...new Set([...fontes.eventos, ...fontes.atividades, ...fontes.oficinas].map((i) => i.responsavel).filter(Boolean))] as string[]
+    return { hoje: todas.filter((o) => o.data === chaveData(a)).length, semana: semana.length, mes: todas.length, sem: new Set(todas.filter((o) => !o.responsavel).map((o) => o.itemId)).size, nomes: nomes.sort((x, y) => x.localeCompare(y, "pt-BR")) }
+  }, [gestao, fontes])
 
   const VISOES: [Visao, string, typeof List][] = [["mes", "Mês", CalendarDays], ["semana", "Semana", Rows3], ["lista", "Lista", List]]
 
@@ -130,7 +145,27 @@ export default function AgendaCompleta({
         acoes={<Button variant="outline" onClick={() => baixarIcs("agenda-casa-de-cultura.ics", proximos)}><Download className="h-4 w-4" aria-hidden /> Baixar para o calendário</Button>}
       />
 
-      <div className="flex flex-wrap gap-3">
+      {resumo && (
+        <ul className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+          {[[resumo.hoje, "hoje"], [resumo.semana, "nesta semana"], [resumo.mes, "neste mês"]].map(([v, r]) => (
+            <li key={r} className="rounded-2xl border bg-card p-4 shadow-sm"><p className="text-3xl font-bold">{v}</p><p className="text-muted-foreground">{v === 1 ? "encontro" : "encontros"} {r}</p></li>
+          ))}
+          <li>
+            <button type="button" aria-pressed={resp === SEM_RESPONSAVEL} onClick={() => setResp(resp === SEM_RESPONSAVEL ? "" : SEM_RESPONSAVEL)} className={`h-full w-full rounded-2xl border p-4 text-left shadow-sm transition-colors hover:border-primary ${resp === SEM_RESPONSAVEL ? "border-primary bg-primary/5" : "bg-card"}`}>
+              <p className="text-3xl font-bold">{resumo.sem}</p><p className="text-muted-foreground">{resumo.sem === 1 ? "item" : "itens"} sem responsável</p>
+            </button>
+          </li>
+        </ul>
+      )}
+
+      <div className="flex flex-wrap items-center gap-3">
+      {resumo && (
+        <select aria-label="Filtrar por responsável" value={resp} onChange={(e) => setResp(e.target.value)} className="h-11 rounded-xl border bg-card px-3 text-sm">
+          <option value="">Responsável: todos</option>
+          <option value={SEM_RESPONSAVEL}>Sem responsável</option>
+          {resumo.nomes.map((n) => <option key={n} value={n}>{n}</option>)}
+        </select>
+      )}
       {fontes?.meusIds && (
         <div className="inline-flex rounded-xl border bg-card p-1" role="group" aria-label="O que mostrar na agenda">
           {([["meus", "Só os meus"], ["todos", "Todos da Casa"]] as const).map(([v, r]) => (
@@ -148,8 +183,8 @@ export default function AgendaCompleta({
       </div>
 
       {!fontes ? <Skeleton className="h-[32rem] rounded-2xl" /> : visao === "mes" ? (
-        <div className="grid items-start gap-6 xl:grid-cols-3">
-          <div className="xl:col-span-2">
+        <div className="space-y-6">
+          <div>
             <CalendarioMes
               ano={ano} mes={mes} ocorrencias={doMes} selecionado={selecionado} onSelecionar={setSelecionado}
               onMudarMes={mudarMes}
@@ -158,7 +193,15 @@ export default function AgendaCompleta({
               onAlternarTipo={(t) => setTipos((p) => { const n = new Set(p); if (n.has(t)) n.delete(t); else n.add(t); return n })}
             />
           </div>
-          <AgendaDia data={selecionado} itens={doMes.filter((o) => o.data === selecionado)} />
+          <AgendaDia data={selecionado} itens={doMes.filter((o) => o.data === selecionado)} detalhe={gestao && ((o) => (
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <div className="min-w-0 text-sm">
+                {o.responsavel ? <p className="truncate">{o.responsavel}</p> : <p className="font-medium text-amber-800 dark:text-amber-300">Sem responsável</p>}
+                <p className="text-muted-foreground">{gestao.inscritos(o)} {gestao.inscritos(o) === 1 ? "inscrito" : "inscritos"}</p>
+              </div>
+              <Button asChild size="sm" variant="outline"><Link href={gestao.hrefChamada(o)} aria-label={`Abrir chamada de ${o.titulo}`}>Chamada</Link></Button>
+            </div>
+          ))} />
         </div>
       ) : visao === "semana" ? (
         <div className="space-y-3">

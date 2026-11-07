@@ -17,6 +17,7 @@ export default function ListaAssistencia() {
       descricao="Serviços de apoio às famílias atendidas pelo projeto."
       migalhas={[{ label: "Atendimento" }, { label: "Assistência" }]}
       icon={HeartHandshake}
+      tipoItem="assistencia"
       singular="assistência"
       genero="f"
       novoHref="/portal/assistencia/novo"

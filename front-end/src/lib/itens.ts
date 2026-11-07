@@ -1,4 +1,4 @@
-import { faixaHorario, dataBR } from "@/lib/formatar"
+import { DIA_POR_INDICE, faixaHorario, dataBR, paraData } from "@/lib/formatar"
 import { normalizarRecorrencia, ocorrenciasNoPeriodo, resumoRecorrencia, type Ocorrencia } from "@/lib/agenda"
 import { assistenciaApi, atividadesApi, centrosApi, eventosApi, oficinasApi } from "@/lib/services/entidades"
 import { ITEM_TIPO_TABLE, type ItemTipo } from "@/lib/services/presencas"
@@ -17,6 +17,8 @@ export type ItemView = {
   imagem_url: string
   centro_id: string
   endereco_mapa: string
+  tem_certificado: boolean
+  certificado_liberado: boolean
   fatos: { rotulo: string; valor: string }[]
   bruto: Evento | Atividade | Oficina | Centro | Assistencia
 }
@@ -37,7 +39,7 @@ function montar(tipo: ItemTipo, b: Record<string, unknown>): ItemView {
   const base = {
     tipo, id: s("id"), nome: s("nome") || "Sem nome", descricao: s("descricao"), local: s("local"), vagas: null as number | null,
     responsavel: s("responsavel"), responsavel_id: (b.responsavel_id as string | null) ?? null,
-    imagem_url: s("imagem_url"), centro_id: s("centro_id"), endereco_mapa: s("endereco_mapa"), bruto: b as ItemView["bruto"],
+    imagem_url: s("imagem_url"), centro_id: s("centro_id"), endereco_mapa: s("endereco_mapa"), tem_certificado: b.tem_certificado === true, certificado_liberado: b.certificado_liberado === true, bruto: b as ItemView["bruto"],
   }
   if (tipo === "evento") {
     const quando = `${dataBR(s("data"))}, ${faixaHorario(s("horarioInicio"), s("horarioFim"))}`
@@ -110,4 +112,19 @@ export function datasDoItem(v: ItemView, diasAtras = 30, diasFrente = 30): Ocorr
     },
     de, ate
   )
+}
+
+/** Libera ou suspende os certificados de um item. */
+export async function definirLiberacaoCertificado(tipo: ItemTipo, id: string, liberado: boolean) {
+  await API_DO_TIPO[tipo].atualizar(id, { certificado_liberado: liberado } as never)
+}
+
+/** O item acontece dentro dos horários livres da pessoa? `null` quando o item não tem dia fixo. */
+export function combinaComHorarios(v: ItemView, horarios: Record<string, { inicio: string; fim: string }[]>): boolean | null {
+  const datas = proximasDatas(v, 21)
+  if (!datas.length) return null
+  return datas.some((o) => {
+    const dia = DIA_POR_INDICE[paraData(o.data).getDay()]
+    return (horarios[dia] ?? []).some((f) => f.inicio && f.fim && f.inicio <= o.inicio.slice(0, 5) && f.fim >= o.fim.slice(0, 5))
+  })
 }

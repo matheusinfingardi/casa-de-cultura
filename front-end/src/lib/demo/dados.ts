@@ -42,13 +42,14 @@ export function criarBanco(): BancoDemo {
   const equipe = "casadecultura.org.br"
 
   const profiles: Linha[] = [
-    { id: "usr-marina", nome: "Marina Alves", email: "admin@admin.com", role: "admin", created_at: haMeses(11, 3) },
-    { id: "usr-roberto", nome: "Roberto Nunes", email: email("Roberto Nunes", equipe), role: "admin", created_at: haMeses(10, 12) },
-    { id: "usr-carlos", nome: "Carlos Mendes", email: "voluntario@voluntario.com", role: "responsavel", created_at: haMeses(9, 5) },
-    { id: "usr-juliana", nome: "Juliana Rocha", email: email("Juliana Rocha", equipe), role: "responsavel", created_at: haMeses(9, 18) },
-    { id: "usr-paulo", nome: "Paulo Ribeiro", email: email("Paulo Ribeiro", equipe), role: "responsavel", created_at: haMeses(8, 2) },
-    { id: "usr-tereza", nome: "Tereza Campos", email: email("Tereza Campos", equipe), role: "responsavel", created_at: haMeses(7, 22) },
-    { id: "usr-andre", nome: "André Vilela", email: email("André Vilela", equipe), role: "responsavel", created_at: haMeses(5, 9) },
+    { id: "usr-marina", nome: "Matheus", email: "admin@admin.com", role: "admin", created_at: haMeses(11, 3) },
+    { id: "usr-roberto", nome: "José Roberto", email: email("José Roberto", equipe), role: "admin", created_at: haMeses(10, 12) },
+    { id: "usr-carlos", nome: "Vitor Leal", email: "voluntario@voluntario.com", role: "responsavel", created_at: haMeses(9, 5) },
+    { id: "usr-juliana", nome: "Juliana", email: email("Juliana", equipe), role: "responsavel", created_at: haMeses(9, 18) },
+    { id: "usr-paulo", nome: "Samuel", email: email("Samuel", equipe), role: "responsavel", created_at: haMeses(8, 2) },
+    { id: "usr-tereza", nome: "Anna Julia", email: email("Anna Julia", equipe), role: "responsavel", created_at: haMeses(7, 22) },
+    { id: "usr-andre", nome: "Thiago", email: email("Thiago", equipe), role: "responsavel", created_at: haMeses(5, 9) },
+    { id: "usr-stephen", nome: "Stephen", email: email("Stephen", equipe), role: "responsavel", created_at: haMeses(4, 14) },
     { id: "usr-ana", nome: "Ana Souza", email: "assistido@assistido.com", role: "cliente", created_at: haMeses(6, 1) },
   ]
   const nomes = ["Beatriz Lima", "Diego Santos", "Fernanda Costa", "Gustavo Pereira", "Helena Martins", "Igor Barbosa", "Joana Dias", "Lucas Ferreira", "Mariana Teixeira", "Nicolas Araújo", "Olívia Cardoso", "Pedro Henrique Moura", "Raquel Gomes", "Sérgio Duarte", "Tainá Oliveira", "Ulisses Prado", "Vanessa Reis", "Wesley Tavares", "Yasmin Freitas", "Zilda Fonseca", "Antônio Batista", "Cláudia Monteiro", "Eduardo Paiva", "Giovana Ramos", "Márcia Assis", "Renato Siqueira"]
@@ -97,7 +98,7 @@ export function criarBanco(): BancoDemo {
     { id: "ofi-teatro", nome: "Teatro Comunitário", vagas: 20, nivel: "intermediario", dia: "Sexta", horarioInicio: "19:00", horarioFim: "21:00", local: "Auditório da Sede", centro_id: "cen-sede", descricao: "Jogos teatrais e montagem de uma peça ao fim do semestre.", ...semResp },
     { id: "ofi-costura", nome: "Corte e Costura", vagas: 10, nivel: "iniciante", dia: "Quarta", horarioInicio: "14:00", horarioFim: "17:00", local: "Núcleo Linhares", centro_id: "cen-leste", descricao: "Geração de renda: ajustes, consertos e peças simples.", ...resp("usr-tereza") },
     { id: "ofi-panificacao", nome: "Panificação Artesanal", vagas: 8, nivel: "iniciante", dia: "Sábado", horarioInicio: "08:00", horarioFim: "11:00", local: "Cozinha — Núcleo Linhares", centro_id: "cen-leste", descricao: "Pães e bolos para consumo e venda.", ...resp("usr-paulo") },
-    { id: "ofi-foto", nome: "Fotografia com Celular", vagas: 15, nivel: "avancado", dia: "Segunda", horarioInicio: "16:00", horarioFim: "18:00", local: "Núcleo Benfica", centro_id: "cen-norte", descricao: "Composição, luz e edição usando o próprio celular.", ...resp("usr-andre") },
+    { id: "ofi-foto", nome: "Fotografia com Celular", vagas: 15, nivel: "avancado", dia: "Segunda", horarioInicio: "16:00", horarioFim: "18:00", local: "Núcleo Benfica", centro_id: "cen-norte", descricao: "Composição, luz e edição usando o próprio celular.", ...resp("usr-stephen") },
   ]
 
   const assistencia: Linha[] = [
@@ -158,6 +159,16 @@ export function criarBanco(): BancoDemo {
   // Fotos de exemplo (licença livre; ver public/demo/CREDITOS.md).
   for (const l of [eventos, atividades, oficinas, centros, assistencia]) for (const i of l) i.imagem_url = `/demo/${i.id}.jpg`
 
+  // Nem tudo emite certificado. Quando emite, o responsável libera no final.
+  const COM_CERTIFICADO = ["evt-mostra", "evt-profissao", "evt-festival", "atv-violao", "atv-reforco", "atv-capoeira", ...oficinas.map((o) => o.id as string)]
+  const LIBERADOS = ["evt-mostra", "evt-profissao", "atv-violao", "ofi-pintura"]
+  for (const l of [eventos, atividades, oficinas, assistencia]) {
+    for (const i of l) {
+      i.tem_certificado = COM_CERTIFICADO.includes(i.id as string)
+      i.certificado_liberado = LIBERADOS.includes(i.id as string)
+    }
+  }
+
   // --- Presença dia a dia -----------------------------------------------------
   // Cada pessoa tem um padrão de frequência, para os relatórios contarem uma história coerente.
   const padrao = (id: string) => {
@@ -168,7 +179,7 @@ export function criarBanco(): BancoDemo {
   const sorteio = (t: string) => ([...t].reduce((a, c) => (a * 31 + c.charCodeAt(0)) >>> 0, 7) % 100) / 100
   const registros: Linha[] = []
   const ate = new Date(); ate.setDate(ate.getDate() - 1)
-  const de = new Date(); de.setDate(de.getDate() - 56)
+  const de = new Date(); de.setDate(de.getDate() - 182)
   const passadas = ocorrenciasNoPeriodo(
     { eventos: eventos as unknown as Evento[], atividades: atividades as unknown as Atividade[], oficinas: oficinas as unknown as Oficina[] },
     de, ate
@@ -186,6 +197,8 @@ export function criarBanco(): BancoDemo {
     if (o.id === "atv-violao" && o.data === ultimaViolao) continue
     for (const ins of presencas.filter((x) => x.item_id === o.id)) {
       const c = ins.cliente_id as string
+      // Ninguém tem presença antes de chegar à Casa.
+      if (o.data < String(profiles.find((u) => u.id === c)?.created_at ?? "").slice(0, 10)) continue
       const { taxa, sumiu } = padrao(c)
       const veio = sumiu && o.data >= limiteSumico ? false : sorteio(`${c}${o.id}${o.data}`) < taxa
       registros.push({ id: `reg-${registros.length}`, item_tipo: o.tipo, item_id: o.id, data: o.data, cliente_id: c, status: veio ? "presente" : "ausente" })
@@ -194,15 +207,18 @@ export function criarBanco(): BancoDemo {
 
   // --- Fichas -----------------------------------------------------------------
   const BAIRROS = ["Centro", "Benfica", "Linhares", "São Pedro", "Santa Luzia", "Vitorino Braga", "Bairu", "Grama"]
+  const SEM_CONDICAO = { deficiencia: "", necessidades: "", saude: "", medicamentos: "", alergias: "", acessibilidade: "" }
   const CONDICOES = [
-    { deficiencia: "", necessidades: "", saude: "", medicamentos: "", alergias: "", acessibilidade: "" },
-    { deficiencia: "Deficiência visual (baixa visão)", necessidades: "Prefere materiais com letras grandes e lugar perto da frente.", saude: "", medicamentos: "", alergias: "", acessibilidade: "Letras ampliadas" },
+    SEM_CONDICAO, SEM_CONDICAO, SEM_CONDICAO, SEM_CONDICAO,
+    { deficiencia: "Deficiência visual", necessidades: "Tem baixa visão: prefere materiais com letras grandes.", evitar: "Mudar os móveis de lugar sem avisar.", saude: "", medicamentos: "", alergias: "", acessibilidade: "Letras ampliadas, Lugar perto da frente" },
     { deficiencia: "", necessidades: "Cuida da mãe idosa; precisa de horários pela manhã.", saude: "Hipertensão", medicamentos: "Losartana", alergias: "", acessibilidade: "" },
-    { deficiencia: "Mobilidade reduzida (usa muletas)", necessidades: "Precisa de sala no térreo.", saude: "", medicamentos: "", alergias: "", acessibilidade: "Rampa e sala no térreo" },
+    SEM_CONDICAO, SEM_CONDICAO,
+    { deficiencia: "Mobilidade reduzida", necessidades: "Usa muletas e precisa de sala no térreo.", saude: "", medicamentos: "", alergias: "", acessibilidade: "Rampa e sala no térreo" },
     { deficiencia: "", necessidades: "", saude: "Asma", medicamentos: "Bombinha em caso de crise", alergias: "Poeira", acessibilidade: "" },
-    { deficiencia: "Transtorno do espectro autista", necessidades: "Funciona melhor em grupos pequenos e com a rotina avisada com antecedência.", saude: "", medicamentos: "", alergias: "", acessibilidade: "Ambiente com pouco barulho" },
+    SEM_CONDICAO, SEM_CONDICAO,
+    { deficiencia: "Transtorno do espectro autista", necessidades: "Funciona melhor em grupos pequenos e com a rotina avisada com antecedência.", evitar: "Mudanças de última hora e muito barulho.", saude: "", medicamentos: "", alergias: "", acessibilidade: "Ambiente com pouco barulho" },
     { deficiencia: "", necessidades: "Procura orientação para voltar ao mercado de trabalho.", saude: "", medicamentos: "", alergias: "Dipirona", acessibilidade: "" },
-    { deficiencia: "Deficiência auditiva", necessidades: "Comunica-se melhor com contato visual; conhece Libras.", saude: "", medicamentos: "", alergias: "", acessibilidade: "Intérprete de Libras quando possível" },
+    { deficiencia: "Deficiência auditiva", necessidades: "Comunica-se melhor com contato visual; conhece Libras.", saude: "", medicamentos: "", alergias: "", acessibilidade: "Intérprete de Libras" },
   ]
   const SOCIAL = [
     { beneficios: ["Bolsa Família", "CadÚnico"], renda: "Até 1 salário mínimo", moradia: "Alugada", escolaridade: "Ensino fundamental incompleto", trabalho: "Trabalho informal", transporte: "A pé" },
@@ -243,25 +259,85 @@ export function criarBanco(): BancoDemo {
     { id: "dep-7", responsavel_id: "usr-a4", nome: "Miguel Martins", nascimento: "2017-03-11", parentesco: "Neto", atividade: "Capoeira Infantil", mora_junto: true, parente_id: null, telefone: "" },
   ]
 
+  // Idades coerentes com o parentesco acima.
+  const nascer = (id: string, nascimento: string) => { fichas.find((f) => f.id === id)!.nascimento = nascimento }
+  nascer("usr-a0", "1990-01-15"); nascer("usr-a1", "2004-09-14"); nascer("usr-a2", "1975-05-03"); nascer("usr-a4", "1961-07-22")
+  Object.assign(dependentes[0], { cuidados: "Tem asma: leva a bombinha nas atividades.", escola: "E.M. Santos Dumont" })
+  Object.assign(dependentes[1], { escola: "E.E. Delfim Moreira" })
+  Object.assign(dependentes[6], { deficiencia: "Transtorno do espectro autista", cuidados: "Grupos pequenos e rotina avisada com antecedência." })
+
+  // Mais famílias: mães, pais e avós que cuidam de crianças. Alguns dos pequenos têm cuidados especiais.
+  const CRIANCAS = ["Davi", "Alice", "Theo", "Helena", "Samuel", "Cecília", "Benício", "Lívia", "Gael", "Maitê"]
+  const FEMININO = new Set(["Alice", "Helena", "Cecília", "Lívia", "Maitê"])
+  const CUIDADOS_CRIANCA: Linha[] = [
+    {},
+    { deficiencia: "Deficiência auditiva", cuidados: "Usa aparelho auditivo; ajuda falar de frente, olhando nos olhos." },
+    {},
+    { cuidados: "Alergia a amendoim: conferir os lanches." },
+    { deficiencia: "TDAH", cuidados: "Atividades curtas e lugar perto do professor." },
+  ]
+  let crianca = 0
+  fichas.forEach((f, i) => {
+    const id = f.id as string
+    if (dependentes.some((d) => d.responsavel_id === id)) return
+    const anos = new Date().getFullYear() - Number(String(f.nascimento).slice(0, 4))
+    const pessoa = assistidos.find((a) => a.id === id)!
+    const sobrenome = String(pessoa.nome).split(" ").pop()
+    const eFilho = anos >= 26 && anos <= 52 && i % 2 === 0
+    const eNeto = anos > 55 && i % 3 === 0
+    if (!eFilho && !eNeto) return
+    for (let k = 0; k < (i % 3 === 0 ? 2 : 1); k++) {
+      const nome = CRIANCAS[crianca % CRIANCAS.length]
+      const fem = FEMININO.has(nome)
+      dependentes.push({
+        id: `dep-g${crianca}`, responsavel_id: id, nome: `${nome} ${sobrenome}`, nascimento: `${2011 + (crianca * 3) % 11}-${p2((crianca % 12) + 1)}-${p2((crianca % 27) + 1)}`,
+        parentesco: eFilho ? (fem ? "Filha" : "Filho") : (fem ? "Neta" : "Neto"), atividade: ["Capoeira Infantil", "Reforço Escolar", ""][crianca % 3], mora_junto: true, parente_id: null, telefone: "",
+        ...CUIDADOS_CRIANCA[crianca % CUIDADOS_CRIANCA.length],
+      })
+      crianca++
+    }
+  })
+
+  // A atividade de cada dependente vira inscrição de verdade: entra na chamada e ocupa vaga.
+  for (const d of dependentes) {
+    const nomeItem = d.atividade as string
+    d.atividade = ""
+    if (!nomeItem) continue
+    const lugar = ([["atividade", atividades], ["oficina", oficinas]] as const).flatMap(([tipo, l]) => l.filter((x) => x.nome === nomeItem).map((x) => ({ tipo, id: x.id as string })))[0]
+    if (!lugar) continue
+    presencas.push({ id: `pre-${d.id}`, item_tipo: lugar.tipo, item_id: lugar.id, item_nome: nomeItem, cliente_id: d.id, status: "marcada", created_at: haMeses(2, 1) })
+    const taxa = Math.max(0.78, padrao(d.id as string).taxa)
+    for (const o of passadas) {
+      if (o.id !== lugar.id || o.data < haMeses(2, 1).slice(0, 10) || o.data === ultimaViolao) continue
+      registros.push({ id: `reg-${registros.length}`, item_tipo: o.tipo, item_id: o.id, data: o.data, cliente_id: d.id, status: sorteio(`${d.id}${o.data}`) < taxa ? "presente" : "ausente" })
+    }
+  }
+
   // --- Acompanhamento da equipe -----------------------------------------------
   const acompanhamento: Linha[] = [
-    { id: "aco-1", pessoa_id: "usr-ana", autor: "Marina Alves", tipo: "Atendimento", texto: "Conversamos sobre a rotina com os filhos. Ana quer concluir um curso de informática para buscar outro trabalho.", proximo_passo: "Avisar quando abrir vaga em Informática Básica.", created_at: haMeses(1, 12) },
-    { id: "aco-2", pessoa_id: "usr-ana", autor: "Juliana Rocha", tipo: "Encaminhamento", texto: "Encaminhada ao Acompanhamento Social para atualizar o CadÚnico.", proximo_passo: "Confirmar a atualização no próximo encontro.", created_at: haMeses(0, 2) },
+    { id: "aco-1", pessoa_id: "usr-ana", autor: "Matheus", tipo: "Atendimento", texto: "Conversamos sobre a rotina com os filhos. Ana quer concluir um curso de informática para buscar outro trabalho.", proximo_passo: "Avisar quando abrir vaga em Informática Básica.", created_at: haMeses(1, 12) },
+    { id: "aco-2", pessoa_id: "usr-ana", autor: "Juliana", tipo: "Encaminhamento", texto: "Encaminhada ao Acompanhamento Social para atualizar o CadÚnico.", proximo_passo: "Confirmar a atualização no próximo encontro.", created_at: haMeses(0, 2) },
     ...assistidos.filter((a) => a.id !== "usr-ana").slice(0, 12).map((a, i) => ({
-      id: `aco-g${i}`, pessoa_id: a.id, autor: ["Marina Alves", "Juliana Rocha", "Tereza Campos"][i % 3], tipo: ["Ligação", "Atendimento", "Visita"][i % 3],
+      id: `aco-g${i}`, pessoa_id: a.id, autor: ["Matheus", "Juliana", "Anna Julia"][i % 3], tipo: ["Ligação", "Atendimento", "Visita"][i % 3],
       texto: ["Ligamos para saber como está e reforçar o convite para as atividades.", "Atendimento de acolhimento; pessoa relatou boa adaptação ao grupo.", "Visita à família para entender as dificuldades de transporte."][i % 3],
       proximo_passo: ["", "Acompanhar a frequência no próximo mês.", "Verificar auxílio-transporte."][i % 3], created_at: haMeses(i % 4, 4 + i),
     })),
   ]
 
   // --- Voluntários -------------------------------------------------------------
-  const G = (dias: string[], periodos: string[]) => Object.fromEntries(dias.map((d) => [d, periodos]))
+  const G = (dias: string[], inicio: string, fim: string) => Object.fromEntries(dias.map((d) => [d, [{ inicio, fim }]]))
+  // Nomes reais da equipe do projeto: só disponibilidade e áreas fictícias, sem dados pessoais nem biografia.
+  const voluntario = (id: string, horarios: unknown, areas: string[], tarefas: string[], interesses: string[], unidades: string[], experiencia: string, frequencia: string) => ({
+    id, horarios, areas, tarefas, interesses, unidades, experiencia, frequencia, cidade: "Juiz de Fora", whatsapp: true,
+    telefone: "", nascimento: "", bairro: "", contato_emergencia: "", autoriza_imagem: true, profissao: "", local_trabalho: "", formacao: "", escolaridade: "", registro_profissional: "", idiomas: "", habilidades: "", tem_transporte: false, observacoes: "", outras_ideias: "",
+  })
   const disponibilidade: Linha[] = [
-    { id: "usr-carlos", grade: G(["Segunda", "Quarta"], ["Noite"]), ...{ telefone: "(32) 99120-3344", areas: ["Música", "Informática"], formacao: "Licenciatura em Música", experiencia: "Dá aulas de violão há 8 anos. Ajudou a montar o laboratório de informática.", observacoes: "Posso substituir aos sábados, com aviso." } },
-    { id: "usr-juliana", grade: G(["Terça", "Quinta"], ["Manhã", "Tarde"]), telefone: "(32) 99120-5566", areas: ["Psicologia", "Artes"], formacao: "Psicologia", experiencia: "Atende famílias em situação de vulnerabilidade.", observacoes: "" },
-    { id: "usr-paulo", grade: G(["Sábado"], ["Manhã"]), telefone: "(32) 99120-7788", areas: ["Esporte", "Cozinha", "Eventos"], formacao: "Educação Física", experiencia: "Mestre de capoeira. Ajuda na organização de eventos.", observacoes: "" },
-    { id: "usr-tereza", grade: G(["Segunda", "Terça", "Quinta", "Sexta"], ["Tarde"]), telefone: "(32) 99120-9900", areas: ["Educação", "Assistência social"], formacao: "Pedagogia", experiencia: "Professora aposentada, cuida do reforço escolar.", observacoes: "" },
-    { id: "usr-andre", grade: G(["Quarta", "Sexta"], ["Noite"]), telefone: "(32) 99120-1212", areas: ["Música", "Fotografia"], formacao: "Comunicação Social", experiencia: "Rege o coral e registra os eventos em foto.", observacoes: "" },
+    voluntario("usr-carlos", G(["Segunda", "Quarta"], "17:30", "21:00"), ["Música", "Informática"], ["Dar aulas ou conduzir oficinas", "Dar apoio em computadores"], ["atv-violao", "ofi-info", "atv-coral"], ["cen-sede"], "Ajuda nas aulas de violão e no laboratório de informática.", "Toda semana"),
+    voluntario("usr-juliana", G(["Terça", "Quinta"], "08:00", "16:30"), ["Artes", "Assistência social"], ["Acolher quem chega", "Dar aulas ou conduzir oficinas"], ["ofi-pintura", "atv-yoga", "ass-saude"], ["cen-sede", "cen-leste"], "Acompanha as oficinas de arte e os atendimentos.", "Toda semana"),
+    voluntario("usr-paulo", G(["Sábado"], "08:00", "12:00"), ["Esporte", "Cozinha", "Eventos"], ["Ajudar na organização de eventos", "Cozinhar ou servir lanches"], ["atv-capoeira", "ofi-panificacao", "evt-festival"], ["cen-norte", "cen-leste"], "Ajuda na capoeira e na organização de eventos.", "Toda semana"),
+    voluntario("usr-tereza", G(["Segunda", "Terça", "Quinta", "Sexta"], "13:30", "17:00"), ["Educação", "Assistência social"], ["Reforço escolar", "Ajudar um professor em sala"], ["atv-reforco", "ass-escolar"], ["cen-norte"], "Acompanha o reforço escolar.", "Toda semana"),
+    voluntario("usr-andre", G(["Quarta", "Sexta"], "19:00", "21:30"), ["Música", "Eventos"], ["Ajudar na organização de eventos", "Fazer a chamada das atividades"], ["atv-coral", "evt-sarau", "ofi-teatro"], ["cen-sede"], "Ajuda no coral e nos saraus.", "Duas vezes por mês"),
+    voluntario("usr-stephen", G(["Segunda", "Sábado"], "14:00", "18:00"), ["Fotografia", "Informática"], ["Tirar fotos e gravar vídeos", "Cuidar das redes sociais"], ["ofi-foto", "evt-festival"], ["cen-norte"], "Conduz a oficina de fotografia e registra os eventos.", "Quando houver eventos"),
   ]
 
   return {
@@ -271,7 +347,7 @@ export function criarBanco(): BancoDemo {
       { id: "not-1", usuario_id: "usr-ana", titulo: "Festival confirmado", texto: "Sua inscrição no Festival de Cultura Popular foi confirmada.", href: "/painel/inscricoes", lida: false, created_at: haMeses(0, 1) },
       { id: "not-2", usuario_id: "usr-ana", titulo: "Lembrete", texto: "A Aula de Violão começa às 18:00 de segunda.", href: "/painel/agenda", lida: true, created_at: haMeses(0, 1) },
       { id: "not-3", usuario_id: "usr-carlos", titulo: "Nova atribuição", texto: "Você agora é responsável pela Informática Básica.", href: "/painel", lida: false, created_at: haMeses(0, 1) },
-      { id: "not-4", usuario_id: "usr-marina", titulo: "Pedido de voluntariado", texto: "Luciana Prates pediu para ser voluntária.", href: "/portal/usuarios?aba=pedidos", lida: false, created_at: haMeses(0, 1) },
+      { id: "not-4", usuario_id: "usr-marina", titulo: "Pedido de voluntariado", texto: "Luciana Prates pediu para ser voluntária.", href: "/portal/voluntarios?aba=pedidos", lida: false, created_at: haMeses(0, 1) },
       { id: "not-5", usuario_id: "usr-marina", titulo: "Oficina lotada", texto: "Informática Básica atingiu o limite de vagas.", href: "/portal/oficinas/ofi-info", lida: false, created_at: haMeses(0, 1) },
     ],
     convites: [
@@ -288,12 +364,12 @@ export function criarBanco(): BancoDemo {
       { id: "met-3", titulo: "Taxa de presença", alvo: 80, indicador: "presenca" },
     ],
     auditoria: [
-      { id: "aud-1", usuario: "Marina Alves", acao: "criou", tabela: "eventos", descricao: "Festival de Cultura Popular", created_at: haMeses(0, 2) },
-      { id: "aud-2", usuario: "Roberto Nunes", acao: "alterou", tabela: "oficinas", descricao: "Informática Básica", created_at: haMeses(0, 4) },
-      { id: "aud-3", usuario: "Carlos Mendes", acao: "alterou", tabela: "presencas", descricao: "Presença em Aula de Violão", created_at: haMeses(0, 6) },
+      { id: "aud-1", usuario: "Matheus", acao: "criou", tabela: "eventos", descricao: "Festival de Cultura Popular", created_at: haMeses(0, 2) },
+      { id: "aud-2", usuario: "José Roberto", acao: "alterou", tabela: "oficinas", descricao: "Informática Básica", created_at: haMeses(0, 4) },
+      { id: "aud-3", usuario: "Vitor Leal", acao: "alterou", tabela: "presencas", descricao: "Presença em Aula de Violão", created_at: haMeses(0, 6) },
     ],
     mensagens: [
-      { id: "msg-1", assunto: "Lembrete do Festival", texto: "O Festival de Cultura Popular está chegando. Contamos com você!", canal: "email", publico: "Inscritos no Festival de Cultura Popular", enviados: 13, autor: "Marina Alves", created_at: haMeses(0, 2) },
+      { id: "msg-1", assunto: "Lembrete do Festival", texto: "O Festival de Cultura Popular está chegando. Contamos com você!", canal: "email", publico: "Inscritos no Festival de Cultura Popular", enviados: 13, autor: "Matheus", created_at: haMeses(0, 2) },
     ],
     consentimentos: [{ id: "usr-ana", versao: "1.0", aceito_em: haMeses(6, 1) }],
     seguranca: [],

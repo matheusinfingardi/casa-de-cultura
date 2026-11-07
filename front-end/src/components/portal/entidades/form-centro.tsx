@@ -68,7 +68,7 @@ export default function FormCentro({ item }: { item?: Centro }) {
         </Campo>
       </Secao>
 
-      <CamposExtras erroImagem={erros.imagem_url} valores={v} definir={(c, x) => f.definir(c, x)} comUnidade={false} />
+      <CamposExtras erroImagem={erros.imagem_url} valores={v} definir={(c, x) => f.definir(c as never, x as never)} comUnidade={false} />
 
       <Secao titulo="Responsável">
         <CampoResponsavel valorId={v.responsavel_id ?? null} onChange={(id, nome) => { f.definir("responsavel_id", id); f.definir("responsavel", nome) }} />

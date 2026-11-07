@@ -13,6 +13,7 @@ export default function ListaCentros() {
       descricao="Unidades físicas onde o projeto atua."
       migalhas={[{ label: "Atendimento" }, { label: "Centros" }]}
       icon={Building2}
+      tipoItem="centro"
       singular="centro"
       novoHref="/portal/centros/novo"
       detalheHref={(i) => `/portal/centros/${i.id}`}

@@ -80,6 +80,7 @@ export function CartaoItem({ i, assistido: a }: { i: ItemView; assistido: AcoesA
       <div className="flex flex-1 flex-col gap-2 p-4">
         <div className="flex flex-wrap gap-1.5">
           <Badge variant="outline">{ITEM_TIPO_LABELS[i.tipo]}</Badge>
+          {i.tem_certificado && <Badge variant="outline"><Award className="h-3 w-3" aria-hidden /> Certificado</Badge>}
           {inscrito && <Badge>Você participa</Badge>}
           {fila && <Badge variant="secondary">Na lista de espera</Badge>}
           {lotado && !inscrito && !fila && <Badge variant="destructive">Lotado</Badge>}

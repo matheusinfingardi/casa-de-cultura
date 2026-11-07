@@ -19,6 +19,7 @@ export default function ListaEventos() {
       descricao="Acontecimentos em data marcada: festivais, feiras, campanhas e encontros."
       migalhas={[{ label: "Programação" }, { label: "Eventos" }]}
       icon={CalendarDays}
+      tipoItem="evento"
       singular="evento"
       novoHref="/portal/eventos/novo"
       detalheHref={(i) => `/portal/eventos/${i.id}`}

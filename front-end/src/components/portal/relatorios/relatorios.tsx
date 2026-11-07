@@ -2,24 +2,26 @@
 
 import { useEffect, useMemo, useState } from "react"
 import Link from "next/link"
-import { ArrowDown, ArrowUp, FileSpreadsheet, Minus, Pencil, Printer, Sparkles, TrendingDown } from "lucide-react"
+import { ArrowDown, ArrowUp, Award, CalendarHeart, FileSpreadsheet, HeartHandshake, Minus, Pencil, Printer, RotateCcw, Sprout, TrendingUp, Users, type LucideIcon } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Skeleton } from "@/components/ui/skeleton"
 import PageHeader from "@/components/comum/page-header"
 import { useDemo } from "@/hooks/use-demo"
-import { calcularAssiduidade, idade, situacao } from "@/lib/assiduidade"
+import { calcularAssiduidade, idade, situacao, voltouAVir, type Assiduidade } from "@/lib/assiduidade"
 import { chaveData, dataBR } from "@/lib/formatar"
 import { baixarArquivo, gerarCsv } from "@/lib/ics"
+import { ehResponsavelFamiliar } from "@/lib/familia"
 import { rotaAdmin } from "@/lib/itens"
 import { carregarDashboard, type DadosDashboard } from "@/lib/services/dashboard"
-import { listarFichas, listarMetas, listarRegistros, salvarMeta, type Ficha, type Meta, type StatusDia } from "@/lib/services/extras"
+import { listarFichas, listarMetas, listarRegistros, listarTodosDependentes, salvarMeta, type Dependente, type Ficha, type Meta, type StatusDia } from "@/lib/services/extras"
 import { ITEM_TIPO_LABELS, ITEM_TIPOS, type ItemTipo } from "@/lib/services/presencas"
 import { useUnidade } from "@/components/portal/unidade"
 
 const PERIODOS = [{ v: "30", r: "Últimos 30 dias" }, { v: "56", r: "Últimas 8 semanas" }, { v: "90", r: "Últimos 3 meses" }, { v: "0", r: "Todo o período" }]
-type Aba = "panorama" | "participacao" | "pessoas"
+type Aba = "panorama" | "participacao" | "pessoas" | "publico"
+type GrupoPessoas = "frequentes" | "irregulares" | "contato"
 type Reg = { item_id: string; item_tipo: ItemTipo; cliente_id: string; data: string; status: StatusDia }
 
 const antesDe = (dias: number) => { const d = new Date(); d.setDate(d.getDate() - dias); return chaveData(d) }
@@ -87,6 +89,8 @@ export default function Relatorios() {
   const [periodo, setPeriodo] = useState("56")
   const [tipo, setTipo] = useState<ItemTipo | "">("")
   const [aba, setAba] = useState<Aba>("panorama")
+  const [dependentes, setDependentes] = useState<Dependente[]>([])
+  const [grupo, setGrupo] = useState<GrupoPessoas>("frequentes")
   const [editando, setEditando] = useState<string | null>(null)
 
   useEffect(() => { carregarDashboard().then(setDados) }, [])
@@ -95,6 +99,7 @@ export default function Relatorios() {
     listarRegistros().then(setRegistros)
     listarFichas().then(setFichas)
     listarMetas().then(setMetas)
+    listarTodosDependentes().then(setDependentes)
   }, [demo])
 
   const r = useMemo(() => {
@@ -137,15 +142,32 @@ export default function Relatorios() {
       })
       .filter((i) => i.inscritos > 0)
       .sort((a, b) => (b.taxa ?? -1) - (a.taxa ?? -1))
-    const comTaxa = porItem.filter((i) => i.taxa !== null && i.encontros >= 2)
 
     // Pessoas
     const porPessoa = new Map<string, Reg[]>()
     for (const x of validos) porPessoa.set(x.cliente_id, [...(porPessoa.get(x.cliente_id) ?? []), x])
-    const contato = [...porPessoa.entries()]
-      .map(([id, l]) => ({ id, nome: dados.usuarios.find((u) => u.id === id)?.nome ?? "Pessoa", ass: calcularAssiduidade(l) }))
-      .filter((p) => p.ass.faltasSeguidas >= 3 || (p.ass.taxa ?? 100) < 50)
-      .sort((a, b) => b.ass.faltasSeguidas - a.ass.faltasSeguidas)
+    const pessoas = [...porPessoa.entries()]
+      .filter(([id]) => dados.usuarios.some((u) => u.id === id && u.role === "cliente"))
+      .map(([id, l]) => ({ id, nome: dados.usuarios.find((u) => u.id === id)?.nome ?? "Pessoa", ass: calcularAssiduidade(l), voltou: voltouAVir(l) }))
+    const ehContato = (a: Assiduidade) => a.faltasSeguidas >= 3 || (a.taxa ?? 100) < 50
+    const contato = pessoas.filter((p) => ehContato(p.ass)).sort((a, b) => b.ass.faltasSeguidas - a.ass.faltasSeguidas || (a.ass.taxa ?? 0) - (b.ass.taxa ?? 0))
+    const frequentes = pessoas.filter((p) => !ehContato(p.ass) && (p.ass.taxa ?? 0) >= 75).sort((a, b) => (b.ass.taxa ?? 0) - (a.ass.taxa ?? 0) || b.ass.total - a.ass.total)
+    const irregulares = pessoas.filter((p) => !ehContato(p.ass) && (p.ass.taxa ?? 0) < 75).sort((a, b) => (b.ass.taxa ?? 0) - (a.ass.taxa ?? 0))
+
+    // Boas notícias do período, em frases, sem exigir interpretação.
+    const novas = dados.usuarios.filter((u) => u.role === "cliente" && (u.created_at ?? "").slice(0, 10) >= limite).length
+    const muitoFirmes = pessoas.filter((p) => (p.ass.taxa ?? 0) >= 90 && p.ass.total >= 5).length
+    const voltaram = pessoas.filter((p) => p.voltou).length
+    const turmasCheias = porItem.filter((i) => i.vagas && i.inscritos / i.vagas >= 0.9).length
+    const comCertificado = [...dados.eventos, ...dados.atividades, ...dados.oficinas].filter((i) => (i as { certificado_liberado?: boolean }).certificado_liberado).length
+    const dTaxa = delta(taxa(atual), taxa(anterior))
+    const boas: { valor: string; texto: string; icon: LucideIcon }[] = []
+    if (dTaxa && dTaxa > 0) boas.push({ valor: `+${dTaxa}`, texto: "pontos de presença em relação ao período anterior", icon: TrendingUp })
+    if (muitoFirmes) boas.push({ valor: String(muitoFirmes), texto: muitoFirmes === 1 ? "pessoa veio a 90% ou mais dos encontros" : "pessoas vieram a 90% ou mais dos encontros", icon: Award })
+    if (voltaram) boas.push({ valor: String(voltaram), texto: voltaram === 1 ? "pessoa voltou a vir depois de faltar 3 vezes seguidas" : "pessoas voltaram a vir depois de faltar 3 vezes seguidas", icon: RotateCcw })
+    if (novas) boas.push({ valor: String(novas), texto: novas === 1 ? "pessoa nova chegou à Casa" : "pessoas novas chegaram à Casa", icon: Sprout })
+    if (turmasCheias) boas.push({ valor: String(turmasCheias), texto: turmasCheias === 1 ? "turma está com as vagas quase todas preenchidas" : "turmas estão com as vagas quase todas preenchidas", icon: Users })
+    if (comCertificado) boas.push({ valor: String(comCertificado), texto: comCertificado === 1 ? "atividade já liberou certificados" : "atividades já liberaram certificados", icon: CalendarHeart })
 
     const assistidos = dados.usuarios.filter((u) => u.role === "cliente")
     const fichasA = fichas.filter((f) => assistidos.some((a) => a.id === f.id))
@@ -162,31 +184,34 @@ export default function Relatorios() {
       ativas: ativas(atual), dAtivas: delta(ativas(atual), ativas(anterior)),
       encontros: encontros(atual), dEncontros: delta(encontros(atual), encontros(anterior)),
       faltas: atual.filter((x) => x.status === "ausente").length,
-      meses, porItem, contato, melhor: comTaxa[0], pior: comTaxa[comTaxa.length - 1],
+      meses, porItem, contato, frequentes, irregulares, boas,
+      familias: assistidos.filter((a) => ehResponsavelFamiliar(dependentes.filter((d) => d.responsavel_id === a.id))).length,
+      criancas: dependentes.filter((d) => ["Filho", "Filha", "Neto", "Neta", "Sobrinho", "Sobrinha"].includes(d.parentesco) && !d.parente_id).length,
+      cuidadosFamilia: dependentes.filter((d) => d.deficiencia || d.cuidados).length,
       assistidos: assistidos.length, porFaixa, porBairro: contar((f) => f.bairro).slice(0, 6),
       comDeficiencia: fichasA.filter((f) => f.deficiencia).length, comBeneficio: fichasA.filter((f) => f.beneficios?.length).length,
       inscricoes: dados.presencas.filter((p) => itens.has(p.item_id)).length,
       temFichas: fichasA.length > 0,
     }
-  }, [dados, filtrar, periodo, tipo, registros, fichas, demo])
+  }, [dados, filtrar, periodo, tipo, registros, fichas, dependentes, demo])
 
   function exportar() {
     if (!r) return
     const linhas: (string | number)[][] = aba === "pessoas"
-      ? [["Pessoa", "Presença (%)", "Faltas seguidas", "Última presença"], ...r.contato.map((p) => [p.nome, p.ass.taxa ?? "", p.ass.faltasSeguidas, p.ass.ultimaPresenca ? dataBR(p.ass.ultimaPresenca) : ""])]
+      ? [["Pessoa", "Situação", "Presença (%)", "Faltas seguidas", "Última presença"], ...[...r.frequentes, ...r.irregulares, ...r.contato].map((p) => [p.nome, situacao(p.ass).rotulo, p.ass.taxa ?? "", p.ass.faltasSeguidas, p.ass.ultimaPresenca ? dataBR(p.ass.ultimaPresenca) : ""])]
       : [["Item", "Área", "Inscritos", "Encontros", "Presenças", "Faltas", "Presença (%)"], ...r.porItem.map((i) => [i.nome, ITEM_TIPO_LABELS[i.tipo], i.inscritos, i.encontros, i.presentes, i.faltas, i.taxa ?? ""])]
     baixarArquivo(`relatorio-${aba}.csv`, gerarCsv(linhas), "text/csv;charset=utf-8")
   }
 
   const valorMeta = (m: Meta) => (m.indicador === "assistidos" ? r?.ativas ?? 0 : m.indicador === "inscricoes" ? r?.inscricoes ?? 0 : r?.taxa ?? 0)
   const nomePeriodo = PERIODOS.find((p) => p.v === periodo)?.r
-  const ABAS: [Aba, string][] = [["panorama", "Panorama"], ["participacao", "Participação"], ["pessoas", "Pessoas"]]
+  const ABAS: [Aba, string][] = [["panorama", "Panorama"], ["participacao", "Participação"], ["pessoas", "Pessoas"], ["publico", "Quem a Casa atende"]]
 
   return (
     <div className="space-y-6">
       <PageHeader
         titulo="Relatórios"
-        descricao="Entenda como o projeto está indo, quem precisa de atenção e preste contas a parceiros."
+        descricao="Veja o que está indo bem, onde dá para melhorar e preste contas a parceiros."
         acoes={
           <span className="nao-imprimir flex flex-wrap gap-2">
             <Button variant="outline" onClick={exportar}><FileSpreadsheet className="h-4 w-4" aria-hidden /> Baixar planilha</Button>
@@ -216,7 +241,7 @@ export default function Relatorios() {
             <Numero valor={r.taxa === null ? "—" : `${r.taxa}%`} rotulo="de presença" delta={r.dTaxa} unidade=" pontos" />
             <Numero valor={String(r.ativas)} rotulo="pessoas compareceram" delta={r.dAtivas} />
             <Numero valor={String(r.encontros)} rotulo="encontros realizados" delta={r.dEncontros} />
-            <Numero valor={String(r.contato.length)} rotulo="precisam de contato" />
+            <Numero valor={String(r.frequentes.length)} rotulo="pessoas frequentes" />
           </div>
 
           <div className="nao-imprimir flex gap-1 overflow-x-auto border-b" role="tablist" aria-label="Partes do relatório">
@@ -229,28 +254,23 @@ export default function Relatorios() {
             <div className="grid items-start gap-6 lg:grid-cols-3">
               <div className="space-y-6 lg:col-span-2">
                 <section className="rounded-2xl border bg-card p-5 shadow-sm">
+                  <h2 className="mb-3 text-xl font-semibold">O que está indo bem</h2>
+                  {r.boas.length === 0 ? <p className="text-muted-foreground">Ainda não há destaques neste período.</p> : (
+                    <ul className="grid gap-x-6 sm:grid-cols-2">
+                      {r.boas.map((b) => (
+                        <li key={b.texto} className="flex items-center gap-3 border-b py-3">
+                          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-emerald-900 dark:bg-emerald-900 dark:text-emerald-100"><b.icon className="h-5 w-5" aria-hidden /></span>
+                          <p><strong className="text-xl font-bold">{b.valor}</strong> {b.texto}</p>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </section>
+                <section className="rounded-2xl border bg-card p-5 shadow-sm">
                   <h2 className="text-xl font-semibold">Presença mês a mês</h2>
                   <p className="mb-4 text-muted-foreground">De cada 100 pessoas esperadas, quantas vieram.</p>
                   {r.meses.length ? <Barras dados={r.meses} sufixo="%" max={100} /> : <p className="text-muted-foreground">Ainda sem registros suficientes.</p>}
                 </section>
-                {(r.melhor || r.pior) && (
-                  <section className="grid gap-4 sm:grid-cols-2">
-                    {r.melhor && (
-                      <div className="rounded-2xl border bg-card p-5 shadow-sm">
-                        <p className="flex items-center gap-2 font-semibold"><Sparkles className="h-4 w-4 text-primary" aria-hidden /> Maior presença</p>
-                        <Link href={rotaAdmin(r.melhor.tipo, r.melhor.id)} className="mt-1 block text-lg font-semibold hover:underline">{r.melhor.nome}</Link>
-                        <p className="text-muted-foreground">{r.melhor.taxa}% em {r.melhor.encontros} encontros</p>
-                      </div>
-                    )}
-                    {r.pior && r.pior.id !== r.melhor?.id && (
-                      <div className="rounded-2xl border bg-card p-5 shadow-sm">
-                        <p className="flex items-center gap-2 font-semibold"><TrendingDown className="h-4 w-4 text-primary" aria-hidden /> Vale olhar de perto</p>
-                        <Link href={rotaAdmin(r.pior.tipo, r.pior.id)} className="mt-1 block text-lg font-semibold hover:underline">{r.pior.nome}</Link>
-                        <p className="text-muted-foreground">{r.pior.taxa}% em {r.pior.encontros} encontros</p>
-                      </div>
-                    )}
-                  </section>
-                )}
               </div>
 
               <section className="rounded-2xl border bg-card p-5 shadow-sm">
@@ -320,43 +340,53 @@ export default function Relatorios() {
             </section>
           )}
 
-          {aba === "pessoas" && (
-            <div className="grid items-start gap-6 lg:grid-cols-2">
+          {aba === "pessoas" && (() => {
+            const GRUPOS: [GrupoPessoas, string, typeof r.frequentes, string][] = [
+              ["frequentes", "Frequentes", r.frequentes, "Vieram a 75% ou mais dos encontros. Vale reconhecer."],
+              ["irregulares", "Irregulares", r.irregulares, "Vêm de vez em quando. Um convite pode ajudar."],
+              ["contato", "Precisam de contato", r.contato, "Faltaram 3 vezes seguidas ou vieram a menos da metade dos encontros."],
+            ]
+            const [, , lista, dica] = GRUPOS.find(([v]) => v === grupo)!
+            return (
               <section className="rounded-2xl border bg-card p-5 shadow-sm">
-                <h2 className="text-xl font-semibold">Quem precisa de contato ({r.contato.length})</h2>
-                <p className="mb-3 text-muted-foreground">Faltou 3 vezes seguidas ou veio a menos da metade dos encontros.</p>
-                {r.contato.length === 0 ? <p className="text-muted-foreground">Ninguém nesta situação.</p> : (
-                  <ul className="divide-y">
-                    {r.contato.slice(0, 12).map((p) => (
-                      <li key={p.id} className="flex flex-wrap items-center justify-between gap-2 py-2.5">
-                        <Link href={`/portal/usuarios/${p.id}`} className="font-medium hover:underline">{p.nome}</Link>
-                        <span className={`rounded-full px-2.5 py-1 text-sm font-medium ${situacao(p.ass).classe}`}>{p.ass.taxa}%{p.ass.faltasSeguidas >= 3 ? ` · ${p.ass.faltasSeguidas} faltas seguidas` : ""}</span>
+                <div className="nao-imprimir mb-3 flex flex-wrap gap-2" role="group" aria-label="Situação das pessoas">
+                  {GRUPOS.map(([v, ro, l]) => <Button key={v} size="sm" variant={grupo === v ? "default" : "outline"} aria-pressed={grupo === v} onClick={() => setGrupo(v)}>{ro} ({l.length})</Button>)}
+                </div>
+                <p className="mb-2 text-muted-foreground">{dica} Considera todo o histórico de cada pessoa.</p>
+                {lista.length === 0 ? <p className="text-muted-foreground">Ninguém nesta situação.</p> : (
+                  <ul className="grid gap-x-8 md:grid-cols-2">
+                    {lista.map((p) => (
+                      <li key={p.id} className="flex flex-wrap items-center justify-between gap-2 border-b py-2.5">
+                        <Link href={`/portal/assistidos/${p.id}?aba=relatorio`} className="font-medium hover:underline" aria-label={`Relatório de ${p.nome}`}>{p.nome}</Link>
+                        <span className={`rounded-full px-2.5 py-1 text-sm font-medium ${situacao(p.ass).classe}`}>{p.ass.presentes} de {p.ass.total} ({p.ass.taxa}%){p.ass.faltasSeguidas >= 3 ? ` · ${p.ass.faltasSeguidas} faltas seguidas` : ""}</span>
                       </li>
                     ))}
                   </ul>
                 )}
               </section>
+            )
+          })()}
 
-              {r.temFichas ? (
-                <div className="space-y-6">
-                  <section className="rounded-2xl border bg-card p-5 shadow-sm">
-                    <h2 className="mb-3 text-xl font-semibold">Quem a Casa atende</h2>
-                    <dl className="mb-5 grid grid-cols-3 gap-3 text-center">
-                      <div><dd className="text-3xl font-bold">{r.assistidos}</dd><dt className="text-sm text-muted-foreground">assistidos</dt></div>
-                      <div><dd className="text-3xl font-bold">{r.comDeficiencia}</dd><dt className="text-sm text-muted-foreground">com deficiência</dt></div>
-                      <div><dd className="text-3xl font-bold">{r.comBeneficio}</dd><dt className="text-sm text-muted-foreground">com benefício</dt></div>
-                    </dl>
-                    <h3 className="mb-2 font-semibold">Por idade</h3>
-                    <Barras dados={r.porFaixa} />
-                  </section>
-                  <section className="rounded-2xl border bg-card p-5 shadow-sm">
-                    <h2 className="mb-3 text-xl font-semibold">Bairros com mais assistidos</h2>
-                    <Lista dados={r.porBairro} />
-                  </section>
-                </div>
-              ) : <p className="text-muted-foreground">O perfil do público depende das fichas, que ainda não existem no banco real.</p>}
+          {aba === "publico" && (r.temFichas ? (
+            <div className="grid items-start gap-6 lg:grid-cols-2">
+              <section className="rounded-2xl border bg-card p-5 shadow-sm">
+                <h2 className="mb-3 text-xl font-semibold">Quem a Casa atende</h2>
+                <dl className="grid grid-cols-2 gap-4 sm:grid-cols-3">
+                  {[[r.assistidos, "assistidos"], [r.familias, "famílias com crianças ou dependentes"], [r.criancas, "crianças e dependentes"], [r.comDeficiencia, "pessoas com deficiência"], [r.cuidadosFamilia, "familiares com cuidados especiais"], [r.comBeneficio, "pessoas com benefício"]].map(([v, ro]) => (
+                    <div key={ro}><dd className="text-3xl font-bold">{v}</dd><dt className="text-sm text-muted-foreground">{ro}</dt></div>
+                  ))}
+                </dl>
+              </section>
+              <section className="rounded-2xl border bg-card p-5 shadow-sm">
+                <h2 className="mb-3 text-xl font-semibold">Por idade</h2>
+                <Barras dados={r.porFaixa} />
+              </section>
+              <section className="rounded-2xl border bg-card p-5 shadow-sm lg:col-span-2">
+                <h2 className="mb-3 flex items-center gap-2 text-xl font-semibold"><HeartHandshake className="h-5 w-5 text-primary" aria-hidden /> Bairros com mais assistidos</h2>
+                <Lista dados={r.porBairro} />
+              </section>
             </div>
-          )}
+          ) : <p className="text-muted-foreground">O perfil do público depende das fichas, que ainda não existem no banco real.</p>)}
         </>
       )}
     </div>

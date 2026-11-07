@@ -20,24 +20,21 @@ import { CampoSelect } from "@/components/comum/campos"
 import { useDemo } from "@/hooks/use-demo"
 import { notify } from "@/lib/notify"
 import { dataBR, iniciais } from "@/lib/formatar"
-import { calcularAssiduidade, idade, situacao, type Assiduidade } from "@/lib/assiduidade"
-import { cancelarConvite, criarConvite, listarConvites, listarFichas, listarPedidos, listarRegistros, responderPedido, type Convite, type Ficha, type PedidoVoluntario } from "@/lib/services/extras"
+import { cancelarConvite, criarConvite, listarConvites, type Convite } from "@/lib/services/extras"
 import { contarInscricoesPorPessoa } from "@/lib/services/presencas"
 import { ROLES, ROLE_LABELS, atualizarRole, listarUsuarios, type Role, type Usuario } from "@/lib/services/usuarios"
 
-type Aba = "cliente" | "responsavel" | "admin" | "convites" | "pedidos"
+type Aba = "cliente" | "responsavel" | "admin" | "convites"
 const POR_PAGINA = 10
 const ABAS: { v: Aba; r: string; dica: string; soDemo?: boolean }[] = [
-  { v: "cliente", r: "Assistidos", dica: "Pessoas que participam das atividades." },
-  { v: "responsavel", r: "Voluntários", dica: "Conduzem atividades e registram presença." },
+  { v: "cliente", r: "Assistidos", dica: "Contas de quem participa das atividades. Para acompanhar cada pessoa, use Gestão > Assistidos." },
+  { v: "responsavel", r: "Voluntários", dica: "Contas de quem conduz atividades. Para ver o trabalho de cada um, use Gestão > Voluntários." },
   { v: "admin", r: "Administração", dica: "Acesso completo a este portal." },
-  { v: "pedidos", r: "Pedidos", dica: "Pessoas que querem ser voluntárias.", soDemo: true },
   { v: "convites", r: "Convites", dica: "Convites enviados por e-mail.", soDemo: true },
 ]
+const hrefPessoa = (u: Usuario) => (u.role === "cliente" ? `/portal/assistidos/${u.id}` : u.role === "responsavel" ? `/portal/voluntarios/${u.id}` : `/portal/usuarios/${u.id}`)
 
-type Extra = { ass?: Assiduidade; ficha?: Ficha }
-
-function TabelaPessoas({ pessoas, inscricoes, euId, onPapel, extra, comCuidado }: { pessoas: Usuario[]; inscricoes: Record<string, number>; euId?: string; onPapel: (u: Usuario, r: Role) => void; extra: (id: string) => Extra; comCuidado: boolean }) {
+function TabelaPessoas({ pessoas, inscricoes, euId, onPapel }: { pessoas: Usuario[]; inscricoes: Record<string, number>; euId?: string; onPapel: (u: Usuario, r: Role) => void }) {
   return (
     <Card className="gap-0 overflow-hidden p-0">
       <div className="overflow-x-auto">
@@ -45,39 +42,30 @@ function TabelaPessoas({ pessoas, inscricoes, euId, onPapel, extra, comCuidado }
           <thead className="bg-muted/50 text-left text-sm text-muted-foreground">
             <tr>
               <th scope="col" className="px-5 py-3 font-semibold">Pessoa</th>
-              {comCuidado && <th scope="col" className="hidden px-3 py-3 font-semibold lg:table-cell">Cuidados</th>}
-              {comCuidado && <th scope="col" className="hidden px-3 py-3 font-semibold md:table-cell">Assiduidade</th>}
-              {!comCuidado && <th scope="col" className="hidden px-3 py-3 font-semibold lg:table-cell">Desde</th>}
+              <th scope="col" className="hidden px-3 py-3 font-semibold lg:table-cell">Desde</th>
               <th scope="col" className="hidden px-3 py-3 text-right font-semibold sm:table-cell">Inscrições</th>
               <th scope="col" className="w-48 px-5 py-3 font-semibold">Papel</th>
             </tr>
           </thead>
           <tbody className="divide-y">
-            {pessoas.map((u) => {
-              const { ass, ficha } = extra(u.id)
-              const st = ass ? situacao(ass) : null
-              const anos = idade(ficha?.nascimento)
-              return (
+            {pessoas.map((u) => (
               <tr key={u.id} className="hover:bg-muted/30">
                 <td className="px-5 py-3">
-                  <Link href={`/portal/usuarios/${u.id}`} className="group flex min-w-0 items-center gap-3">
+                  <Link href={hrefPessoa(u)} className="group flex min-w-0 items-center gap-3">
                     <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-sm font-semibold text-primary" aria-hidden>{iniciais(u.nome)}</span>
                     <span className="min-w-0">
                       <span className="block truncate font-medium group-hover:underline">{u.nome ?? "Sem nome"}{u.id === euId && <Badge variant="outline" className="ml-2">você</Badge>}</span>
-                      <span className="block truncate text-sm text-muted-foreground">{anos !== null ? `${anos} anos · ` : ""}{ficha?.bairro ? `${ficha.bairro} · ` : ""}{u.email}</span>
+                      <span className="block truncate text-sm text-muted-foreground">{u.email}</span>
                     </span>
                   </Link>
                 </td>
-                {comCuidado && <td className="hidden px-3 py-3 text-sm lg:table-cell">{ficha?.deficiencia ? <span className="font-medium">{ficha.deficiencia}</span> : ficha?.necessidades ? <span className="text-muted-foreground">Tem necessidades anotadas</span> : <span className="text-muted-foreground">—</span>}</td>}
-                {comCuidado && <td className="hidden px-3 py-3 md:table-cell">{st && <span className={`whitespace-nowrap rounded-full px-2.5 py-1 text-sm font-medium ${st.classe}`}>{ass?.taxa !== null ? `${ass?.taxa}% · ` : ""}{st.rotulo}</span>}</td>}
-                {!comCuidado && <td className="hidden whitespace-nowrap px-3 py-3 text-muted-foreground lg:table-cell">{dataBR(u.created_at?.slice(0, 10))}</td>}
+                <td className="hidden whitespace-nowrap px-3 py-3 text-muted-foreground lg:table-cell">{dataBR(u.created_at?.slice(0, 10))}</td>
                 <td className="hidden px-3 py-3 text-right tabular-nums sm:table-cell">{inscricoes[u.id] ?? 0}</td>
                 <td className="px-5 py-2">
                   <CampoSelect aria-label={`Papel de ${u.nome ?? u.email}`} valor={u.role} desativado={u.id === euId} opcoes={ROLES.map((r) => ({ valor: r, label: ROLE_LABELS[r] }))} onChange={(r) => onPapel(u, r as Role)} />
                 </td>
               </tr>
-              )
-            })}
+            ))}
           </tbody>
         </table>
       </div>
@@ -94,16 +82,12 @@ export default function GestaoUsuarios() {
   const [usuarios, setUsuarios] = useState<Usuario[] | null>(null)
   const [inscricoes, setInscricoes] = useState<Record<string, number>>({})
   const [convites, setConvites] = useState<Convite[]>([])
-  const [pedidos, setPedidos] = useState<PedidoVoluntario[]>([])
   const [busca, setBusca] = useState("")
   const [pagina, setPagina] = useState(1)
   const [pendente, setPendente] = useState<{ u: Usuario; role: Role } | null>(null)
   const [convidando, setConvidando] = useState(false)
   const [conviteEmail, setConviteEmail] = useState("")
   const [convitePapel, setConvitePapel] = useState("responsavel")
-  const [fichas, setFichas] = useState<Ficha[]>([])
-  const [assiduidades, setAssiduidades] = useState<Record<string, Assiduidade>>({})
-  const [cuidado, setCuidado] = useState(params.get("filtro") ?? "todos")
 
   useEffect(() => {
     listarUsuarios().then(setUsuarios)
@@ -112,37 +96,20 @@ export default function GestaoUsuarios() {
   useEffect(() => {
     if (!demo) return
     listarConvites().then(setConvites)
-    listarPedidos().then(setPedidos)
-    listarFichas().then(setFichas)
-    listarRegistros().then((regs) => {
-      const porPessoa: Record<string, typeof regs> = {}
-      for (const r of regs) (porPessoa[r.cliente_id] ??= []).push(r)
-      setAssiduidades(Object.fromEntries(Object.entries(porPessoa).map(([id, l]) => [id, calcularAssiduidade(l)])))
-    })
   }, [demo])
 
   const contagem = useMemo(() => {
     const c: Record<string, number> = { cliente: 0, responsavel: 0, admin: 0 }
     usuarios?.forEach((u) => c[u.role]++)
-    c.pedidos = pedidos.filter((p) => p.status === "pendente").length
     c.convites = convites.filter((x) => x.status === "pendente").length
     return c
-  }, [usuarios, pedidos, convites])
+  }, [usuarios, convites])
 
   const ehPessoas = aba === "cliente" || aba === "responsavel" || aba === "admin"
   const filtradas = useMemo(() => {
     const t = busca.trim().toLowerCase()
-    return (usuarios ?? []).filter((u) => {
-      if (u.role !== aba || (t && !`${u.nome ?? ""} ${u.email ?? ""}`.toLowerCase().includes(t))) return false
-      if (aba !== "cliente" || cuidado === "todos") return true
-      const f = fichas.find((x) => x.id === u.id)
-      const a = assiduidades[u.id]
-      if (cuidado === "deficiencia") return !!f?.deficiencia
-      if (cuidado === "contato") return !!a && (a.faltasSeguidas >= 3 || (a.taxa ?? 100) < 50)
-      if (cuidado === "beneficio") return !!f?.beneficios?.length
-      return true
-    })
-  }, [usuarios, aba, busca, cuidado, fichas, assiduidades])
+    return (usuarios ?? []).filter((u) => u.role === aba && (!t || `${u.nome ?? ""} ${u.email ?? ""}`.toLowerCase().includes(t)))
+  }, [usuarios, aba, busca])
   const totalPaginas = Math.max(1, Math.ceil(filtradas.length / POR_PAGINA))
   const paginaAtual = Math.min(pagina, totalPaginas)
   const naPagina = filtradas.slice((paginaAtual - 1) * POR_PAGINA, paginaAtual * POR_PAGINA)
@@ -169,13 +136,6 @@ export default function GestaoUsuarios() {
     else aplicar(u.id, role)
   }
 
-  async function responder(p: PedidoVoluntario, aprovado: boolean) {
-    await responderPedido(p, aprovado)
-    setPedidos(await listarPedidos())
-    setConvites(await listarConvites())
-    notify.success(aprovado ? `Convite enviado para ${p.email}` : "Pedido recusado")
-  }
-
   async function convidar(e: React.FormEvent) {
     e.preventDefault()
     if (!/\S+@\S+\.\S+/.test(conviteEmail)) return notify.error("Digite um e-mail válido")
@@ -192,7 +152,8 @@ export default function GestaoUsuarios() {
     <div className="space-y-6">
       <PageHeader
         titulo="Usuários"
-        descricao="Conheça e acompanhe cada pessoa: abra o nome para ver a ficha, a família e a participação."
+        descricao="Contas de acesso ao sistema: papéis e convites."
+        migalhas={[{ label: "Suporte" }, { label: "Usuários" }]}
         acoes={demo ? <Button onClick={() => setConvidando(true)}><MailPlus className="h-4 w-4" aria-hidden /> Convidar pessoa</Button> : undefined}
       />
 
@@ -215,16 +176,9 @@ export default function GestaoUsuarios() {
             <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" aria-hidden />
             <Input className="pl-10" placeholder="Buscar por nome ou e-mail" aria-label="Buscar usuário" value={busca} onChange={(e) => { setBusca(e.target.value); setPagina(1) }} />
           </div>
-          {aba === "cliente" && demo && (
-            <div className="flex flex-wrap gap-2" role="group" aria-label="Filtrar assistidos">
-              {[["todos", "Todos"], ["contato", "Precisam de contato"], ["deficiencia", "Com deficiência"], ["beneficio", "Recebem benefício"]].map(([v, r]) => (
-                <Button key={v} size="sm" variant={cuidado === v ? "default" : "outline"} aria-pressed={cuidado === v} onClick={() => { setCuidado(v); setPagina(1) }}>{r}</Button>
-              ))}
-            </div>
-          )}
           {naPagina.length === 0 ? <EstadoVazio icon={Users} titulo="Ninguém encontrado" texto="Tente outra busca ou outro filtro." /> : (
             <>
-              <TabelaPessoas pessoas={naPagina} inscricoes={inscricoes} euId={user?.id} onPapel={pedirTroca} comCuidado={aba === "cliente" && demo} extra={(id) => ({ ass: assiduidades[id], ficha: fichas.find((f) => f.id === id) })} />
+              <TabelaPessoas pessoas={naPagina} inscricoes={inscricoes} euId={user?.id} onPapel={pedirTroca} />
               <div className="flex items-center justify-between gap-3">
                 <p className="text-sm text-muted-foreground" aria-live="polite">{filtradas.length} {filtradas.length === 1 ? "pessoa" : "pessoas"}</p>
                 {totalPaginas > 1 && (
@@ -238,29 +192,6 @@ export default function GestaoUsuarios() {
             </>
           )}
         </>
-      ) : aba === "pedidos" ? (
-        pedidos.length === 0 ? <EstadoVazio icon={Users} titulo="Nenhum pedido" /> : (
-          <ul className="grid gap-3 lg:grid-cols-2">
-            {pedidos.map((p) => (
-              <li key={p.id} className="space-y-3 rounded-2xl border bg-card p-5 shadow-sm">
-                <div className="flex items-start justify-between gap-2">
-                  <div className="min-w-0"><p className="font-semibold">{p.nome}</p><p className="truncate text-sm text-muted-foreground">{p.email} · {p.telefone}</p></div>
-                  <Badge variant={p.status === "pendente" ? "secondary" : "outline"}>{p.status === "pendente" ? "Aguardando" : p.status === "aprovado" ? "Aprovado" : "Recusado"}</Badge>
-                </div>
-                <dl className="grid gap-2 sm:grid-cols-2">
-                  <div><dt className="text-sm text-muted-foreground">Quer ajudar com</dt><dd>{p.area}</dd></div>
-                  <div><dt className="text-sm text-muted-foreground">Disponibilidade</dt><dd>{p.disponibilidade}</dd></div>
-                </dl>
-                {p.status === "pendente" && (
-                  <div className="flex gap-2">
-                    <Button size="sm" onClick={() => responder(p, true)}>Aprovar e convidar</Button>
-                    <Button size="sm" variant="outline" onClick={() => responder(p, false)}>Recusar</Button>
-                  </div>
-                )}
-              </li>
-            ))}
-          </ul>
-        )
       ) : (
         convites.length === 0 ? <EstadoVazio icon={MailPlus} titulo="Nenhum convite enviado" /> : (
           <Card className="gap-0 divide-y p-0">

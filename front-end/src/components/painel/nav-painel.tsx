@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { CalendarDays, ClipboardCheck, ClipboardList, Home, IdCard, LifeBuoy, Search, Users, type LucideIcon } from "lucide-react"
+import { Award, CalendarDays, ClipboardCheck, ClipboardList, Home, IdCard, LifeBuoy, Search, Sparkles, Users, type LucideIcon } from "lucide-react"
 import type { Role } from "@/lib/services/usuarios"
 
 type Item = { titulo: string; url: string; icon: LucideIcon }
@@ -12,14 +12,17 @@ const ASSISTIDO: Item[] = [
   { titulo: "Atividades da Casa", url: "/painel/explorar", icon: Search },
   { titulo: "Minhas inscrições", url: "/painel/inscricoes", icon: ClipboardList },
   { titulo: "Agenda", url: "/painel/agenda", icon: CalendarDays },
-  { titulo: "Família", url: "/painel/familia", icon: Users },
+  { titulo: "Dependentes", url: "/painel/familia", icon: Users },
   { titulo: "Ajuda", url: "/painel/ajuda", icon: LifeBuoy },
 ]
 
 const VOLUNTARIO: Item[] = [
   { titulo: "Compromissos", url: "/painel", icon: ClipboardCheck },
+  { titulo: "Minhas atividades", url: "/painel/atividades", icon: Sparkles },
+  { titulo: "Meus assistidos", url: "/painel/assistidos", icon: Users },
   { titulo: "Agenda", url: "/painel/agenda", icon: CalendarDays },
   { titulo: "Minha ficha", url: "/painel/ficha", icon: IdCard },
+  { titulo: "Certificados", url: "/painel/certificados", icon: Award },
   { titulo: "Ajuda", url: "/painel/ajuda", icon: LifeBuoy },
 ]
 
@@ -31,7 +34,7 @@ export default function NavPainel({ role }: { role: Role | null }) {
     <nav aria-label="Menu" className="nao-imprimir border-b bg-background">
       <ul className="mx-auto flex max-w-6xl gap-1 overflow-x-auto px-1 md:px-5">
         {itens.map((item) => {
-          const ativo = pathname === item.url || (item.url === "/painel" && (pathname.startsWith("/painel/presenca") || pathname.startsWith("/painel/qr")))
+          const ativo = pathname === item.url || (item.url !== "/painel" && pathname.startsWith(item.url + "/")) || (item.url === "/painel" && (pathname.startsWith("/painel/presenca") || pathname.startsWith("/painel/qr")))
           return (
             <li key={item.url}>
               <Link href={item.url} aria-current={ativo ? "page" : undefined} className={`flex h-12 items-center gap-2 whitespace-nowrap border-b-2 px-3 font-medium transition-colors ${ativo ? "border-primary text-primary" : "border-transparent text-muted-foreground hover:text-foreground"}`}>

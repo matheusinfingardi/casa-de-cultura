@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react"
 import Link from "next/link"
-import { ArrowDown, ArrowUp, ArrowUpDown, ChevronRight, Plus, Search, Trash2, type LucideIcon } from "lucide-react"
+import { ArrowDown, ArrowUp, ArrowUpDown, ChevronRight, LayoutGrid, Plus, Search, Table2, Trash2, type LucideIcon } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
@@ -11,7 +11,9 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { notify } from "@/lib/notify"
 import { useUnidade } from "@/components/portal/unidade"
 import PageHeader, { type Migalha } from "./page-header"
+import CapaItem from "./capa-item"
 import EstadoVazio from "./estado-vazio"
+import type { ItemTipo } from "@/lib/services/presencas"
 import Confirmar from "./confirmar"
 
 export type Coluna<T> = {
@@ -37,6 +39,7 @@ type Props<T extends { id: string }> = {
   descricao: string
   migalhas?: Migalha[]
   icon: LucideIcon
+  tipoItem: ItemTipo
   singular: string // "evento"
   genero?: "m" | "f"
   novoHref: string
@@ -50,8 +53,12 @@ type Props<T extends { id: string }> = {
   ordemInicial?: string
 }
 
+type Visao = "tabela" | "cartoes"
+const CHAVE_VISAO = "cc-lista-visao"
+const lerVisao = (): Visao => { try { return localStorage.getItem(CHAVE_VISAO) === "cartoes" ? "cartoes" : "tabela" } catch { return "tabela" } }
+
 export default function ListaEntidade<T extends { id: string }>({
-  titulo, descricao, migalhas, icon, singular, genero = "m", novoHref, detalheHref, carregar, excluir, nome,
+  titulo, descricao, migalhas, icon, tipoItem, singular, genero = "m", novoHref, detalheHref, carregar, excluir, nome,
   colunas, busca, filtros = [], ordemInicial,
 }: Props<T>) {
   const [itens, setItens] = useState<T[] | null>(null)
@@ -61,6 +68,12 @@ export default function ListaEntidade<T extends { id: string }>({
     ordemInicial ? { chave: ordemInicial, asc: true } : null
   )
   const [aExcluir, setAExcluir] = useState<T | null>(null)
+  // A escolha só aparece depois de carregar a lista, então não há diferença entre servidor e navegador.
+  const [visao, setVisaoState] = useState<Visao>(lerVisao)
+  function setVisao(v: Visao) {
+    setVisaoState(v)
+    try { localStorage.setItem(CHAVE_VISAO, v) } catch { /* só uma preferência */ }
+  }
   const { filtrar } = useUnidade()
 
   useEffect(() => {
@@ -166,32 +179,61 @@ export default function ListaEntidade<T extends { id: string }>({
         />
       ) : (
         <>
-          <p className="text-sm text-muted-foreground" aria-live="polite">
-            {filtrando ? `${visiveis.length} de ${itens.length}` : itens.length} {itens.length === 1 ? singular : `${singular}s`}
-          </p>
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <p className="text-sm text-muted-foreground" aria-live="polite">
+              {filtrando ? `${visiveis.length} de ${itens.length}` : itens.length} {itens.length === 1 ? singular : `${singular}s`}
+            </p>
+            <div className="flex flex-wrap items-center gap-3">
+              {visao === "cartoes" && (
+                <select aria-label="Ordenar por" className="hidden h-10 rounded-xl border bg-card px-3 text-sm md:block" value={ordem ? `${ordem.chave}|${ordem.asc}` : ""}
+                  onChange={(e) => { const [chave, asc] = e.target.value.split("|"); setOrdem(chave ? { chave, asc: asc === "true" } : null) }}>
+                  <option value="">Ordem: padrão</option>
+                  {colunas.filter((c) => c.ordem).flatMap((c) => [
+                    <option key={`${c.chave}-a`} value={`${c.chave}|true`}>{c.titulo}: crescente</option>,
+                    <option key={`${c.chave}-d`} value={`${c.chave}|false`}>{c.titulo}: decrescente</option>,
+                  ])}
+                </select>
+              )}
+              <div className="hidden rounded-xl border bg-card p-1 md:inline-flex" role="group" aria-label="Forma de ver a lista">
+                {([["tabela", "Tabela", Table2], ["cartoes", "Cartões", LayoutGrid]] as const).map(([v, r, I]) => (
+                  <button key={v} type="button" aria-pressed={visao === v} onClick={() => setVisao(v)} className={`flex items-center gap-2 rounded-lg px-3 py-1.5 text-sm font-medium ${visao === v ? "bg-primary text-primary-foreground" : "hover:bg-muted"}`}>
+                    <I className="h-4 w-4" aria-hidden />{r}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
 
-          {/* Celular: um cartão por item */}
-          <div className="flex flex-col gap-3 md:hidden">
+          {/* Cartões: sempre no celular; no computador, quando escolhidos */}
+          <div className={`grid gap-4 ${visao === "cartoes" ? "sm:grid-cols-2 xl:grid-cols-3" : "md:hidden"}`}>
             {visiveis.map((i) => (
-              <Card key={i.id} className="space-y-3 p-4">
-                <Link href={detalheHref(i)} className="flex items-center justify-between gap-2 text-base font-semibold">
-                  <span className="min-w-0">{primeira.render(i)}</span>
-                  <ChevronRight className="h-5 w-5 shrink-0 text-muted-foreground" aria-hidden />
-                </Link>
-                <dl className="space-y-2 text-sm">
-                  {demais.map((c) => (
-                    <div key={c.chave} className="flex justify-between gap-4">
-                      <dt className="shrink-0 text-muted-foreground">{c.titulo}</dt>
-                      <dd className="min-w-0 text-right">{c.render(i)}</dd>
-                    </div>
-                  ))}
-                </dl>
+              <Card key={i.id} className="flex flex-col gap-0 overflow-hidden p-0 transition-colors hover:border-primary">
+                <CapaItem tipo={tipoItem} imagem={(i as { imagem_url?: string }).imagem_url} className="h-40" />
+                <div className="flex flex-1 flex-col gap-3 p-4">
+                  <Link href={detalheHref(i)} className="text-lg font-semibold leading-snug hover:underline">{primeira.render(i)}</Link>
+                  <dl className="space-y-2 text-sm">
+                    {demais.map((c) => (
+                      <div key={c.chave} className="flex justify-between gap-4">
+                        <dt className="shrink-0 text-muted-foreground">{c.titulo}</dt>
+                        <dd className="min-w-0 text-right">{c.render(i)}</dd>
+                      </div>
+                    ))}
+                  </dl>
+                  <div className="mt-auto flex items-center justify-between gap-2 border-t pt-3">
+                    <Button size="sm" variant="outline" asChild>
+                      <Link href={detalheHref(i)} aria-label={`Abrir ${nome(i)}`}>Abrir <ChevronRight className="h-4 w-4" aria-hidden /></Link>
+                    </Button>
+                    <Button size="icon-sm" variant="ghost" className="text-red-700 hover:text-red-800 dark:text-red-300" onClick={() => setAExcluir(i)} aria-label={`Excluir ${nome(i)}`}>
+                      <Trash2 className="h-4 w-4" aria-hidden />
+                    </Button>
+                  </div>
+                </div>
               </Card>
             ))}
           </div>
 
           {/* Computador: tabela */}
-          <Card className="hidden gap-0 overflow-hidden p-0 md:block">
+          <Card className={`hidden gap-0 overflow-hidden p-0 ${visao === "tabela" ? "md:block" : ""}`}>
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead className="bg-muted/50 text-left text-sm text-muted-foreground">

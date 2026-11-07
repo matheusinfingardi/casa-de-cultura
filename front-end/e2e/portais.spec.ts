@@ -37,8 +37,8 @@ test.describe("assistido", () => {
 
   test("certificado e QR Code", async ({ page }) => {
     await page.goto("/painel/inscricoes")
-    await page.getByRole("link", { name: "Certificado" }).first().click()
-    await expect(page.getByRole("heading", { name: "Certificado de participação" })).toBeVisible()
+    await page.getByRole("link", { name: "Baixar certificado" }).first().click()
+    await expect(page.getByRole("heading", { name: "Certificado de Participação" })).toBeVisible()
     await page.goto("/painel/qr")
     await expect(page.getByAltText("Seu QR Code")).toBeVisible()
   })
@@ -66,11 +66,25 @@ test.describe("voluntário", () => {
     await expect(page.getByText("Capoeira Infantil")).toHaveCount(0)
     await page.getByRole("button", { name: "Todos da Casa" }).click()
     await expect(page.getByText("Capoeira Infantil").first()).toBeVisible()
+  })
+
+  test("ficha guarda horário exato, tarefas e onde quer contribuir", async ({ page }) => {
     await page.goto("/painel/ficha")
-    await page.getByRole("button", { name: "Domingo, Manhã" }).click()
+    await page.getByRole("button", { name: "Domingo", exact: true }).click()
+    await page.getByLabel("Domingo: início").fill("19:00")
+    await page.getByLabel("Domingo: término").fill("18:00")
     await page.getByRole("button", { name: "Salvar ficha" }).click()
+    await expect(page.getByText(/Domingo: o término/)).toBeVisible()
+    await page.getByLabel("Domingo: término").fill("21:00")
+    await page.getByRole("button", { name: "Reforço escolar", exact: true }).click()
+    await page.getByRole("checkbox", { name: /Teatro Comunitário/ }).check()
+    await page.getByLabel("Profissão").fill("Professor")
+    await page.getByRole("button", { name: "Salvar ficha" }).click()
+    await expect(page.getByText("Ficha salva")).toBeVisible()
     await page.reload()
-    await expect(page.getByRole("button", { name: "Domingo, Manhã" })).toHaveAttribute("aria-pressed", "true")
+    await expect(page.getByLabel("Domingo: término")).toHaveValue("21:00")
+    await expect(page.getByRole("checkbox", { name: /Teatro Comunitário/ })).toBeChecked()
+    await expect(page.getByLabel("Profissão")).toHaveValue("Professor")
   })
 
   test("sem internet guarda a marcação e envia depois", async ({ page, context }) => {
@@ -88,5 +102,68 @@ test.describe("voluntário", () => {
   test("não acessa o portal da administração", async ({ page }) => {
     await page.goto("/portal")
     await page.waitForURL(/\/painel/)
+  })
+})
+
+test.describe("áreas do voluntário", () => {
+  test.beforeEach(({ page }) => entrarComo(page, "voluntario"))
+
+  test("minhas atividades tem página própria com frequência", async ({ page }) => {
+    await page.goto("/painel/atividades")
+    await page.getByRole("link", { name: "Aula de Violão" }).click()
+    await expect(page.getByRole("heading", { name: "Diário de presença" })).toBeVisible()
+    await expect(page.getByRole("heading", { name: /Inscritos/ })).toBeVisible()
+    await page.getByRole("link", { name: "Fazer chamada" }).first().click()
+    await expect(page.getByRole("heading", { name: "Escolha o dia" })).toBeVisible()
+  })
+
+  test("meus assistidos mostra só quem tem relação e protege dados sensíveis", async ({ page }) => {
+    await page.goto("/painel/assistidos")
+    await page.getByLabel("Buscar assistido").fill("Ana Souza")
+    await page.getByRole("link", { name: /Ana Souza/ }).click()
+    await expect(page.getByRole("heading", { name: "O que ajuda a acolher" })).toBeVisible()
+    await expect(page.getByText("Bolsa Família")).toHaveCount(0)
+    await page.getByLabel(/O que você observou/).fill("Chegou mais animada hoje")
+    await page.getByRole("button", { name: "Salvar observação" }).click()
+    await expect(page.getByText("Chegou mais animada hoje")).toBeVisible()
+  })
+
+  test("não abre assistido sem relação com o voluntário", async ({ page }) => {
+    await page.goto("/painel/assistidos/usr-inexistente")
+    await expect(page.getByText("Assistido não encontrado")).toBeVisible()
+  })
+})
+
+test.describe("certificados", () => {
+  test("responsável libera e os dois lados baixam", async ({ page, context }) => {
+    await entrarComo(page, "voluntario")
+    await page.goto("/painel/certificados")
+    await expect(page.getByText("Informática Básica")).toBeVisible()
+    await page.locator("li", { hasText: "Informática Básica" }).getByRole("link", { name: "Abrir chamada para liberar" }).click()
+    await page.getByRole("button", { name: "Liberar certificados" }).click()
+    await page.getByRole("dialog").getByRole("button", { name: "Liberar" }).click()
+    await expect(page.getByText("Liberados", { exact: true })).toBeVisible()
+    await page.goto("/painel/certificados")
+    await page.locator("li", { hasText: "Informática Básica" }).getByRole("link", { name: "Baixar meu certificado" }).click()
+    await expect(page.getByRole("heading", { name: "Certificado de Trabalho Voluntário" })).toBeVisible()
+    await expect(page.getByText(/Vitor Leal/).first()).toBeVisible()
+    await context.clearCookies()
+  })
+
+  test("atividade sem certificado ou não liberada não mostra o botão", async ({ page }) => {
+    await entrarComo(page, "assistido")
+    await page.goto("/painel/inscricoes")
+    const assistencia = page.locator("li", { hasText: "Acompanhamento Social" }).first()
+    await expect(assistencia).toBeVisible()
+    await expect(assistencia.getByRole("link", { name: "Baixar certificado" })).toHaveCount(0)
+    await expect(page.getByRole("link", { name: "Baixar certificado" }).first()).toBeVisible()
+  })
+
+  test("formulário pergunta se emite certificado", async ({ page }) => {
+    await entrarComo(page, "admin")
+    await page.goto("/portal/oficinas/novo")
+    await expect(page.getByText("Esta atividade emite certificado?")).toBeVisible()
+    await page.getByRole("radio", { name: "Sim" }).click()
+    await expect(page.getByRole("radio", { name: "Sim" })).toHaveAttribute("aria-checked", "true")
   })
 })

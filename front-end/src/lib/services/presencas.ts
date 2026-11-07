@@ -205,6 +205,8 @@ export type PresencaDoItem = {
   profiles: {
     nome: string | null
     email: string | null
+    /** Dependente sem conta própria: id de quem cuida dele. */
+    dependente_de?: string
   } | null
 }
 

@@ -17,7 +17,7 @@ export const PRIMEIROS_PASSOS: Record<Perfil, Passo[]> = {
   ],
   admin: [
     { titulo: "Cadastre", texto: "Crie eventos, atividades, oficinas, centros e assistências." },
-    { titulo: "Escolha voluntários", texto: "Em Usuários, defina quem é voluntário e atribua os itens." },
+    { titulo: "Escolha voluntários", texto: "Em Suporte > Usuários, defina quem é voluntário e atribua os itens." },
     { titulo: "Acompanhe", texto: "Use a Visão geral no dia a dia e os Relatórios para prestar contas." },
   ],
 }
@@ -34,9 +34,9 @@ export const TEMAS: Record<Perfil, Tema[]> = {
       { p: "O que é o meu QR Code?", r: "É o seu cartão digital. Mostre ao voluntário na chegada: ele lê o código e marca sua presença naquele dia. Fica em Início › Meu QR Code." },
       { p: "Como coloco na agenda do celular?", r: "Em Agenda, toque em “Baixar para o calendário” e abra o arquivo no celular." },
     ] },
-    { id: "familia", titulo: "Família e certificados", perguntas: [
-      { p: "Posso cuidar das inscrições dos meus filhos?", r: "Sim. Em Família, cadastre seus filhos e escolha a atividade de cada um." },
-      { p: "Como consigo meu certificado?", r: "Em Minhas inscrições, toque em “Certificado” nos itens em que sua presença foi confirmada. Dá para imprimir ou salvar em PDF." },
+    { id: "familia", titulo: "Dependentes e certificados", perguntas: [
+      { p: "Posso cuidar das inscrições dos meus filhos?", r: "Sim. Em Dependentes, cadastre seus filhos, conte os cuidados de cada um, inscreva nas atividades e veja a frequência." },
+      { p: "Como consigo meu certificado?", r: "Nem toda atividade emite certificado. Quando emite, o responsável libera no final e você recebe um aviso. Depois, em Minhas inscrições, toque em “Baixar certificado”. Dá para imprimir ou salvar em PDF." },
     ] },
     { id: "conta", titulo: "Minha conta", perguntas: [
       { p: "Esqueci minha senha.", r: "Na tela de entrada, toque em “Esqueci minha senha”. Você recebe um link por e-mail para criar outra." },
@@ -58,7 +58,10 @@ export const TEMAS: Record<Perfil, Tema[]> = {
     ] },
     { id: "rotina", titulo: "Minha rotina", perguntas: [
       { p: "Não aparece nenhum compromisso.", r: "A administração precisa escolher você como voluntário responsável no cadastro do item." },
-      { p: "Como informo meus horários livres?", r: "Em Minha ficha, marque dias e períodos e diga como pode ajudar. A administração vê isso na sua página." },
+      { p: "Como informo meus horários livres?", r: "Em Minha ficha, escolha os dias e informe o horário exato. Lá você também marca o que pode fazer e em quais atividades quer ajudar." },
+      { p: "Como acompanho as pessoas das minhas atividades?", r: "Em Meus assistidos você vê quem está vindo, quem precisa de contato e o que ajuda a acolher cada pessoa. Em Minhas atividades, a frequência de cada dia." },
+      { p: "Como libero os certificados?", r: "Se a atividade emite certificado, abra a chamada e, quando terminar, toque em “Liberar certificados”. Quem tem presença recebe um aviso e pode baixar o seu." },
+      { p: "Eu também recebo certificado?", r: "Sim. Depois de liberar, abra Certificados e baixe o seu, com os encontros e as horas que você conduziu." },
       { p: "Quero criar uma atividade.", r: "A criação é feita pela administração. Envie sua sugestão pelo Suporte ou fale com a coordenação." },
     ] },
   ],
@@ -67,12 +70,15 @@ export const TEMAS: Record<Perfil, Tema[]> = {
       { p: "Qual a diferença entre evento, atividade e oficina?", r: "Evento: acontece em uma data (festival, feira). Atividade: encontro que se repete (aula, treino). Oficina: turma com vagas limitadas num dia fixo." },
       { p: "Como crio um item?", r: "No menu, escolha o tipo e clique em “Novo”. Campos com * são obrigatórios. Se faltar algo, o campo fica vermelho e explica o que fazer." },
       { p: "Como copio um item para o próximo semestre?", r: "Abra a página do item e clique em “Duplicar”. Ajuste o que mudou e salve." },
+      { p: "Toda atividade tem certificado?", r: "Não. No cadastro, responda se ela emite certificado. Se sim, o responsável ou a administração libera no final, em “Liberar certificados”, na página do item." },
       { p: "Excluí algo por engano.", r: "A exclusão é definitiva. Avise o T.I. o quanto antes: pode dar para recuperar do backup." },
     ] },
     { id: "pessoas", titulo: "Pessoas", perguntas: [
-      { p: "Como torno alguém voluntário?", r: "Em Usuários, mude o papel da pessoa para Voluntário. Depois escolha-a como responsável no cadastro do item." },
-      { p: "Como respondo quem quer ser voluntário?", r: "Em Usuários › Pedidos, clique em “Aprovar e convidar” ou “Recusar”." },
-      { p: "Como vejo a ficha de alguém?", r: "Em Usuários, clique no nome. Você vê necessidades, família, assiduidade e o histórico de acompanhamento. Os dados pessoais ficam escondidos até você clicar em “Mostrar dados”." },
+      { p: "Como torno alguém voluntário?", r: "Em Suporte > Usuários, mude o papel da pessoa para Voluntário. Depois escolha-a como responsável no cadastro do item." },
+      { p: "Como respondo quem quer ser voluntário?", r: "Em Gestão > Voluntários, na aba Pedidos, clique em “Aprovar e convidar” ou “Recusar”." },
+      { p: "Como é calculada a assiduidade?", r: "Presenças divididas pelos encontros em que houve chamada. Na página da pessoa, clique em uma barra para ver cada dia. Frequente é quem veio a 75% ou mais; irregular, de 50% a 74%; precisa de contato, quem veio a menos de 50% ou faltou 3 vezes seguidas." },
+      { p: "Como inscrevo um dependente em uma atividade?", r: "Na página da pessoa, abra Dependentes e use “Inscrever em”. Ele entra na chamada e ocupa vaga." },
+      { p: "Como vejo a ficha de alguém?", r: "Em Gestão > Assistidos, clique no nome. Você vê necessidades, dependentes, participação, assiduidade, relatório e o histórico de acompanhamento. Os dados pessoais ficam escondidos até você clicar em “Mostrar dados”." },
     ] },
     { id: "acompanhar", titulo: "Acompanhamento", perguntas: [
       { p: "O que é “Precisa de atenção”?", r: "Pendências encontradas pelo sistema: pedidos sem resposta, itens sem responsável e oficinas sem vagas." },

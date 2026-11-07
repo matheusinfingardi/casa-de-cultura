@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react"
 import Link from "next/link"
 import { useParams } from "next/navigation"
-import { CalendarPlus, CheckCircle2, Hourglass, SearchX, UserRound } from "lucide-react"
+import { Award, CalendarPlus, CheckCircle2, Hourglass, SearchX, UserRound } from "lucide-react"
 
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -17,13 +17,14 @@ import MapaLocal from "@/components/comum/mapa-local"
 import { useAssistido } from "@/components/painel/use-assistido"
 import { dataExtenso, faixaHorario } from "@/lib/formatar"
 import { baixarIcs } from "@/lib/ics"
+import InscreverDependente from "@/components/painel/inscrever-dependente"
 import { carregarItem, enderecoDaUnidade, enderecoDoMapa, proximasDatas, type ItemView } from "@/lib/itens"
 import { listarEspera } from "@/lib/services/extras"
 import { ITEM_TIPO_LABELS, PRESENCA_LABELS, isItemTipo, type ItemTipo } from "@/lib/services/presencas"
 
 export default function ItemAssistidoPage() {
   const { tipo, id } = useParams<{ tipo: string; id: string }>()
-  const { role } = useAuth()
+  const { role, user } = useAuth()
   const a = useAssistido()
   const [endUnidade, setEndUnidade] = useState<string | undefined>()
   const [item, setItem] = useState<ItemView | null | undefined>(undefined)
@@ -86,9 +87,18 @@ export default function ItemAssistidoPage() {
         <aside className="space-y-4 rounded-2xl border bg-card p-5 shadow-sm lg:sticky lg:top-6">
           {role === "responsavel" ? (
             <>
-              <p className="text-lg font-semibold">Você é voluntário</p>
-              <p className="text-muted-foreground">Se este compromisso for seu, a chamada fica em Compromissos.</p>
-              <Button asChild variant="outline" className="w-full"><Link href={`/painel/presenca/${item.tipo}/${item.id}`}>Abrir chamada</Link></Button>
+              {item.responsavel_id === user?.id ? (
+                <>
+                  <p className="text-lg font-semibold">Esta atividade é sua</p>
+                  <Button asChild className="w-full"><Link href={`/painel/atividades/${item.tipo}/${item.id}`}>Acompanhar atividade</Link></Button>
+                </>
+              ) : (
+                <>
+                  <p className="text-lg font-semibold">Quer ajudar aqui?</p>
+                  <p className="text-muted-foreground">Marque esta atividade na sua ficha, e a coordenação fica sabendo.</p>
+                  <Button asChild variant="outline" className="w-full"><Link href="/painel/ficha">Abrir minha ficha</Link></Button>
+                </>
+              )}
             </>
           ) : minha ? (
             <>
@@ -115,6 +125,8 @@ export default function ItemAssistidoPage() {
               <Button className="w-full" size="lg" disabled={!!a.acao} onClick={() => a.inscrever(item)}>Quero participar</Button>
             </>
           )}
+          {role !== "responsavel" && user && item.tipo !== "centro" && <InscreverDependente item={item} responsavelId={user.id} lotado={!!lotado} />}
+          {item.tem_certificado && <p className="flex items-center gap-2 border-t pt-4 text-muted-foreground"><Award className="h-4 w-4 shrink-0" aria-hidden /> {item.certificado_liberado ? "Certificados liberados para quem participou" : "Emite certificado, liberado no final"}</p>}
           {item.responsavel && <p className="flex items-center gap-2 border-t pt-4 text-muted-foreground"><UserRound className="h-4 w-4 shrink-0" aria-hidden /> Com {item.responsavel}</p>}
         </aside>
       </div>

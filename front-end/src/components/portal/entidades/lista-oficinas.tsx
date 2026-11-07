@@ -18,6 +18,7 @@ export default function ListaOficinas() {
       descricao="Turmas com vagas limitadas que acontecem num dia fixo da semana."
       migalhas={[{ label: "Programação" }, { label: "Oficinas" }]}
       icon={Palette}
+      tipoItem="oficina"
       singular="oficina"
       genero="f"
       novoHref="/portal/oficinas/novo"

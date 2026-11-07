@@ -1,7 +1,6 @@
 import {
   Activity, BarChart3, Building2, CalendarDays, CalendarRange, HeartHandshake, History, LayoutDashboard,
-  LifeBuoy, Megaphone, Palette, Send, Sparkles, Users, type LucideIcon,
-} from "lucide-react"
+  LifeBuoy, Megaphone, Palette, Send, Sparkles, Users, type LucideIcon, HandHeart, UserCog } from "lucide-react"
 
 export type NavItem = { title: string; url: string; icon: LucideIcon; soDemo?: boolean }
 export type NavGrupo = { titulo: string; itens: NavItem[] }
@@ -33,7 +32,8 @@ export const NAV_ADMIN: NavGrupo[] = [
   {
     titulo: "Gestão",
     itens: [
-      { title: "Usuários", url: "/portal/usuarios", icon: Users },
+      { title: "Assistidos", url: "/portal/assistidos", icon: Users },
+      { title: "Voluntários", url: "/portal/voluntarios", icon: HandHeart },
       { title: "Relatórios", url: "/portal/relatorios", icon: BarChart3 },
       { title: "Comunicados", url: "/portal/comunicados", icon: Send },
       { title: "Histórico de ações", url: "/portal/auditoria", icon: History },
@@ -42,6 +42,7 @@ export const NAV_ADMIN: NavGrupo[] = [
   {
     titulo: "Suporte",
     itens: [
+      { title: "Usuários", url: "/portal/usuarios", icon: UserCog },
       { title: "Ajuda", url: "/portal/ajuda", icon: LifeBuoy },
       { title: "Atualizações", url: "/portal/atualizacoes", icon: Megaphone },
       { title: "Status do sistema", url: "/portal/status", icon: Activity },

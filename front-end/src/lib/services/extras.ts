@@ -90,7 +90,7 @@ export async function marcarDia(tipo: ItemTipo, itemId: string, data: string, cl
 // --- Ficha da pessoa e família --------------------------------------------------
 export type Ficha = {
   id: string; telefone: string; nascimento: string; endereco: string; bairro: string; responsavel_legal: string; contato_emergencia: string; autoriza_imagem: boolean
-  deficiencia: string; necessidades: string; saude: string; medicamentos: string; alergias: string; acessibilidade: string
+  deficiencia: string; necessidades: string; evitar?: string; saude: string; medicamentos: string; alergias: string; acessibilidade: string
   beneficios: string[]; renda: string; moradia: string; escolaridade: string; trabalho: string; transporte: string; observacoes: string
 }
 export const FICHA_VAZIA: Omit<Ficha, "id"> = {
@@ -109,9 +109,13 @@ export async function salvarFicha(f: Ficha) {
   if (error) { notify.error("Não foi possível salvar a ficha"); throw error }
 }
 
-export type Dependente = { id: string; responsavel_id: string; nome: string; nascimento: string; parentesco: string; atividade: string; mora_junto?: boolean; parente_id?: string | null; telefone?: string }
+export type Dependente = { id: string; responsavel_id: string; nome: string; nascimento: string; parentesco: string; atividade: string; mora_junto?: boolean; parente_id?: string | null; telefone?: string; deficiencia?: string; cuidados?: string; escola?: string }
 export async function listarDependentes(responsavelId: string): Promise<Dependente[]> {
   return (await lista<Dependente>("dependentes", { col: "nome" })).filter((d) => d.responsavel_id === responsavelId)
+}
+export const listarTodosDependentes = () => lista<Dependente>("dependentes", { col: "nome" })
+export async function atualizarDependente(id: string, d: Partial<Dependente>) {
+  await supabase.from("dependentes").update(d).eq("id", id)
 }
 export async function salvarDependente(d: Omit<Dependente, "id">) {
   await supabase.from("dependentes").insert([d])
@@ -121,9 +125,12 @@ export async function removerDependente(id: string) {
 }
 
 // --- Acompanhamento pela equipe ---------------------------------------------------
-export type NotaAcompanhamento = { id: string; pessoa_id: string; autor: string; tipo: string; texto: string; proximo_passo: string; created_at: string }
+export type NotaAcompanhamento = { id: string; pessoa_id: string; autor: string; tipo: string; texto: string; proximo_passo: string; created_at: string; passo_feito?: boolean }
 export async function listarAcompanhamento(pessoaId: string): Promise<NotaAcompanhamento[]> {
   return (await lista<NotaAcompanhamento>("acompanhamento", { col: "created_at", asc: false })).filter((n) => n.pessoa_id === pessoaId)
+}
+export async function atualizarNota(id: string, n: Partial<NotaAcompanhamento>) {
+  await supabase.from("acompanhamento").update(n).eq("id", id)
 }
 export async function salvarNota(n: Omit<NotaAcompanhamento, "id" | "created_at">) {
   await supabase.from("acompanhamento").insert([n])
@@ -149,12 +156,35 @@ export async function responderPedido(p: PedidoVoluntario, aprovado: boolean) {
   if (aprovado) await criarConvite(p.email, "responsavel")
 }
 
-export const PERIODOS_DIA = ["Manhã", "Tarde", "Noite"] as const
-export const AREAS_AJUDA = ["Música", "Artes", "Esporte", "Educação", "Informática", "Cozinha", "Psicologia", "Assistência social", "Saúde", "Jurídico", "Fotografia", "Eventos", "Transporte"]
-export type Disponibilidade = { id: string; grade: Record<string, string[]>; telefone: string; areas: string[]; formacao: string; experiencia: string; observacoes: string }
+export const AREAS_AJUDA = ["Música", "Artes", "Esporte", "Educação", "Informática", "Cozinha", "Psicologia", "Assistência social", "Saúde", "Jurídico", "Fotografia", "Eventos", "Transporte", "Comunicação", "Administração"]
+/** Sugestões de tarefas concretas. A pessoa também pode escrever as suas. */
+export const SUGESTOES_TAREFAS = [
+  "Dar aulas ou conduzir oficinas", "Ajudar um professor em sala", "Reforço escolar", "Acolher quem chega", "Fazer a chamada das atividades",
+  "Ajudar na organização de eventos", "Arrecadar e separar doações", "Montar e entregar cestas", "Transportar pessoas ou doações", "Cozinhar ou servir lanches",
+  "Tirar fotos e gravar vídeos", "Cuidar das redes sociais", "Dar apoio em computadores", "Pequenos consertos e manutenção", "Orientação jurídica ou de saúde", "Traduzir para Libras",
+]
+export type FaixaHorario = { inicio: string; fim: string }
+export type Disponibilidade = {
+  id: string
+  // Pessoal
+  telefone: string; whatsapp: boolean; nascimento: string; bairro: string; cidade: string; contato_emergencia: string; autoriza_imagem: boolean
+  // Profissional
+  profissao: string; local_trabalho: string; formacao: string; escolaridade: string; registro_profissional: string; idiomas: string; habilidades: string; experiencia: string
+  // Disponibilidade
+  horarios: Record<string, FaixaHorario[]>; frequencia: string; unidades: string[]; tem_transporte: boolean; observacoes: string
+  // Como pode ajudar
+  areas: string[]; tarefas: string[]; outras_ideias: string; interesses: string[]
+}
+export const VOLUNTARIO_VAZIO: Omit<Disponibilidade, "id"> = {
+  telefone: "", whatsapp: true, nascimento: "", bairro: "", cidade: "Juiz de Fora", contato_emergencia: "", autoriza_imagem: false,
+  profissao: "", local_trabalho: "", formacao: "", escolaridade: "", registro_profissional: "", idiomas: "", habilidades: "", experiencia: "",
+  horarios: {}, frequencia: "", unidades: [], tem_transporte: false, observacoes: "",
+  areas: [], tarefas: [], outras_ideias: "", interesses: [],
+}
+export const listarDisponibilidades = () => lista<Disponibilidade>("disponibilidade")
 export async function buscarDisponibilidade(id: string): Promise<Disponibilidade> {
   const { data } = await supabase.from("disponibilidade").select("*").eq("id", id).maybeSingle()
-  return { id, grade: {}, telefone: "", areas: [], formacao: "", experiencia: "", observacoes: "", ...((data as Partial<Disponibilidade> | null) ?? {}) }
+  return { id, ...VOLUNTARIO_VAZIO, ...((data as Partial<Disponibilidade> | null) ?? {}) }
 }
 export async function salvarDisponibilidade(d: Disponibilidade) {
   await supabase.from("disponibilidade").upsert([d])

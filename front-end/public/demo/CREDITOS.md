@@ -1,36 +1,36 @@
 # Créditos das imagens de exemplo
 
-Imagens de licença livre (CC0 ou domínio público) encontradas pelo Openverse, usadas só como dados fictícios da demonstração.
+Fotos de licença livre do Wikimedia Commons, em sua maioria do Brasil, usadas só como dados fictícios da demonstração. Foram recortadas para 960 x 540. Não mostram a Casa de Cultura, e as pessoas nelas não têm relação com o projeto. Troque por fotos próprias, com autorização, antes do uso real.
 
 | Arquivo | Título | Autor | Licença | Fonte |
 |---|---|---|---|---|
-| evt-festival.jpg | 2014 Language Day at DLIFLC | Presidio of Monterey: DLIFLC & USAG | pdm | https://www.flickr.com/photos/38345529@N05/14167989223 |
-| evt-saude.jpg | 20160927-AMS-RBN-6901 | USDAgov | pdm | https://www.flickr.com/photos/41284017@N08/29901607661 |
-| evt-sarau.jpg | Microphone stage greyscale | — | cc0 | https://www.rawpixel.com/image/3286021/free-photo-image-microphone-concert-music |
-| evt-agasalho.jpg | Day 36 Occupy Wall Street October 21 2011 Shankbone 35 | david_shankbone | pdm | https://www.flickr.com/photos/27865228@N06/6268430736 |
-| evt-educacao.jpg | Classroom | cogdogblog | cc0 | https://www.flickr.com/photos/37996646802@N01/46702870 |
-| evt-natal.jpg | Christmas Gifts | Pawel Kadysz | cc0 | https://stocksnap.io/photo/christmas-gifts-3DPEHG8EOI |
-| evt-mostra.jpg | Interview with Karl Krogstad, facing the wall, the back side of a painting on th | Wonderlane | cc0 | https://www.flickr.com/photos/71401718@N00/6489606221 |
-| evt-profissao.jpg | SGRC Job Fair | Greenville, NC | pdm | https://www.flickr.com/photos/156869144@N02/52013533060 |
-| atv-violao.jpg | Acoustic Guitar | Negative Space | cc0 | https://stocksnap.io/photo/acoustic-guitar-HP2GGWWPIN |
-| atv-capoeira.jpg | Ideal Capoeira Workshop 2019 | Arnim Spöttl | pdm | https://www.flickr.com/photos/162676254@N04/47970874768 |
-| atv-reforco.jpg | CWD datasheet | U.S. Fish and Wildlife Service - Midwest Region | pdm | https://www.flickr.com/photos/49208525@N08/6343722631 |
-| atv-yoga.jpg | Yoga Stretch | — | cc0 | https://www.rawpixel.com/image/5970308/yoga-stretch |
-| atv-coral.jpg | Choir singing at unveiling of Maria Gandy memorial | South Australian History Network | cc0 | https://www.flickr.com/photos/59809888@N06/6398283547 |
-| atv-samba.jpg |  | Philippe Vieux-Jeanton | cc0 | https://www.flickr.com/photos/11234074@N05/13398420893 |
-| atv-leitura.jpg | Library Books | Aleksi Tappura | cc0 | https://stocksnap.io/photo/library-books-C4001BDB1C |
-| ofi-pintura.jpg | Abstract Art | Steve Johnson | cc0 | https://stocksnap.io/photo/abstract-art-J8HQTPQR4I |
-| ofi-info.jpg | Apple Macbook Air on Wood Tabletop with Espresso Cup, Notepad, Pen, and iPhone | Image Catalog | cc0 | https://www.flickr.com/photos/132795455@N08/17869117540 |
-| ofi-teatro.jpg | Waterside Theatre seat removal project 11-14-2021 | FortRaleighNPS | pdm | https://www.flickr.com/photos/106616954@N07/51681469496 |
-| ofi-costura.jpg | Salisbury State High School, Sewing - Brisbane | Queensland State Archives | pdm | https://www.flickr.com/photos/60455048@N02/40344735792 |
-| ofi-panificacao.jpg | Breadrolls Bread | 416studios.com | cc0 | https://stocksnap.io/photo/breadrolls-bread-B79FSN7YOU |
-| ofi-foto.jpg | Smartphone photography in Joshua Tree | Joshua Tree National Park | pdm | https://www.flickr.com/photos/115357548@N08/31162175711 |
-| ass-psico.jpg | Lounge furniture, sofa, arm chairs, round table, 3rd floor cafe, Microsoft build | Wonderlane | cc0 | https://www.flickr.com/photos/71401718@N00/5510326235 |
-| ass-juridica.jpg | Justice scales illustration | — | cc0 | https://www.rawpixel.com/image/6866377/image-golden-public-domain-illustrations |
-| ass-cesta.jpg | Variety of fresh fruits on organic food night market. Bali island, Indonesia. | Artem Beliaikin | cc0 | https://www.flickr.com/photos/157635012@N07/42805184804 |
-| ass-social.jpg | Armchair room | — | cc0 | https://www.rawpixel.com/image/6026977/armchair-room-free-public-domain-cc0-photo |
-| ass-saude.jpg | Stethoscope Medical | Negative Space | cc0 | https://stocksnap.io/photo/stethoscope-medical-RAW1RLRTM7 |
-| ass-escolar.jpg | Colored Pencils | Jess Watters | cc0 | https://stocksnap.io/photo/colored-pencils-SWKBAF0RNQ |
-| cen-sede.jpg | Warlborough Building - AKA Hotel - State Hotel - State Bank of Binghamton - Marb | Onasill - Bill Badzo - 149 Million Views - Thank Y | pdm | https://www.flickr.com/photos/7156765@N05/51557145386 |
-| cen-norte.jpg | 20131118-OC-RBN-0790 | USDAgov | pdm | https://www.flickr.com/photos/41284017@N08/12189348373 |
-| cen-leste.jpg | Venice Italy Venezia - Creative Commons by gnuckx | gnuckx | cc0 | https://www.flickr.com/photos/34409164@N06/4933530053 |
+| evt-festival.jpg | MARACATU CORAÇÃO NAZARENO.jpg | Noelia Brito | CC BY-SA 4.0 | https://commons.wikimedia.org/wiki/File:MARACATU_CORA%C3%87%C3%83O_NAZARENO.jpg |
+| evt-saude.jpg | Inauguração da requalificação da Unidade Básica de Saúde de Ouro Preto | Prefeitura de Olinda | CC BY 2.0 | https://commons.wikimedia.org/wiki/File:Inaugura%C3%A7%C3%A3o_da_requalifica%C3%A7%C3%A3o_da_Unidade_B%C3%A1sica_de_Sa%C3%BAde_de_Ouro_Preto_(23273758139).jpg |
+| evt-educacao.jpg | Senado Federal do Brasil Fotos produzidas pelo Senado (22501090284).jp | Senado Federal | CC BY 2.0 | https://commons.wikimedia.org/wiki/File:Senado_Federal_do_Brasil_Fotos_produzidas_pelo_Senado_(22501090284).jpg |
+| evt-mostra.jpg | Exposição NÓS – arte e ciência por mulheres no Oi Futuro 01.jpg | Avelludo | CC BY-SA 4.0 | https://commons.wikimedia.org/wiki/File:Exposi%C3%A7%C3%A3o_N%C3%93S_%E2%80%93_arte_e_ci%C3%AAncia_por_mulheres_no_Oi_Futuro_01.jpg |
+| atv-violao.jpg | Aulas de violão com o professor Beethoven Melo. (41917152502).jpg | Amazônia Real from Manaus AM, Brasil | CC BY 2.0 | https://commons.wikimedia.org/wiki/File:Aulas_de_viol%C3%A3o_com_o_professor_Beethoven_Melo._(41917152502).jpg |
+| atv-capoeira.jpg | Roda de Capoeira tradicional do Engenho da Rainha 1.jpg | Estela Neto | CC BY-SA 4.0 | https://commons.wikimedia.org/wiki/File:Roda_de_Capoeira_tradicional_do_Engenho_da_Rainha_1.jpg |
+| atv-reforco.jpg | Fazenda Água Limpa inicia semestre nova em folha (36345420841).jpg | Universidade de Brasília from Brasília, Brasil | CC BY 2.0 | https://commons.wikimedia.org/wiki/File:Fazenda_%C3%81gua_Limpa_inicia_semestre_nova_em_folha_(36345420841).jpg |
+| atv-coral.jpg | Banda Sinfônica do Corpo de Fuzileiros Navais se apresenta durante o m | Marinha do Brasil | CC BY-SA 2.0 | https://commons.wikimedia.org/wiki/File:Banda_Sinf%C3%B4nica_do_Corpo_de_Fuzileiros_Navais_se_apresenta_durante_o_maior_festival_de_harpas_do_mundo_-_2024_(53851329822).jpg |
+| atv-samba.jpg | Ministério da Cultura - Samba de roda com baianas e Olívia Santana.jpg | Ministério da Cultura | CC BY 2.0 | https://commons.wikimedia.org/wiki/File:Minist%C3%A9rio_da_Cultura_-_Samba_de_roda_com_baianas_e_Ol%C3%ADvia_Santana.jpg |
+| atv-leitura.jpg | Biblioteca Pública de Olinda 03.jpg | Prefeitura de Olinda from Brasil | CC BY 2.0 | https://commons.wikimedia.org/wiki/File:Biblioteca_P%C3%BAblica_de_Olinda_03.jpg |
+| ofi-info.jpg | Ministro Marcos Pontes, inaugura mais uma sala de Inclusão digital (48 | Ministério da Ciência, Tecnologia e Inovações from Brasília - DF, Bras | CC BY 2.0 | https://commons.wikimedia.org/wiki/File:Ministro_Marcos_Pontes,_inaugura_mais_uma_sala_de_Inclus%C3%A3o_digital_(48501118577).jpg |
+| ofi-teatro.jpg | AlanMinas.jpg | Fabio Rodrigues Pozzebom/Agência Brasil | CC BY 3.0 br | https://commons.wikimedia.org/wiki/File:AlanMinas.jpg |
+| ofi-panificacao.jpg | Padaria Comunitária de Cana Brava, Ipirá (1) (36031920570).jpg | Neusa Cadore from Salvador, Brasil | CC BY 2.0 | https://commons.wikimedia.org/wiki/File:Padaria_Comunit%C3%A1ria_de_Cana_Brava,_Ipir%C3%A1_(1)_(36031920570).jpg |
+| ass-cesta.jpg | Capitania dos Portos do Amapá (CPAP) em apoio logístico para distribui | Marinha do Brasil | CC BY-SA 2.0 | https://commons.wikimedia.org/wiki/File:Capitania_dos_Portos_do_Amap%C3%A1_(CPAP)_em_apoio_log%C3%ADstico_para_distribui%C3%A7%C3%A3o_de_cestas_b%C3%A1sicas_%C3%A0s_fam%C3%ADlias_carentes._(52707255035).jpg |
+| ass-social.jpg | (CRAS) Centro de Referência e Assistência Social - Anguera - panoramio | Wendel Teles | CC BY 3.0 | https://commons.wikimedia.org/wiki/File:(CRAS)_Centro_de_Refer%C3%AAncia_e_Assist%C3%AAncia_Social_-_Anguera_-_panoramio.jpg |
+| ass-saude.jpg | Unidade de Saúde Careiro da Várzea.JPG | União da Juventude Mestiça | CC BY-SA 3.0 | https://commons.wikimedia.org/wiki/File:Unidade_de_Sa%C3%BAde_Careiro_da_V%C3%A1rzea.JPG |
+| cen-sede.jpg | Casa da Cultura de Teresina.jpg | Moacir Ximenes | CC BY 3.0 br | https://commons.wikimedia.org/wiki/File:Casa_da_Cultura_de_Teresina.jpg |
+| cen-norte.jpg | Centro comunitário.jpg | Dafema | CC BY-SA 3.0 | https://commons.wikimedia.org/wiki/File:Centro_comunit%C3%A1rio.jpg |
+| cen-leste.jpg | Centro Comuitário de Vera Cruz4.jpg | Dafema | CC BY-SA 3.0 | https://commons.wikimedia.org/wiki/File:Centro_Comuit%C3%A1rio_de_Vera_Cruz4.jpg |
+| evt-agasalho.jpg | Campanha - Vítimas das chuvas no Rio Grande do Sul (53706509303).jpg | Agência Senado from Brasilia, Brazil | CC BY 2.0 | https://commons.wikimedia.org/wiki/File:Campanha_-_V%C3%ADtimas_das_chuvas_no_Rio_Grande_do_Sul_(53706509303).jpg |
+| evt-natal.jpg | Natal Luz - Gramado - Show de acendimento - panoramio (7).jpg | Larissa Fraga | CC BY 3.0 | https://commons.wikimedia.org/wiki/File:Natal_Luz_-_Gramado_-_Show_de_acendimento_-_panoramio_(7).jpg |
+| evt-profissao.jpg | Feiras. Exposições. Mostras (33454790270).jpg | Senado Federal | CC BY 2.0 | https://commons.wikimedia.org/wiki/File:Feiras._Exposi%C3%A7%C3%B5es._Mostras_(33454790270).jpg |
+| ofi-costura.jpg | ... sonho realizado ... (8664553566).jpg | Vagner Carvalheiro from São Paulo, Brasil | CC BY 2.0 | https://commons.wikimedia.org/wiki/File:..._sonho_realizado_..._(8664553566).jpg |
+| ofi-foto.jpg | Oficina de Fotografia Inclusiva (31482004901).jpg | Senado Federal | CC BY 2.0 | https://commons.wikimedia.org/wiki/File:Oficina_de_Fotografia_Inclusiva_(31482004901).jpg |
+| ass-juridica.jpg | Foto Fachada DPE CAB.jpg | Lucas Fernandes DPEBA | CC BY-SA 4.0 | https://commons.wikimedia.org/wiki/File:Foto_Fachada_DPE_CAB.jpg |
+| ass-escolar.jpg | Palestra de Mentalidade Marítima e da Cultura Oceânica para crianças.  | Marinha do Brasil | CC BY-SA 2.0 | https://commons.wikimedia.org/wiki/File:Palestra_de_Mentalidade_Mar%C3%ADtima_e_da_Cultura_Oce%C3%A2nica_para_crian%C3%A7as._(52690423517).jpg |
+| evt-sarau.jpg | Joan Manresa en un recital de poesia.jpg | LarinOtorrino | CC BY-SA 4.0 | https://commons.wikimedia.org/wiki/File:Joan_Manresa_en_un_recital_de_poesia.jpg |
+| atv-yoga.jpg | YogaClass.jpg | The original uploader was Trollderella at English Wikipedia. | CC BY-SA 2.0 | https://commons.wikimedia.org/wiki/File:YogaClass.jpg |
+| ofi-pintura.jpg | Painting students art league school.jpg | George | CC BY-SA 3.0 | https://commons.wikimedia.org/wiki/File:Painting_students_art_league_school.jpg |
+| ass-psico.jpg | Gopal prasad sharma giving classes to the students.jpg | Abhi009kk | CC BY-SA 4.0 | https://commons.wikimedia.org/wiki/File:Gopal_prasad_sharma_giving_classes_to_the_students.jpg |

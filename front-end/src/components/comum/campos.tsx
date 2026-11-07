@@ -70,7 +70,7 @@ export function CampoResponsavel({
           />
           {lista && lista.length === 0 && (
             <p className="text-xs text-muted-foreground">
-              Ainda não há voluntários. Defina o papel “Voluntário” a um usuário em{" "}
+              Ainda não há voluntários. Defina o papel “Voluntário” a uma conta em{" "}
               <Link href="/portal/usuarios" className="text-primary underline">Usuários</Link>.
             </p>
           )}

@@ -104,8 +104,8 @@ export default function Dashboard() {
     const porPessoa = new Map<string, Registro[]>()
     for (const r of registros) if (ids.has(r.item_id)) porPessoa.set(r.cliente_id, [...(porPessoa.get(r.cliente_id) ?? []), r])
     const sumidas = [...porPessoa.values()].filter((l) => calcularAssiduidade(l).faltasSeguidas >= 3).length
-    if (sumidas) alertas.push({ texto: `${sumidas} ${sumidas === 1 ? "pessoa faltou" : "pessoas faltaram"} 3 vezes seguidas ou mais`, href: "/portal/usuarios?aba=cliente&filtro=contato", acao: "Ver quem" })
-    if (pedidos) alertas.push({ texto: `${pedidos} ${pedidos === 1 ? "pedido" : "pedidos"} para ser voluntário aguardando resposta`, href: "/portal/usuarios?aba=pedidos", acao: "Responder" })
+    if (sumidas) alertas.push({ texto: `${sumidas} ${sumidas === 1 ? "pessoa faltou" : "pessoas faltaram"} 3 vezes seguidas ou mais`, href: "/portal/assistidos?filtro=contato", acao: "Ver quem" })
+    if (pedidos) alertas.push({ texto: `${pedidos} ${pedidos === 1 ? "pedido" : "pedidos"} para ser voluntário aguardando resposta`, href: "/portal/voluntarios?aba=pedidos", acao: "Responder" })
     if (semResp) alertas.push({ texto: `${semResp} ${semResp === 1 ? "item está" : "itens estão"} sem voluntário responsável`, href: "/portal/eventos", acao: "Resolver" })
     if (lotadas.length) alertas.push({ texto: `${lotadas[0].nome}${lotadas.length > 1 ? ` e mais ${lotadas.length - 1}` : ""} sem vagas`, href: `/portal/oficinas/${lotadas[0].id}`, acao: "Ver" })
 

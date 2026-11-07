@@ -16,6 +16,7 @@ export default function ListaAtividades() {
       descricao="Encontros recorrentes, como aulas e treinos, ou ações de data única."
       migalhas={[{ label: "Programação" }, { label: "Atividades" }]}
       icon={Sparkles}
+      tipoItem="atividade"
       singular="atividade"
       genero="f"
       novoHref="/portal/atividades/novo"

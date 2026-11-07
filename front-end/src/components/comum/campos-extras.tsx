@@ -16,7 +16,7 @@ import { CampoSelect } from "./campos"
 /** Só entram no formulário na demonstração: o banco real ainda não tem estas colunas. */
 export function extrasIniciais(item?: Extras, comUnidade = true): Extras {
   if (!ehDemo()) return {}
-  return { descricao: item?.descricao ?? "", imagem_url: item?.imagem_url ?? "", endereco_mapa: item?.endereco_mapa ?? "", ...(comUnidade ? { centro_id: item?.centro_id ?? "" } : {}) }
+  return { descricao: item?.descricao ?? "", imagem_url: item?.imagem_url ?? "", endereco_mapa: item?.endereco_mapa ?? "", ...(comUnidade ? { tem_certificado: item?.tem_certificado ?? false } : {}), ...(comUnidade ? { centro_id: item?.centro_id ?? "" } : {}) }
 }
 
 /** A foto é obrigatória onde a coluna existe (na demonstração, por enquanto). */
@@ -46,7 +46,7 @@ export default function CamposExtras({
   valores, definir, comUnidade = true, erroImagem,
 }: {
   valores: Extras
-  definir: (campo: "descricao" | "imagem_url" | "centro_id" | "endereco_mapa", valor: string) => void
+  definir: (campo: "descricao" | "imagem_url" | "centro_id" | "endereco_mapa" | "tem_certificado", valor: string | boolean) => void
   comUnidade?: boolean
   erroImagem?: string
 }) {
@@ -69,6 +69,17 @@ export default function CamposExtras({
         <Campo label="Endereço para o mapa" dica="Opcional. Se ficar vazio, usamos o endereço da unidade.">
           {(p) => <Input {...p} value={valores.endereco_mapa ?? ""} placeholder="Ex.: Parque Halfeld, Juiz de Fora - MG" onChange={(e) => definir("endereco_mapa", e.target.value)} />}
         </Campo>
+      )}
+      {comUnidade && (
+        <fieldset>
+          <legend className="mb-1.5 text-sm font-medium">Esta atividade emite certificado?</legend>
+          <div className="inline-flex overflow-hidden rounded-xl border" role="radiogroup" aria-label="Emite certificado">
+            {([[false, "Não"], [true, "Sim"]] as const).map(([v, r]) => (
+              <button key={r} type="button" role="radio" aria-checked={!!valores.tem_certificado === v} onClick={() => definir("tem_certificado", v)} className={`px-6 py-2 text-sm font-medium ${!!valores.tem_certificado === v ? "bg-primary text-primary-foreground" : "bg-card hover:bg-muted"}`}>{r}</button>
+            ))}
+          </div>
+          <p className="mt-1.5 text-xs text-muted-foreground">Se sim, o responsável libera os certificados no final, e cada pessoa com presença pode baixar o seu.</p>
+        </fieldset>
       )}
       <div className="space-y-2">
         <p className="text-sm font-medium">Foto <span className="text-red-600" aria-hidden>*</span><span className="sr-only">(obrigatório)</span></p>

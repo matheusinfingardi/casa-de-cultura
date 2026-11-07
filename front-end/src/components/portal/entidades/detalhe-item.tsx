@@ -15,16 +15,18 @@ import PageHeader from "@/components/comum/page-header"
 import { useDemo } from "@/hooks/use-demo"
 import { dataExtenso, faixaHorario, iniciais } from "@/lib/formatar"
 import { baixarIcs } from "@/lib/ics"
+import DiarioPresenca from "@/components/comum/diario-presenca"
+import QuadroInscritos from "@/components/comum/quadro-inscritos"
+import LiberarCertificado from "@/components/comum/liberar-certificado"
 import MapaLocal from "@/components/comum/mapa-local"
 import { API_DO_TIPO, carregarItem, enderecoDaUnidade, enderecoDoMapa, paraView, proximasDatas, rotaAdmin, type ItemView } from "@/lib/itens"
 import { notify } from "@/lib/notify"
-import { listarEspera, type Espera } from "@/lib/services/extras"
-import { ITEM_TIPO_LABELS, ITEM_TIPO_TABLE, PRESENCA_LABELS, listarPresencasDoItem, type ItemTipo, type PresencaDoItem, type PresencaStatus } from "@/lib/services/presencas"
+import { listarEspera, registrosDoItem, type Espera, type Registro } from "@/lib/services/extras"
+import { ITEM_TIPO_LABELS, ITEM_TIPO_TABLE, listarPresencasDoItem, type ItemTipo, type PresencaDoItem } from "@/lib/services/presencas"
 import { listarUsuarios, type Usuario } from "@/lib/services/usuarios"
 
 const PLURAL: Record<ItemTipo, string> = { evento: "Eventos", atividade: "Atividades", oficina: "Oficinas", centro: "Centros", assistencia: "Assistência" }
 const GRUPO: Record<ItemTipo, string> = { evento: "Programação", atividade: "Programação", oficina: "Programação", centro: "Atendimento", assistencia: "Atendimento" }
-const COR: Record<PresencaStatus, string> = { presente: "bg-emerald-500", marcada: "bg-sky-500", ausente: "bg-rose-500" }
 
 function Bloco({ titulo, acao, children }: { titulo: string; acao?: React.ReactNode; children: React.ReactNode }) {
   return (
@@ -44,6 +46,7 @@ export default function DetalheItem({ tipo, id }: { tipo: ItemTipo; id: string }
   const [item, setItem] = useState<ItemView | null | undefined>(undefined)
   const [inscritos, setInscritos] = useState<PresencaDoItem[]>([])
   const [espera, setEspera] = useState<Espera[]>([])
+  const [registros, setRegistros] = useState<Registro[]>([])
   const [usuarios, setUsuarios] = useState<Usuario[]>([])
   const [naUnidade, setNaUnidade] = useState<ItemView[]>([])
   const [excluindo, setExcluindo] = useState(false)
@@ -59,7 +62,7 @@ export default function DetalheItem({ tipo, id }: { tipo: ItemTipo; id: string }
   }, [tipo, id])
 
   useEffect(() => {
-    if (demo && item) listarEspera(tipo, id).then(setEspera)
+    if (demo && item) { listarEspera(tipo, id).then(setEspera); registrosDoItem(tipo, id).then(setRegistros) }
     if (item) enderecoDaUnidade(item).then(setEndUnidade)
     if (demo && item && tipo === "centro") {
       Promise.all((["evento", "atividade", "oficina", "assistencia"] as ItemTipo[]).map(async (t) => {
@@ -76,7 +79,6 @@ export default function DetalheItem({ tipo, id }: { tipo: ItemTipo; id: string }
 
   const datas = proximasDatas(item)
   const voluntario = usuarios.find((u) => u.id === item.responsavel_id)
-  const n = (s: PresencaStatus) => inscritos.filter((p) => p.status === s).length
   const ocupacao = item.vagas ? Math.min(100, Math.round((inscritos.length / item.vagas) * 100)) : 0
   const lotado = item.vagas !== null && item.vagas > 0 && inscritos.length >= item.vagas
   const nomeDe = (uid: string) => usuarios.find((u) => u.id === uid)?.nome ?? "Pessoa"
@@ -85,6 +87,7 @@ export default function DetalheItem({ tipo, id }: { tipo: ItemTipo; id: string }
     if (!item) return
     const resto = { ...(item.bruto as unknown as Record<string, unknown>) }
     delete resto.id
+    resto.certificado_liberado = false
     const copia = await API_DO_TIPO[tipo].criar({ ...resto, nome: `${item.nome} (cópia)` } as never)
     notify.success("Cópia criada. Ajuste o que precisar.")
     router.push(`${rotaAdmin(tipo, (copia as { id: string }).id)}/editar`)
@@ -159,19 +162,10 @@ export default function DetalheItem({ tipo, id }: { tipo: ItemTipo; id: string }
 
           <MapaLocal endereco={enderecoDoMapa(item, endUnidade)} />
 
-          <Bloco titulo={`Inscritos (${inscritos.length})`} acao={<Button asChild size="sm" variant="outline"><Link href={`/portal/presenca/${tipo}/${id}`}>Gerenciar</Link></Button>}>
-            {inscritos.length === 0 ? <p className="text-muted-foreground">Ninguém inscrito ainda.</p> : (
-              <ul className="grid gap-x-6 gap-y-3 sm:grid-cols-2">
-                {inscritos.slice(0, 8).map((p) => (
-                  <li key={p.id} className="flex items-center gap-3">
-                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary/10 text-sm font-semibold text-primary" aria-hidden>{iniciais(p.profiles?.nome)}</span>
-                    <span className="min-w-0 flex-1 truncate">{p.profiles?.nome ?? "Sem nome"}</span>
-                    <span className="flex items-center gap-1.5 text-sm text-muted-foreground"><span className={`h-2 w-2 rounded-full ${COR[p.status]}`} aria-hidden />{PRESENCA_LABELS[p.status]}</span>
-                  </li>
-                ))}
-              </ul>
-            )}
-            {inscritos.length > 8 && <p className="mt-3 text-sm text-muted-foreground">e mais {inscritos.length - 8} pessoas.</p>}
+          {demo && tipo !== "centro" && <DiarioPresenca item={item} registros={registros} hrefChamada={(d) => `/portal/presenca/${tipo}/${id}?data=${d}`} />}
+
+          <Bloco titulo={`Inscritos (${inscritos.length})`} acao={<Button asChild size="sm" variant="outline"><Link href={`/portal/presenca/${tipo}/${id}`}>Gerenciar lista</Link></Button>}>
+            <QuadroInscritos inscritos={inscritos} hrefPessoa={(p) => `/portal/assistidos/${p}`} />
           </Bloco>
         </div>
 
@@ -195,18 +189,7 @@ export default function DetalheItem({ tipo, id }: { tipo: ItemTipo; id: string }
             </Bloco>
           )}
 
-          {inscritos.length > 0 && (
-            <Bloco titulo="Presença">
-              <ul className="space-y-2">
-                {(["presente", "marcada", "ausente"] as PresencaStatus[]).map((s) => (
-                  <li key={s} className="flex items-center justify-between">
-                    <span className="flex items-center gap-2"><span className={`h-2.5 w-2.5 rounded-full ${COR[s]}`} aria-hidden />{PRESENCA_LABELS[s]}</span>
-                    <span className="font-semibold">{n(s)}</span>
-                  </li>
-                ))}
-              </ul>
-            </Bloco>
-          )}
+          <LiberarCertificado item={item} presentes={demo ? new Set(registros.filter((r) => r.status === "presente").map((r) => r.cliente_id)).size : inscritos.filter((p) => p.status === "presente").length} aoMudar={() => carregarItem(tipo, id).then(setItem)} />
 
           <Bloco titulo="Responsável">
             {item.responsavel ? (
