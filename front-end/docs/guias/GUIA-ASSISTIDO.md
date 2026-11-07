@@ -44,13 +44,15 @@ Clique em **Entrar na lista de espera**. Se abrir uma vaga, você entra sozinho 
 
 ## Minhas inscrições
 
-Para cada item, você vê a próxima data e quantas vezes compareceu. Quando sua presença for confirmada, aparece o botão **Certificado**. Para sair de um item, clique em **Cancelar inscrição**.
+Para cada item, você vê a próxima data e quantas vezes compareceu. Para sair de um item, clique em **Cancelar inscrição**.
 
 ![Minhas inscrições](../img/assistido-inscricoes.png)
 
 ## Seu certificado
 
-Mostra seu nome, a atividade, os encontros e as horas. Clique em **Imprimir ou salvar PDF**.
+Nem toda atividade emite certificado. Quando emite, o responsável libera no final e você recebe um aviso no sino. Depois, em **Minhas inscrições**, clique em **Baixar certificado**.
+
+Ele mostra seu nome, a atividade, os encontros e as horas. Clique em **Imprimir ou salvar PDF**.
 
 ![Certificado](../img/assistido-certificado.png)
 
@@ -60,10 +62,10 @@ Ao chegar, abra **Meu QR Code**, na tela de Início, e mostre ao voluntário. El
 
 ![Meu QR Code](../img/assistido-qr.png)
 
-## Agenda e família
+## Agenda e dependentes
 
 - **Agenda:** veja só os seus compromissos ou todos da Casa. Dá para enviar ao calendário do celular.
-- **Família:** cadastre filhos e dependentes e escolha a atividade de cada um.
+- **Dependentes:** cadastre seus filhos e outros dependentes, conte os cuidados de cada um, inscreva nas atividades e acompanhe a frequência. Na página de uma atividade, também dá para inscrever direto.
 
 ## Sua conta
 

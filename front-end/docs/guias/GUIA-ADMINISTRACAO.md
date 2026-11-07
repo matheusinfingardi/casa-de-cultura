@@ -19,7 +19,9 @@ A entrada da administração **não aparece na página inicial**. Acesse o ender
 
 ## Agenda
 
-Mostra tudo o que acontece, em três formatos: **Mês**, **Semana** e **Lista**. O botão **Baixar para o calendário** gera um arquivo para o celular.
+Mostra tudo o que acontece, em três formatos: **Mês**, **Semana** e **Lista**. No mês, clique em um dia para ver os compromissos dele logo abaixo do calendário. O botão **Baixar para o calendário** gera um arquivo para o celular.
+
+No alto, veja quantos encontros há hoje, na semana e no mês, e quantos itens estão sem responsável. Filtre por responsável. Cada compromisso do dia mostra quem conduz, quantos inscritos tem e o botão **Chamada**.
 
 ![Agenda](../img/admin-agenda.png)
 
@@ -38,7 +40,8 @@ Mostra tudo o que acontece, em três formatos: **Mês**, **Semana** e **Lista**.
 1. No menu, escolha o tipo.
 2. Clique em **Novo** (ou **Nova**).
 3. Preencha os campos com asterisco. **A foto é obrigatória**: ela aparece para quem vai se inscrever.
-4. Clique em **Criar**.
+4. Responda se a atividade **emite certificado**.
+5. Clique em **Criar**.
 
 Se faltar algo, o campo fica vermelho e explica o que fazer.
 
@@ -48,33 +51,63 @@ Se faltar algo, o campo fica vermelho e explica o que fazer.
 
 Ao clicar em um item, você vê a foto, as próximas datas, as vagas, a lista de espera, o responsável e um **mapa com o endereço**.
 
-Nessa página você pode abrir a **Chamada**, **Editar**, **Duplicar** (bom para repetir no próximo semestre) e **Excluir**.
+Nessa página você pode abrir a **Chamada**, **Editar**, **Duplicar** (bom para repetir no próximo semestre) e **Excluir**. Se o item emite certificado, é aqui também que você pode **Liberar certificados**.
 
 ![Página de uma oficina](../img/admin-item.png)
 
-## Usuários: conhecer e cuidar de cada pessoa
+## Assistidos: conhecer e cuidar de cada pessoa
 
-As pessoas estão separadas em **Assistidos**, **Voluntários** e **Administração**, além das abas **Pedidos** e **Convites**. Em Assistidos, filtre por quem **precisa de contato**, **tem deficiência** ou **recebe benefício**.
+Em **Gestão > Assistidos** está a lista de quem a Casa atende, com os dependentes, os cuidados e a assiduidade de cada um. Filtre por **com dependentes**, **com cuidados especiais**, **precisam de contato** ou **recebem benefício**.
 
-![Usuários](../img/admin-usuarios.png)
+![Assistidos](../img/admin-assistidos.png)
 
 Clique no nome para abrir a página da pessoa:
 
 | Aba | O que tem |
 |---|---|
-| Resumo | Contato, assiduidade, último acompanhamento e família |
-| Necessidades e condições | Deficiência, o que ajuda essa pessoa, saúde e condição social |
-| Família | Parentes e ligação com a ficha de outros assistidos |
-| Participação | Presença em cada atividade e últimos encontros |
-| Acompanhamento | Visitas, ligações, encaminhamentos e próximos passos |
+| Resumo | Contato, assiduidade, último acompanhamento e dependentes |
+| Necessidades e condições | Deficiência, acessibilidade, o que ajuda, o que evitar, saúde e condição social |
+| Dependentes | Filhos e outros familiares, com os cuidados e as atividades de cada um |
+| Participação | Cada atividade em detalhes, encontro por encontro. Dá para inscrever e tirar |
+| Assiduidade | Barras clicáveis, a conta do número e o histórico completo |
+| Acompanhamento | Linha do tempo de atendimentos, ligações, visitas e próximos passos |
+| Relatório | Resumo para imprimir: o que vai bem e onde dá para ajudar |
 
 ![Página de uma pessoa](../img/admin-pessoa.png)
+
+### Assiduidade
+
+Clique em uma barra para ver cada dia daquele período. Mude entre 8 semanas, 3 meses, 6 meses e tudo. A página mostra a conta: presenças divididas por encontros.
+
+![Assiduidade](../img/admin-assiduidade.png)
+
+### Dependentes
+
+Quando alguém tem filhos ou outros dependentes, cada um pode ser inscrito nas atividades. Ele entra na chamada, ocupa vaga e tem a própria assiduidade. Os cuidados dele ficam junto do cadastro.
+
+![Dependentes](../img/admin-dependentes.png)
 
 Se a pessoa faltou 3 vezes seguidas, um aviso sugere entrar em contato.
 
 > **Cuidado:** essas informações são sensíveis. Registre só o necessário, com o consentimento da pessoa ou do responsável. Os dados pessoais ficam escondidos até você clicar em **Mostrar dados**.
 
-Na página de um voluntário, você vê em quais dias ele pode ajudar, de que forma e quais são seus compromissos.
+## Voluntários
+
+Em **Gestão > Voluntários** você vê o que cada um conduz e quando pode ajudar. Na aba **Pedidos**, responda quem quer ser voluntário. A página de cada voluntário traz horários, atividades, inscritos e dados profissionais.
+
+## Usuários
+
+Em **Suporte > Usuários** ficam as contas de acesso: mude o papel de uma pessoa e envie convites.
+
+## Tabela ou cartões
+
+Em Eventos, Atividades, Oficinas, Assistência e Centros, escolha ver em **Tabela** ou **Cartões**, com foto. O sistema lembra da sua escolha.
+
+![Lista em cartões](../img/admin-cartoes.png)
+
+## Presença: sempre no diário
+
+A página de cada item mostra o **Diário de presença**: um dia por linha, com quantos vieram. Clique no dia para abrir a chamada. O quadro de inscritos mostra quem é cada pessoa, os dependentes e os cuidados.
 
 ## Relatórios
 
@@ -82,9 +115,10 @@ Escolha o período, a área e a unidade. Os números mostram a diferença em rel
 
 | Aba | O que mostra |
 |---|---|
-| Panorama | Presença mês a mês, destaques e metas |
+| Panorama | O que está indo bem, presença mês a mês e metas |
 | Participação | Tabela com cada item |
-| Pessoas | Quem precisa de contato e o perfil do público |
+| Pessoas | Frequentes, irregulares e quem precisa de contato, com link para o relatório de cada um |
+| Quem a Casa atende | Famílias, dependentes, idade, bairros e cuidados |
 
 Depois, baixe a planilha ou salve em PDF para enviar a parceiros.
 

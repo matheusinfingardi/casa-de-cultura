@@ -62,7 +62,12 @@ Tudo abaixo funciona no **modo demonstração**. Os itens com 🔗 ainda precisa
 
 ### v1.7 Cuidado e rotina ✅ protótipo (esta entrega)
 - **Pessoas:** página do assistido com necessidades, saúde, condição social, família ligada, assiduidade e acompanhamento 🔗.
-- **Voluntário:** compromissos dia a dia, chamada por data com check-in dentro da atividade 🔗 e ficha de disponibilidade 🔗.
+- **Voluntário:** compromissos dia a dia, chamada por data com check-in dentro da atividade 🔗, ficha com horários exatos e dados profissionais 🔗, Minhas atividades com página própria e Meus assistidos 🔗.
+- **Certificados:** o criador define se a atividade emite certificado, o responsável libera no final e o voluntário também recebe o seu 🔗.
+- **Calendário:** maior, em largura total, com o quadro do dia embaixo. Na administração, com resumo, filtro por responsável e atalho para a chamada.
+- **Dependentes:** cadastro com cuidados e inscrição nas atividades, com chamada e assiduidade próprias 🔗.
+- **Acompanhamento individual:** assiduidade clicável com histórico, participação em detalhes, linha do tempo e relatório individual 🔗.
+- **Gestão:** Assistidos e Voluntários separados de Usuários; listas em tabela ou cartões; presença só no diário de cada dia.
 - **Assistido:** Atividades da Casa com fotos, abas do que participa e do que pode se inscrever; certificado novo.
 - **Administração:** quadro por tipo na Visão geral, relatórios com comparação e foto obrigatória 🔗.
 - **Mapa** do endereço em cada item, sem custo.
