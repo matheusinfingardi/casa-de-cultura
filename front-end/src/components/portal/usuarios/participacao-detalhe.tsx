@@ -12,6 +12,7 @@ import { calcularAssiduidade, situacao } from "@/lib/assiduidade"
 import { dataBR, dataExtenso } from "@/lib/formatar"
 import { proximasDatas, rotaAdmin, type ItemView } from "@/lib/itens"
 import { notify } from "@/lib/notify"
+import { certificadosDaPessoa, type CertificadoEmitido } from "@/lib/services/certificados"
 import type { Dependente, Registro } from "@/lib/services/extras"
 import { ITEM_TIPO_LABELS, contarInscritos, listarInscricoesDe, matricularCliente, removerPresenca, type ContagemItem, type MinhaPresenca } from "@/lib/services/presencas"
 
@@ -19,14 +20,14 @@ function Fato({ rotulo, valor }: { rotulo: string; valor: React.ReactNode }) {
   return <div><dt className="text-sm text-muted-foreground">{rotulo}</dt><dd className="font-medium">{valor}</dd></div>
 }
 
-function Cartao({ i, item, registros, aoTirar }: { i: MinhaPresenca; item?: ItemView; registros: Registro[]; aoTirar: () => void }) {
+function Cartao({ i, item, registros, certificados, aoTirar }: { i: MinhaPresenca; item?: ItemView; registros: Registro[]; certificados: CertificadoEmitido[]; aoTirar: () => void }) {
   const [aberto, setAberto] = useState(false)
   const regs = registros.filter((r) => r.item_id === i.item_id).sort((a, b) => a.data.localeCompare(b.data))
   const ass = calcularAssiduidade(regs)
   const st = situacao(ass)
   const prox = item ? proximasDatas(item, 60)[0] : undefined
-  const veio = regs.some((r) => r.status === "presente")
-  const certificado = !item?.tem_certificado ? "Esta atividade não emite" : !item.certificado_liberado ? "Aguardando o responsável liberar" : veio ? "Pode baixar" : "Liberado, mas ainda sem presença"
+  const qtd = certificados.filter((c) => c.itens.some((x) => x.id === i.item_id)).length
+  const certificado = !item?.tem_certificado ? "Esta atividade não emite" : qtd ? (qtd === 1 ? "1 certificado gerado" : `${qtd} certificados gerados`) : "Ainda não gerado"
   return (
     <li className="overflow-hidden rounded-2xl border bg-card shadow-sm">
       <button type="button" aria-expanded={aberto} onClick={() => setAberto(!aberto)} className="flex w-full flex-wrap items-center gap-4 p-4 text-left hover:bg-muted/40">
@@ -84,7 +85,9 @@ export default function ParticipacaoDetalhe({ pessoaId, inscricoes, registros, i
   const [tirar, setTirar] = useState<MinhaPresenca | null>(null)
   const [dosDependentes, setDosDependentes] = useState<{ dep: Dependente; lista: MinhaPresenca[] }[]>([])
 
+  const [certificados, setCertificados] = useState<CertificadoEmitido[]>([])
   useEffect(() => { contarInscritos().then(setContagem) }, [inscricoes])
+  useEffect(() => { certificadosDaPessoa(pessoaId).then(setCertificados) }, [pessoaId])
   useEffect(() => {
     Promise.all(familia.filter((d) => !d.parente_id).map(async (dep) => ({ dep, lista: await listarInscricoesDe(dep.id) }))).then(setDosDependentes)
   }, [familia])
@@ -115,7 +118,7 @@ export default function ParticipacaoDetalhe({ pessoaId, inscricoes, registros, i
       </div>
 
       {inscricoes.length === 0 ? <p className="text-muted-foreground">Nenhuma inscrição ainda.</p> : (
-        <ul className="space-y-3">{inscricoes.map((i) => <Cartao key={i.id} i={i} item={achar(i)} registros={registros} aoTirar={() => setTirar(i)} />)}</ul>
+        <ul className="space-y-3">{inscricoes.map((i) => <Cartao key={i.id} i={i} item={achar(i)} registros={registros} certificados={certificados} aoTirar={() => setTirar(i)} />)}</ul>
       )}
 
       {dosDependentes.some((d) => d.lista.length) && (

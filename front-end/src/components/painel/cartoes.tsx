@@ -27,7 +27,7 @@ export function VazioCard({ children }: { children: React.ReactNode }) {
   return <Card className="p-8 text-center text-muted-foreground">{children}</Card>
 }
 
-export function CartaoInscricao({ p, ocupado, onCancelar, comCertificado }: { p: MinhaPresenca; ocupado: boolean; onCancelar: (p: MinhaPresenca) => void; comCertificado?: boolean }) {
+export function CartaoInscricao({ p, ocupado, onCancelar }: { p: MinhaPresenca; ocupado: boolean; onCancelar: (p: MinhaPresenca) => void }) {
   const [confirmando, setConfirmando] = useState(false)
   return (
     <>
@@ -38,9 +38,6 @@ export function CartaoInscricao({ p, ocupado, onCancelar, comCertificado }: { p:
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <Badge variant={STATUS_BADGE[p.status]}>{PRESENCA_LABELS[p.status]}</Badge>
-          {comCertificado && p.status === "presente" && (
-            <Button size="sm" variant="outline" asChild><Link href={`/painel/certificado/${p.id}`}><Award className="h-4 w-4" aria-hidden /> Certificado</Link></Button>
-          )}
           <Button size="sm" variant="ghost" disabled={ocupado} onClick={() => setConfirmando(true)}>Cancelar inscrição</Button>
         </div>
       </Card>

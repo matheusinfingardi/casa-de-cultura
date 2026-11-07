@@ -2,66 +2,79 @@
 
 import { useEffect, useState } from "react"
 import Link from "next/link"
-import { Award, CheckCircle2, Clock } from "lucide-react"
-import { Badge } from "@/components/ui/badge"
+import { Award } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
 import { useAuth } from "@/components/auth/auth-provider"
+import CertificadosGestao from "@/components/comum/certificados-gestao"
 import EstadoVazio from "@/components/comum/estado-vazio"
 import PageHeader from "@/components/comum/page-header"
 import SoDemo from "@/components/comum/so-demo"
-import { horasEmTexto, horasNasDatas } from "@/lib/certificados"
+import { horasEmTexto } from "@/lib/certificados"
+import { dataBR } from "@/lib/formatar"
 import { listarItensView, type ItemView } from "@/lib/itens"
-import { listarRegistros } from "@/lib/services/extras"
-import { ITEM_TIPO_LABELS } from "@/lib/services/presencas"
+import { certificadosDaPessoa, type CertificadoEmitido } from "@/lib/services/certificados"
 
-type Linha = { item: ItemView; encontros: number; horas: number }
-
-function Lista() {
+function Meus({ vazio }: { vazio: string }) {
   const { user } = useAuth()
-  const [linhas, setLinhas] = useState<Linha[] | null>(null)
-
-  useEffect(() => {
-    if (!user) return
-    Promise.all([listarItensView(), listarRegistros()]).then(([itens, regs]) => {
-      setLinhas(itens.filter((i) => i.responsavel_id === user.id && i.tem_certificado).map((item) => {
-        const datas = [...new Set(regs.filter((r) => r.item_id === item.id).map((r) => r.data))]
-        return { item, encontros: datas.length, horas: horasNasDatas(item, datas) }
-      }))
-    })
-  }, [user])
-
-  if (linhas === null) return null
-  if (!linhas.length) return <EstadoVazio icon={Award} titulo="Nenhum certificado por aqui" texto="Seus compromissos que emitem certificado aparecem nesta página." />
+  const [lista, setLista] = useState<CertificadoEmitido[] | null>(null)
+  useEffect(() => { if (user) certificadosDaPessoa(user.id).then(setLista) }, [user])
+  if (lista === null) return null
+  if (!lista.length) return <EstadoVazio icon={Award} titulo="Nenhum certificado ainda" texto={vazio} />
   return (
-    <ul className="space-y-3">
-      {linhas.map(({ item, encontros, horas }) => (
-        <li key={`${item.tipo}-${item.id}`}>
-          <Card className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between">
-            <div className="min-w-0">
-              <p className="flex flex-wrap items-center gap-2 text-lg font-semibold">{item.nome} <Badge variant="outline">{ITEM_TIPO_LABELS[item.tipo]}</Badge></p>
-              <p className="text-muted-foreground">{encontros} {encontros === 1 ? "encontro conduzido" : "encontros conduzidos"}{horas > 0 ? ` · ${horasEmTexto(horas)}` : ""}</p>
-              {item.certificado_liberado
-                ? <p className="mt-1 flex items-center gap-1.5 font-medium text-emerald-700 dark:text-emerald-300"><CheckCircle2 className="h-4 w-4" aria-hidden /> Certificados liberados</p>
-                : <p className="mt-1 flex items-center gap-1.5 text-muted-foreground"><Clock className="h-4 w-4" aria-hidden /> Ainda não liberados</p>}
-            </div>
-            {item.certificado_liberado && encontros > 0 ? (
-              <Button asChild><Link href={`/painel/certificado/voluntario/${item.tipo}/${item.id}`}><Award className="h-4 w-4" aria-hidden /> Baixar meu certificado</Link></Button>
-            ) : (
-              <Button asChild variant="outline"><Link href={`/painel/presenca/${item.tipo}/${item.id}`}>Abrir chamada para liberar</Link></Button>
-            )}
-          </Card>
-        </li>
-      ))}
-    </ul>
+    <div className="overflow-x-auto rounded-2xl border bg-card shadow-sm">
+      <table className="w-full">
+        <thead className="bg-muted/50 text-left text-sm text-muted-foreground">
+          <tr>
+            <th scope="col" className="px-5 py-3 font-semibold">Certificado</th>
+            <th scope="col" className="px-3 py-3 font-semibold">Para</th>
+            <th scope="col" className="px-3 py-3 font-semibold">Cobre</th>
+            <th scope="col" className="px-5 py-3"><span className="sr-only">Baixar</span></th>
+          </tr>
+        </thead>
+        <tbody className="divide-y">
+          {lista.map((c) => {
+            const ds = [...c.datas].sort()
+            return (
+              <tr key={c.id}>
+                <td className="px-5 py-3"><span className="font-semibold">{c.titulo}</span>{c.itens.length > 1 && <span className="block text-sm text-muted-foreground">{c.itens.map((i) => i.nome).join(", ")}</span>}</td>
+                <td className="px-3 py-3">{c.pessoa_nome}{c.papel === "voluntario" && <span className="block text-sm text-muted-foreground">Como voluntário</span>}</td>
+                <td className="whitespace-nowrap px-3 py-3 text-sm">{ds.length} {ds.length === 1 ? "encontro" : "encontros"}{c.horas ? ` · ${horasEmTexto(c.horas)}` : ""}<span className="block text-muted-foreground">{ds.length === 1 ? dataBR(ds[0]) : `${dataBR(ds[0])} a ${dataBR(ds[ds.length - 1])}`}</span></td>
+                <td className="px-5 py-2 text-right"><Button asChild size="sm"><Link href={`/painel/certificado/${c.id}`} aria-label={`Baixar certificado: ${c.titulo}, ${c.pessoa_nome}`}><Award className="h-4 w-4" aria-hidden /> Baixar</Link></Button></td>
+              </tr>
+            )
+          })}
+        </tbody>
+      </table>
+    </div>
+  )
+}
+
+function Voluntario() {
+  const { user } = useAuth()
+  const [itens, setItens] = useState<ItemView[]>([])
+  const [aba, setAba] = useState<"meus" | "gerar">("meus")
+  useEffect(() => { if (user) listarItensView().then((l) => setItens(l.filter((i) => i.responsavel_id === user.id))) }, [user])
+  return (
+    <div className="space-y-5">
+      <div className="flex gap-1 overflow-x-auto border-b" role="tablist" aria-label="Certificados">
+        {([["meus", "Meus certificados"], ["gerar", "Das minhas atividades"]] as const).map(([v, r]) => (
+          <button key={v} type="button" role="tab" aria-selected={aba === v} onClick={() => setAba(v)} className={`-mb-px whitespace-nowrap border-b-2 px-4 py-3 font-medium ${aba === v ? "border-primary text-primary" : "border-transparent text-muted-foreground hover:text-foreground"}`}>{r}</button>
+        ))}
+      </div>
+      {aba === "meus" ? <Meus vazio="Quando os certificados das suas atividades forem gerados, o seu aparece aqui." /> : (
+        <CertificadosGestao itens={itens} autor={(user?.user_metadata?.nome as string) ?? "Voluntário"} hrefVer={(id) => `/painel/certificado/${id}`} />
+      )}
+    </div>
   )
 }
 
 export default function CertificadosPage() {
+  const { role } = useAuth()
+  const vol = role === "responsavel"
   return (
     <div className="space-y-6">
-      <PageHeader titulo="Certificados" descricao="Libere os certificados dos inscritos quando terminar e baixe o seu pelo trabalho que você conduziu." />
-      <SoDemo><Lista /></SoDemo>
+      <PageHeader titulo="Certificados" descricao={vol ? "Baixe os seus e gere os das pessoas que participam das suas atividades." : "Baixe os seus certificados e os dos seus dependentes."} />
+      <SoDemo>{vol ? <Voluntario /> : <Meus vazio="Quando o responsável gerar um certificado para você, ele aparece aqui." />}</SoDemo>
     </div>
   )
 }

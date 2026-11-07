@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react"
 import Link from "next/link"
-import { useParams } from "next/navigation"
+import { useParams, useSearchParams } from "next/navigation"
 import { ArrowRight, ClipboardCheck, SearchX } from "lucide-react"
 
 import { Badge } from "@/components/ui/badge"
@@ -13,12 +13,13 @@ import CapaItem from "@/components/comum/capa-item"
 import EstadoVazio from "@/components/comum/estado-vazio"
 import DiarioPresenca from "@/components/comum/diario-presenca"
 import QuadroInscritos from "@/components/comum/quadro-inscritos"
-import LiberarCertificado from "@/components/comum/liberar-certificado"
+import AbasItem, { lerAba, type AbaItem } from "@/components/comum/abas-item"
+import CertificadosGestao from "@/components/comum/certificados-gestao"
 import MapaLocal from "@/components/comum/mapa-local"
 import PageHeader from "@/components/comum/page-header"
 import { useDemo } from "@/hooks/use-demo"
 import { chaveData, faixaHorario, paraData } from "@/lib/formatar"
-import { carregarItem, datasDoItem, enderecoDaUnidade, enderecoDoMapa, type ItemView } from "@/lib/itens"
+import { carregarItem, datasDoItem, listarItensView, enderecoDaUnidade, enderecoDoMapa, type ItemView } from "@/lib/itens"
 import { listarEspera, registrosDoItem, type Espera, type Registro } from "@/lib/services/extras"
 import { ITEM_TIPO_LABELS, isItemTipo, listarPresencasDoItem, type ItemTipo, type PresencaDoItem } from "@/lib/services/presencas"
 
@@ -36,13 +37,15 @@ export default function AtividadeVoluntarioPage() {
   const { tipo, id } = useParams<{ tipo: string; id: string }>()
   const { user } = useAuth()
   const demo = useDemo()
+  const params = useSearchParams()
+  const abas: [AbaItem, string][] = [["geral", "Visão geral"], ["inscritos", "Inscritos"], ["diario", "Diário de presença"], ["certificados", "Certificados"]]
+  const [aba, setAba] = useState<AbaItem>(lerAba(params.get("aba"), abas))
+  const [meus, setMeus] = useState<ItemView[]>([])
   const [item, setItem] = useState<ItemView | null | undefined>(undefined)
   const [inscritos, setInscritos] = useState<PresencaDoItem[]>([])
   const [registros, setRegistros] = useState<Registro[]>([])
   const [espera, setEspera] = useState<Espera[]>([])
   const [endUnidade, setEndUnidade] = useState<string | undefined>()
-
-  const recarregarItem = () => (isItemTipo(tipo) ? carregarItem(tipo as ItemTipo, id) : Promise.resolve(null)).then(setItem)
 
   useEffect(() => {
     ;(isItemTipo(tipo) ? carregarItem(tipo as ItemTipo, id) : Promise.resolve(null)).then((i) => {
@@ -52,6 +55,9 @@ export default function AtividadeVoluntarioPage() {
       enderecoDaUnidade(i).then(setEndUnidade)
     })
   }, [tipo, id])
+  useEffect(() => {
+    if (user) listarItensView().then((l) => setMeus(l.filter((i) => i.responsavel_id === user.id)))
+  }, [user])
   useEffect(() => {
     if (!demo || !isItemTipo(tipo)) return
     registrosDoItem(tipo as ItemTipo, id).then(setRegistros)
@@ -85,14 +91,18 @@ export default function AtividadeVoluntarioPage() {
         ))}
       </ul>
 
-      <div className="grid items-start gap-6 lg:grid-cols-3">
+      <AbasItem abas={abas} atual={aba} onChange={setAba} />
+
+      {aba === "inscritos" && (
+        <Bloco titulo={`Inscritos (${inscritos.length})`} acao={<Link href="/painel/assistidos" className="flex items-center gap-1 text-sm font-medium text-primary hover:underline">Meus assistidos <ArrowRight className="h-4 w-4" aria-hidden /></Link>}>
+          <QuadroInscritos inscritos={inscritos} hrefPessoa={(p) => `/painel/assistidos/${p}`} comSaude={false} />
+        </Bloco>
+      )}
+      {aba === "diario" && <DiarioPresenca item={item} registros={registros} hrefChamada={(d) => `/painel/presenca/${item.tipo}/${item.id}?data=${d}`} />}
+      {aba === "certificados" && <CertificadosGestao itens={meus} itemFixo={item} autor={(user?.user_metadata?.nome as string) ?? "Voluntário"} hrefVer={(c) => `/painel/certificado/${c}`} />}
+
+      {aba === "geral" && <div className="grid items-start gap-6 lg:grid-cols-3">
         <div className="space-y-6 lg:col-span-2">
-          <DiarioPresenca item={item} registros={registros} hrefChamada={(d) => `/painel/presenca/${item.tipo}/${item.id}?data=${d}`} />
-
-          <Bloco titulo={`Inscritos (${inscritos.length})`} acao={<Link href="/painel/assistidos" className="flex items-center gap-1 text-sm font-medium text-primary hover:underline">Meus assistidos <ArrowRight className="h-4 w-4" aria-hidden /></Link>}>
-            <QuadroInscritos inscritos={inscritos} hrefPessoa={(p) => `/painel/assistidos/${p}`} comSaude={false} />
-          </Bloco>
-
           <MapaLocal endereco={enderecoDoMapa(item, endUnidade)} />
         </div>
 
@@ -113,9 +123,8 @@ export default function AtividadeVoluntarioPage() {
             </Bloco>
           )}
           {espera.length > 0 && <Bloco titulo="Lista de espera"><p>{espera.length} {espera.length === 1 ? "pessoa aguardando vaga" : "pessoas aguardando vaga"}.</p></Bloco>}
-          <LiberarCertificado item={item} presentes={new Set(registros.filter((r) => r.status === "presente").map((r) => r.cliente_id)).size} aoMudar={recarregarItem} />
         </aside>
-      </div>
+      </div>}
     </div>
   )
 }

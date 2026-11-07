@@ -161,11 +161,9 @@ export function criarBanco(): BancoDemo {
 
   // Nem tudo emite certificado. Quando emite, o responsável libera no final.
   const COM_CERTIFICADO = ["evt-mostra", "evt-profissao", "evt-festival", "atv-violao", "atv-reforco", "atv-capoeira", ...oficinas.map((o) => o.id as string)]
-  const LIBERADOS = ["evt-mostra", "evt-profissao", "atv-violao", "ofi-pintura"]
   for (const l of [eventos, atividades, oficinas, assistencia]) {
     for (const i of l) {
       i.tem_certificado = COM_CERTIFICADO.includes(i.id as string)
-      i.certificado_liberado = LIBERADOS.includes(i.id as string)
     }
   }
 
@@ -180,14 +178,15 @@ export function criarBanco(): BancoDemo {
   const registros: Linha[] = []
   const ate = new Date(); ate.setDate(ate.getDate() - 1)
   const de = new Date(); de.setDate(de.getDate() - 182)
+  const duracao = (ini: string, fim: string) => { const m = (h: string) => { const [a, b] = h.split(":").map(Number); return a * 60 + (b || 0) }; return ini && fim ? m(fim) - m(ini) : 0 }
   const passadas = ocorrenciasNoPeriodo(
     { eventos: eventos as unknown as Evento[], atividades: atividades as unknown as Atividade[], oficinas: oficinas as unknown as Oficina[] },
     de, ate
-  ).map((o) => ({ tipo: o.tipo as string, id: o.itemId, data: o.data }))
+  ).map((o) => ({ tipo: o.tipo as string, id: o.itemId, data: o.data, minutos: duracao(o.inicio, o.fim) }))
   // Assistências não têm dia fixo: atendimentos nas últimas quartas-feiras.
   for (const item of assistencia) {
     for (let d = new Date(de); d <= ate; d.setDate(d.getDate() + 1)) {
-      if (d.getDay() === 3) passadas.push({ tipo: "assistencia", id: item.id as string, data: `${d.getFullYear()}-${p2(d.getMonth() + 1)}-${p2(d.getDate())}` })
+      if (d.getDay() === 3) passadas.push({ tipo: "assistencia", id: item.id as string, data: `${d.getFullYear()}-${p2(d.getMonth() + 1)}-${p2(d.getDate())}`, minutos: 0 })
     }
   }
   const limiteSumico = emDias(-16)
@@ -313,6 +312,28 @@ export function criarBanco(): BancoDemo {
     }
   }
 
+  // --- Certificados já gerados ------------------------------------------------
+  // Um de atividade, um de conjunto de atividades e um de evento, para mostrar as formas possíveis.
+  const certificados: Linha[] = []
+  const gerar = (titulo: string, ids: string[], volId: string | null, autor: string) => {
+    const doItem = (id: string) => [...atividades, ...oficinas, ...eventos].find((x) => x.id === id)!
+    const lista = ids.map((id) => ({ tipo: passadas.find((o) => o.id === id)?.tipo ?? "atividade", id, nome: doItem(id).nome as string }))
+    const horas = (rs: Linha[]) => Math.round(rs.reduce((t, r) => t + (passadas.find((o) => o.id === r.item_id && o.data === r.data)?.minutos ?? 0), 0) / 30) / 2
+    const pessoas = new Set(registros.filter((r) => ids.includes(r.item_id as string) && r.status === "presente").map((r) => r.cliente_id as string))
+    for (const c of pessoas) {
+      const rs = registros.filter((r) => r.cliente_id === c && ids.includes(r.item_id as string) && r.status === "presente")
+      const dep = dependentes.find((d) => d.id === c)
+      certificados.push({ id: `cert-${certificados.length + 1}`, pessoa_id: c, pessoa_nome: profiles.find((u) => u.id === c)?.nome ?? dep?.nome ?? "Pessoa", responsavel_id: dep?.responsavel_id ?? null, papel: "participante", titulo, itens: lista, datas: [...new Set(rs.map((r) => r.data))], horas: horas(rs), emitido_por: autor, created_at: haMeses(0, 1) })
+    }
+    if (volId) {
+      const rs = [...new Map(registros.filter((r) => ids.includes(r.item_id as string)).map((r) => [`${r.item_id}${r.data}`, r])).values()]
+      certificados.push({ id: `cert-${certificados.length + 1}`, pessoa_id: volId, pessoa_nome: profiles.find((u) => u.id === volId)?.nome, responsavel_id: null, papel: "voluntario", titulo, itens: lista, datas: [...new Set(rs.map((r) => r.data))], horas: horas(rs), emitido_por: autor, created_at: haMeses(0, 1) })
+    }
+  }
+  gerar("Aula de Violão", ["atv-violao"], "usr-carlos", "Vitor Leal")
+  gerar("Trilha de Artes", ["ofi-pintura", "evt-mostra"], "usr-juliana", "Matheus")
+  gerar("Dia de Orientação Profissional", ["evt-profissao"], null, "Matheus")
+
   // --- Acompanhamento da equipe -----------------------------------------------
   const acompanhamento: Linha[] = [
     { id: "aco-1", pessoa_id: "usr-ana", autor: "Matheus", tipo: "Atendimento", texto: "Conversamos sobre a rotina com os filhos. Ana quer concluir um curso de informática para buscar outro trabalho.", proximo_passo: "Avisar quando abrir vaga em Informática Básica.", created_at: haMeses(1, 12) },
@@ -341,7 +362,7 @@ export function criarBanco(): BancoDemo {
   ]
 
   return {
-    profiles, eventos, atividades, oficinas, centros, assistencia, presencas, registros, fichas, dependentes, acompanhamento, disponibilidade,
+    profiles, eventos, atividades, oficinas, centros, assistencia, presencas, registros, fichas, dependentes, acompanhamento, disponibilidade, certificados,
     lista_espera: fora.slice(0, 3).map((a, i) => ({ id: `esp-${i}`, item_tipo: "oficina", item_id: "ofi-info", item_nome: "Informática Básica", cliente_id: a.id, created_at: haMeses(0, 1 + i) })),
     notificacoes: [
       { id: "not-1", usuario_id: "usr-ana", titulo: "Festival confirmado", texto: "Sua inscrição no Festival de Cultura Popular foi confirmada.", href: "/painel/inscricoes", lida: false, created_at: haMeses(0, 1) },

@@ -5,12 +5,12 @@ import { entrarComo } from "./apoio"
 const ROTAS: [string, "admin" | "voluntario" | "assistido" | null][] = [
   ["/", null], ["/auth?perfil=assistido&mode=register", null], ["/termos", null],
   ["/portal", "admin"], ["/portal/agenda", "admin"], ["/portal/eventos", "admin"], ["/portal/eventos/novo", "admin"],
-  ["/portal/oficinas/ofi-info", "admin"], ["/portal/usuarios", "admin"], ["/portal/assistidos", "admin"], ["/portal/voluntarios", "admin"], ["/portal/assistidos/usr-ana?aba=assiduidade", "admin"], ["/portal/assistidos/usr-ana?aba=familia", "admin"], ["/portal/assistidos/usr-ana?aba=participacao", "admin"], ["/portal/assistidos/usr-ana?aba=acompanhamento", "admin"], ["/portal/assistidos/usr-ana?aba=relatorio", "admin"], ["/portal/usuarios/usr-ana", "admin"], ["/portal/relatorios", "admin"],
+  ["/portal/oficinas/ofi-info", "admin"], ["/portal/usuarios", "admin"], ["/portal/certificados", "admin"], ["/portal/atividades/atv-violao?aba=inscritos", "admin"], ["/portal/atividades/atv-violao?aba=certificados", "admin"], ["/portal/assistidos", "admin"], ["/portal/voluntarios", "admin"], ["/portal/assistidos/usr-ana?aba=assiduidade", "admin"], ["/portal/assistidos/usr-ana?aba=familia", "admin"], ["/portal/assistidos/usr-ana?aba=participacao", "admin"], ["/portal/assistidos/usr-ana?aba=acompanhamento", "admin"], ["/portal/assistidos/usr-ana?aba=relatorio", "admin"], ["/portal/usuarios/usr-ana", "admin"], ["/portal/relatorios", "admin"],
   ["/portal/comunicados", "admin"], ["/portal/ajuda", "admin"], ["/portal/atualizacoes", "admin"], ["/portal/conta", "admin"], ["/portal/status", "admin"],
   ["/painel", "assistido"], ["/painel/explorar", "assistido"], ["/painel/item/oficina/ofi-teatro", "assistido"], ["/painel/agenda", "assistido"], ["/painel/familia", "assistido"],
   ["/demonstracao", null],
   ["/painel/inscricoes", "assistido"],
-  ["/painel", "voluntario"], ["/painel/certificados", "voluntario"], ["/painel/atividades", "voluntario"], ["/painel/atividades/atividade/atv-violao", "voluntario"], ["/painel/assistidos", "voluntario"], ["/painel/assistidos/usr-ana", "voluntario"], ["/painel/presenca/atividade/atv-violao", "voluntario"], ["/painel/ficha", "voluntario"],
+  ["/painel", "voluntario"], ["/painel/certificados", "voluntario"], ["/painel/certificados", "assistido"], ["/painel/atividades/atividade/atv-violao?aba=inscritos", "voluntario"], ["/painel/atividades", "voluntario"], ["/painel/atividades/atividade/atv-violao", "voluntario"], ["/painel/assistidos", "voluntario"], ["/painel/assistidos/usr-ana", "voluntario"], ["/painel/presenca/atividade/atv-violao", "voluntario"], ["/painel/ficha", "voluntario"],
 ]
 
 for (const [rota, perfil] of ROTAS) {

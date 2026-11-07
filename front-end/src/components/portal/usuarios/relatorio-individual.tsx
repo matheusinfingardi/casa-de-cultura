@@ -1,12 +1,12 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { CheckCircle2, CircleAlert, Printer } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { calcularAssiduidade, idade, maiorSequencia, situacao, voltouAVir } from "@/lib/assiduidade"
 import { chaveData, dataBR } from "@/lib/formatar"
 import { cuidadosDaFamilia, cuidadosDaPessoa, resumoFamilia } from "@/lib/familia"
-import type { ItemView } from "@/lib/itens"
+import { certificadosDaPessoa, type CertificadoEmitido } from "@/lib/services/certificados"
 import type { Dependente, Ficha, NotaAcompanhamento, Registro } from "@/lib/services/extras"
 import { ITEM_TIPO_LABELS, type MinhaPresenca } from "@/lib/services/presencas"
 import type { Usuario } from "@/lib/services/usuarios"
@@ -14,8 +14,8 @@ import type { Usuario } from "@/lib/services/usuarios"
 const PERIODOS = [{ v: "90", r: "Últimos 3 meses" }, { v: "180", r: "Últimos 6 meses" }, { v: "0", r: "Desde o início" }]
 
 /** Resumo de uma pessoa para a equipe acompanhar e levar ao atendimento. Renda e benefícios ficam de fora de propósito. */
-export default function RelatorioIndividual({ u, ficha, familia, registros, inscricoes, notas, itens }: {
-  u: Usuario; ficha: Ficha; familia: Dependente[]; registros: Registro[]; inscricoes: MinhaPresenca[]; notas: NotaAcompanhamento[]; itens: ItemView[]
+export default function RelatorioIndividual({ u, ficha, familia, registros, inscricoes, notas }: {
+  u: Usuario; ficha: Ficha; familia: Dependente[]; registros: Registro[]; inscricoes: MinhaPresenca[]; notas: NotaAcompanhamento[]
 }) {
   const [periodo, setPeriodo] = useState("90")
   const dias = Number(periodo)
@@ -36,17 +36,15 @@ export default function RelatorioIndividual({ u, ficha, familia, registros, insc
 
   const porItem = inscricoes.map((i) => ({ ...i, ass: calcularAssiduidade(regs.filter((r) => r.item_id === i.item_id)) }))
   const sequencia = maiorSequencia(regs)
-  const certificados = inscricoes.filter((i) => {
-    const it = itens.find((x) => x.id === i.item_id)
-    return it?.tem_certificado && it.certificado_liberado && registros.some((r) => r.item_id === i.item_id && r.status === "presente")
-  })
+  const [certificados, setCertificados] = useState<CertificadoEmitido[]>([])
+  useEffect(() => { certificadosDaPessoa(u.id).then(setCertificados) }, [u.id])
 
   const positivos = [
     ass.taxa !== null && ass.taxa >= 75 && `Veio a ${ass.taxa}% dos encontros do período.`,
     sequencia >= 3 && `Chegou a ${sequencia} presenças seguidas.`,
     voltouAVir(regs) && "Voltou a frequentar depois de um período de faltas.",
     porItem.filter((i) => i.ass.presentes > 0).length >= 2 && `Participa de ${porItem.filter((i) => i.ass.presentes > 0).length} atividades diferentes.`,
-    certificados.length > 0 && `Já pode baixar ${certificados.length === 1 ? "1 certificado" : `${certificados.length} certificados`}.`,
+    certificados.length > 0 && `Tem ${certificados.length === 1 ? "1 certificado gerado" : `${certificados.length} certificados gerados`}.`,
   ].filter(Boolean) as string[]
 
   const atencao = [

@@ -36,8 +36,8 @@ test.describe("assistido", () => {
   })
 
   test("certificado e QR Code", async ({ page }) => {
-    await page.goto("/painel/inscricoes")
-    await page.getByRole("link", { name: "Baixar certificado" }).first().click()
+    await page.goto("/painel/certificados")
+    await page.getByRole("link", { name: /Baixar certificado: Aula de Violão/ }).click()
     await expect(page.getByRole("heading", { name: "Certificado de Participação" })).toBeVisible()
     await page.goto("/painel/qr")
     await expect(page.getByAltText("Seu QR Code")).toBeVisible()
@@ -111,8 +111,11 @@ test.describe("áreas do voluntário", () => {
   test("minhas atividades tem página própria com frequência", async ({ page }) => {
     await page.goto("/painel/atividades")
     await page.getByRole("link", { name: "Aula de Violão" }).click()
-    await expect(page.getByRole("heading", { name: "Diário de presença" })).toBeVisible()
+    await page.getByRole("tab", { name: "Inscritos" }).click()
     await expect(page.getByRole("heading", { name: /Inscritos/ })).toBeVisible()
+    await expect(page.getByRole("table")).toBeVisible()
+    await page.getByRole("tab", { name: "Diário de presença" }).click()
+    await expect(page.getByRole("heading", { name: "Diário de presença" })).toBeVisible()
     await page.getByRole("link", { name: "Fazer chamada" }).first().click()
     await expect(page.getByRole("heading", { name: "Escolha o dia" })).toBeVisible()
   })
@@ -135,28 +138,54 @@ test.describe("áreas do voluntário", () => {
 })
 
 test.describe("certificados", () => {
-  test("responsável libera e os dois lados baixam", async ({ page, context }) => {
-    await entrarComo(page, "voluntario")
-    await page.goto("/painel/certificados")
-    await expect(page.getByText("Informática Básica")).toBeVisible()
-    await page.locator("li", { hasText: "Informática Básica" }).getByRole("link", { name: "Abrir chamada para liberar" }).click()
-    await page.getByRole("button", { name: "Liberar certificados" }).click()
-    await page.getByRole("dialog").getByRole("button", { name: "Liberar" }).click()
-    await expect(page.getByText("Liberados", { exact: true })).toBeVisible()
-    await page.goto("/painel/certificados")
-    await page.locator("li", { hasText: "Informática Básica" }).getByRole("link", { name: "Baixar meu certificado" }).click()
-    await expect(page.getByRole("heading", { name: "Certificado de Trabalho Voluntário" })).toBeVisible()
-    await expect(page.getByText(/Vitor Leal/).first()).toBeVisible()
-    await context.clearCookies()
+  test("administração gera para um conjunto de atividades", async ({ page }) => {
+    await entrarComo(page, "admin")
+    await page.goto("/portal/certificados")
+    await page.getByRole("button", { name: "Gerar certificados" }).click()
+    await page.getByRole("checkbox", { name: /Capoeira Infantil/ }).check()
+    await page.getByRole("checkbox", { name: /Teatro Comunitário/ }).check()
+    await page.getByLabel(/Nome do conjunto/).fill("Trilha Corpo e Palco")
+    await page.getByRole("button", { name: "Gerar agora" }).click()
+    await expect(page.getByText("Trilha Corpo e Palco").first()).toBeVisible()
+    await page.getByRole("link", { name: /Ver certificado de .*Trilha Corpo e Palco/ }).first().click()
+    await expect(page.getByRole("heading", { name: /Certificado de/ })).toBeVisible()
+    await expect(page.getByText(/que reúne/)).toBeVisible()
   })
 
-  test("atividade sem certificado ou não liberada não mostra o botão", async ({ page }) => {
+  test("gera um certificado por presença, nos dias escolhidos", async ({ page }) => {
+    await entrarComo(page, "voluntario")
+    await page.goto("/painel/atividades/oficina/ofi-info?aba=certificados")
+    await page.getByRole("button", { name: "Gerar certificados" }).click()
+    await page.getByRole("radio", { name: /Dias escolhidos/ }).check()
+    await page.getByRole("group", { name: "Dias" }).getByRole("button").first().click()
+    await page.getByRole("radio", { name: /Um certificado por presença/ }).check()
+    await page.getByRole("button", { name: "Gerar agora" }).click()
+    await expect(page.getByRole("heading", { name: /Certificados gerados \([1-9]/ })).toBeVisible()
+  })
+
+  test("assistido baixa os seus na aba própria, e a página da inscrição não tem botão", async ({ page }) => {
     await entrarComo(page, "assistido")
     await page.goto("/painel/inscricoes")
-    const assistencia = page.locator("li", { hasText: "Acompanhamento Social" }).first()
-    await expect(assistencia).toBeVisible()
-    await expect(assistencia.getByRole("link", { name: "Baixar certificado" })).toHaveCount(0)
-    await expect(page.getByRole("link", { name: "Baixar certificado" }).first()).toBeVisible()
+    await expect(page.getByRole("link", { name: /certificado/i }).locator("visible=true").filter({ hasText: "Baixar" })).toHaveCount(0)
+    await page.goto("/painel/certificados")
+    await page.getByRole("link", { name: /Baixar certificado: Trilha de Artes/ }).click()
+    await expect(page.getByRole("heading", { name: "Certificado de Participação" })).toBeVisible()
+  })
+
+  test("certificado aparece como válido e, cancelado, deixa de valer", async ({ page }) => {
+    await entrarComo(page, "admin")
+    await page.goto("/verificar/cert-1")
+    await expect(page.getByText(/Certificado válido/)).toBeVisible()
+    await page.goto("/verificar/nao-existe")
+    await expect(page.getByText(/Não foi possível confirmar/)).toBeVisible()
+  })
+
+  test("item não mostra certificados na visão geral, só na aba", async ({ page }) => {
+    await entrarComo(page, "admin")
+    await page.goto("/portal/atividades/atv-violao")
+    await expect(page.getByRole("button", { name: "Gerar certificados" })).toHaveCount(0)
+    await page.getByRole("tab", { name: "Certificados" }).click()
+    await expect(page.getByRole("button", { name: "Gerar certificados" })).toBeVisible()
   })
 
   test("formulário pergunta se emite certificado", async ({ page }) => {

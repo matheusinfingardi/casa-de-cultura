@@ -22,7 +22,6 @@ import AvisoOffline from "./aviso-offline"
 import Confirmar from "./confirmar"
 import EstadoVazio from "./estado-vazio"
 import LeitorQr from "./leitor-qr"
-import LiberarCertificado from "./liberar-certificado"
 import PageHeader from "./page-header"
 
 type Dia = { data: string; inicio: string; fim: string }
@@ -252,8 +251,6 @@ export default function Chamada({ tipo, itemId, voltarHref, voltarLabel }: { tip
           </>
         )}
       </section>
-
-      <LiberarCertificado item={item} presentes={new Set(registros.filter((r) => r.status === "presente").map((r) => r.cliente_id)).size} aoMudar={carregar} />
 
       {/* 4. Adicionar */}
       <section className="space-y-3 rounded-2xl border bg-card p-5 shadow-sm">

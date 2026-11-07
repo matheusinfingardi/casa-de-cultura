@@ -109,7 +109,7 @@ test("dependente é inscrito em atividade, entra na lista e pode sair", async ({
   await page.getByRole("option", { name: "Teatro Comunitário" }).click()
   await laura.getByRole("button", { name: "Inscrever" }).click()
   await expect(laura.getByRole("link", { name: "Teatro Comunitário" })).toBeVisible()
-  await page.goto("/portal/oficinas/ofi-teatro")
+  await page.goto("/portal/oficinas/ofi-teatro?aba=inscritos")
   await expect(page.getByRole("link", { name: /Laura Souza/ })).toBeVisible()
 })
 
@@ -126,6 +126,7 @@ test("gestão separa assistidos e voluntários; usuários fica em suporte", asyn
 
 test("item não mostra presença geral: fica no diário de cada dia", async ({ page }) => {
   await page.goto("/portal/atividades/atv-violao")
+  await page.getByRole("tab", { name: "Diário de presença" }).click()
   await expect(page.getByRole("heading", { name: "Diário de presença" })).toBeVisible()
   await expect(page.getByRole("heading", { name: "Presença", exact: true })).toHaveCount(0)
 })

@@ -63,7 +63,7 @@ Tudo abaixo funciona no **modo demonstração**. Os itens com 🔗 ainda precisa
 ### v1.7 Cuidado e rotina ✅ protótipo (esta entrega)
 - **Pessoas:** página do assistido com necessidades, saúde, condição social, família ligada, assiduidade e acompanhamento 🔗.
 - **Voluntário:** compromissos dia a dia, chamada por data com check-in dentro da atividade 🔗, ficha com horários exatos e dados profissionais 🔗, Minhas atividades com página própria e Meus assistidos 🔗.
-- **Certificados:** o criador define se a atividade emite certificado, o responsável libera no final e o voluntário também recebe o seu 🔗.
+- **Certificados:** aba própria para gerar de uma atividade ou de um conjunto delas, por presença ou por conjunto de presenças, inclusive para o voluntário 🔗.
 - **Calendário:** maior, em largura total, com o quadro do dia embaixo. Na administração, com resumo, filtro por responsável e atalho para a chamada.
 - **Dependentes:** cadastro com cuidados e inscrição nas atividades, com chamada e assiduidade próprias 🔗.
 - **Acompanhamento individual:** assiduidade clicável com histórico, participação em detalhes, linha do tempo e relatório individual 🔗.

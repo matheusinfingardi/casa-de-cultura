@@ -18,7 +18,6 @@ export type ItemView = {
   centro_id: string
   endereco_mapa: string
   tem_certificado: boolean
-  certificado_liberado: boolean
   fatos: { rotulo: string; valor: string }[]
   bruto: Evento | Atividade | Oficina | Centro | Assistencia
 }
@@ -39,7 +38,7 @@ function montar(tipo: ItemTipo, b: Record<string, unknown>): ItemView {
   const base = {
     tipo, id: s("id"), nome: s("nome") || "Sem nome", descricao: s("descricao"), local: s("local"), vagas: null as number | null,
     responsavel: s("responsavel"), responsavel_id: (b.responsavel_id as string | null) ?? null,
-    imagem_url: s("imagem_url"), centro_id: s("centro_id"), endereco_mapa: s("endereco_mapa"), tem_certificado: b.tem_certificado === true, certificado_liberado: b.certificado_liberado === true, bruto: b as ItemView["bruto"],
+    imagem_url: s("imagem_url"), centro_id: s("centro_id"), endereco_mapa: s("endereco_mapa"), tem_certificado: b.tem_certificado === true, bruto: b as ItemView["bruto"],
   }
   if (tipo === "evento") {
     const quando = `${dataBR(s("data"))}, ${faixaHorario(s("horarioInicio"), s("horarioFim"))}`
@@ -115,9 +114,6 @@ export function datasDoItem(v: ItemView, diasAtras = 30, diasFrente = 30): Ocorr
 }
 
 /** Libera ou suspende os certificados de um item. */
-export async function definirLiberacaoCertificado(tipo: ItemTipo, id: string, liberado: boolean) {
-  await API_DO_TIPO[tipo].atualizar(id, { certificado_liberado: liberado } as never)
-}
 
 /** O item acontece dentro dos horários livres da pessoa? `null` quando o item não tem dia fixo. */
 export function combinaComHorarios(v: ItemView, horarios: Record<string, { inicio: string; fim: string }[]>): boolean | null {

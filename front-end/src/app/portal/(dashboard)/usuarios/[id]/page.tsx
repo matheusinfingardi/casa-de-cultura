@@ -224,7 +224,7 @@ function PaginaAssistido({ u }: { u: Usuario }) {
         </section>
       )}
 
-      {aba === "relatorio" && <RelatorioIndividual u={u} ficha={ficha} familia={familia} registros={registros} inscricoes={inscricoes} notas={notas} itens={itens} />}
+      {aba === "relatorio" && <RelatorioIndividual u={u} ficha={ficha} familia={familia} registros={registros} inscricoes={inscricoes} notas={notas} />}
 
       {aba === "acompanhamento" && <AcompanhamentoPessoa pessoaId={u.id} autor={(user?.user_metadata?.nome as string) ?? "Equipe"} notas={notas} setNotas={setNotas} />}
     </div>

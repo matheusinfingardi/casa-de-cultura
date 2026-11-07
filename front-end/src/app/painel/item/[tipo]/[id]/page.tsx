@@ -126,7 +126,7 @@ export default function ItemAssistidoPage() {
             </>
           )}
           {role !== "responsavel" && user && item.tipo !== "centro" && <InscreverDependente item={item} responsavelId={user.id} lotado={!!lotado} />}
-          {item.tem_certificado && <p className="flex items-center gap-2 border-t pt-4 text-muted-foreground"><Award className="h-4 w-4 shrink-0" aria-hidden /> {item.certificado_liberado ? "Certificados liberados para quem participou" : "Emite certificado, liberado no final"}</p>}
+          {item.tem_certificado && <p className="flex items-center gap-2 border-t pt-4 text-muted-foreground"><Award className="h-4 w-4 shrink-0" aria-hidden /> Pode emitir certificado</p>}
           {item.responsavel && <p className="flex items-center gap-2 border-t pt-4 text-muted-foreground"><UserRound className="h-4 w-4 shrink-0" aria-hidden /> Com {item.responsavel}</p>}
         </aside>
       </div>

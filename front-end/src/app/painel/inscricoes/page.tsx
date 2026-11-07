@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react"
 import Link from "next/link"
-import { Award, CalendarDays, CheckCircle2, Hourglass, XCircle } from "lucide-react"
+import { CalendarDays, CheckCircle2, Hourglass, XCircle } from "lucide-react"
 
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -35,7 +35,7 @@ export default function InscricoesPage() {
 
   return (
     <div className="space-y-6">
-      <PageHeader titulo="Minhas inscrições" descricao="Veja a próxima data de cada item, quantas vezes você compareceu e seus certificados." />
+      <PageHeader titulo="Minhas inscrições" descricao="Veja a próxima data de cada item, e quantas vezes você compareceu. Os certificados ficam em Certificados." />
       {loading ? <Carregando /> : (
         <>
           {minhas.length === 0 ? (
@@ -61,8 +61,6 @@ export default function InscricoesPage() {
                         {prox && <p className="flex items-center gap-2 text-muted-foreground"><CalendarDays className="h-4 w-4 shrink-0" aria-hidden /><span>Próxima data: <span className="first-letter:uppercase">{dataExtenso(prox.data)}</span>, {prox.inicio.slice(0, 5)}</span></p>}
                         {ass.total > 0 && <p className="text-muted-foreground">Você veio a <strong className="text-foreground">{ass.presentes} de {ass.total}</strong> encontros</p>}
                         <div className="mt-1 flex flex-wrap gap-2">
-                          {item?.certificado_liberado && item.tem_certificado && ass.presentes > 0 && <Button size="sm" variant="outline" asChild><Link href={`/painel/certificado/${p.id}`}><Award className="h-4 w-4" aria-hidden /> Baixar certificado</Link></Button>}
-                          {item?.tem_certificado && !item.certificado_liberado && <span className="flex items-center gap-1.5 text-sm text-muted-foreground"><Award className="h-4 w-4" aria-hidden /> Certificado será liberado pelo responsável no final</span>}
                           <Button size="sm" variant="ghost" onClick={() => setCancelando(p)}>Cancelar inscrição</Button>
                         </div>
                       </div>

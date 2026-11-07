@@ -13,6 +13,7 @@ const ASSISTIDO: Item[] = [
   { titulo: "Minhas inscrições", url: "/painel/inscricoes", icon: ClipboardList },
   { titulo: "Agenda", url: "/painel/agenda", icon: CalendarDays },
   { titulo: "Dependentes", url: "/painel/familia", icon: Users },
+  { titulo: "Certificados", url: "/painel/certificados", icon: Award },
   { titulo: "Ajuda", url: "/painel/ajuda", icon: LifeBuoy },
 ]
 

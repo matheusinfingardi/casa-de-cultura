@@ -50,9 +50,7 @@ Para cada item, você vê a próxima data e quantas vezes compareceu. Para sair 
 
 ## Seu certificado
 
-Nem toda atividade emite certificado. Quando emite, o responsável libera no final e você recebe um aviso no sino. Depois, em **Minhas inscrições**, clique em **Baixar certificado**.
-
-Ele mostra seu nome, a atividade, os encontros e as horas. Clique em **Imprimir ou salvar PDF**.
+Quando o responsável gerar um certificado para você ou para um dependente, chega um aviso. Abra **Certificados** no menu e clique em **Baixar**. Ele pode valer para uma atividade, um conjunto de atividades ou um encontro. Depois, escolha "Salvar como PDF" na janela de impressão.
 
 ![Certificado](../img/assistido-certificado.png)
 

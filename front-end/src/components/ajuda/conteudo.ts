@@ -36,7 +36,7 @@ export const TEMAS: Record<Perfil, Tema[]> = {
     ] },
     { id: "familia", titulo: "Dependentes e certificados", perguntas: [
       { p: "Posso cuidar das inscrições dos meus filhos?", r: "Sim. Em Dependentes, cadastre seus filhos, conte os cuidados de cada um, inscreva nas atividades e veja a frequência." },
-      { p: "Como consigo meu certificado?", r: "Nem toda atividade emite certificado. Quando emite, o responsável libera no final e você recebe um aviso. Depois, em Minhas inscrições, toque em “Baixar certificado”. Dá para imprimir ou salvar em PDF." },
+      { p: "Como consigo meu certificado?", r: "Nem toda atividade emite certificado. Quando o responsável gera o seu, você recebe um aviso. Abra Certificados no menu e clique em Baixar." },
     ] },
     { id: "conta", titulo: "Minha conta", perguntas: [
       { p: "Esqueci minha senha.", r: "Na tela de entrada, toque em “Esqueci minha senha”. Você recebe um link por e-mail para criar outra." },
@@ -60,8 +60,8 @@ export const TEMAS: Record<Perfil, Tema[]> = {
       { p: "Não aparece nenhum compromisso.", r: "A administração precisa escolher você como voluntário responsável no cadastro do item." },
       { p: "Como informo meus horários livres?", r: "Em Minha ficha, escolha os dias e informe o horário exato. Lá você também marca o que pode fazer e em quais atividades quer ajudar." },
       { p: "Como acompanho as pessoas das minhas atividades?", r: "Em Meus assistidos você vê quem está vindo, quem precisa de contato e o que ajuda a acolher cada pessoa. Em Minhas atividades, a frequência de cada dia." },
-      { p: "Como libero os certificados?", r: "Se a atividade emite certificado, abra a chamada e, quando terminar, toque em “Liberar certificados”. Quem tem presença recebe um aviso e pode baixar o seu." },
-      { p: "Eu também recebo certificado?", r: "Sim. Depois de liberar, abra Certificados e baixe o seu, com os encontros e as horas que você conduziu." },
+      { p: "Como gero os certificados?", r: "Abra Certificados ou a aba Certificados da atividade e clique em Gerar certificados. Escolha uma atividade ou um conjunto, quais presenças contam e para quem. Pode ser um certificado para o conjunto ou um por presença." },
+      { p: "Eu também recebo certificado?", r: "Sim. Ao gerar, deixe marcada a opção de quem conduziu. O seu fica em Certificados, com os encontros e as horas." },
       { p: "Quero criar uma atividade.", r: "A criação é feita pela administração. Envie sua sugestão pelo Suporte ou fale com a coordenação." },
     ] },
   ],
@@ -70,7 +70,7 @@ export const TEMAS: Record<Perfil, Tema[]> = {
       { p: "Qual a diferença entre evento, atividade e oficina?", r: "Evento: acontece em uma data (festival, feira). Atividade: encontro que se repete (aula, treino). Oficina: turma com vagas limitadas num dia fixo." },
       { p: "Como crio um item?", r: "No menu, escolha o tipo e clique em “Novo”. Campos com * são obrigatórios. Se faltar algo, o campo fica vermelho e explica o que fazer." },
       { p: "Como copio um item para o próximo semestre?", r: "Abra a página do item e clique em “Duplicar”. Ajuste o que mudou e salve." },
-      { p: "Toda atividade tem certificado?", r: "Não. No cadastro, responda se ela emite certificado. Se sim, o responsável ou a administração libera no final, em “Liberar certificados”, na página do item." },
+      { p: "Toda atividade tem certificado?", r: "Não. No cadastro, responda se ela emite certificado. Se sim, o responsável ou a administração gera na aba Certificados." },
       { p: "Excluí algo por engano.", r: "A exclusão é definitiva. Avise o T.I. o quanto antes: pode dar para recuperar do backup." },
     ] },
     { id: "pessoas", titulo: "Pessoas", perguntas: [

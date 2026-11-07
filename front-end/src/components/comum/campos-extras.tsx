@@ -78,7 +78,7 @@ export default function CamposExtras({
               <button key={r} type="button" role="radio" aria-checked={!!valores.tem_certificado === v} onClick={() => definir("tem_certificado", v)} className={`px-6 py-2 text-sm font-medium ${!!valores.tem_certificado === v ? "bg-primary text-primary-foreground" : "bg-card hover:bg-muted"}`}>{r}</button>
             ))}
           </div>
-          <p className="mt-1.5 text-xs text-muted-foreground">Se sim, o responsável libera os certificados no final, e cada pessoa com presença pode baixar o seu.</p>
+          <p className="mt-1.5 text-xs text-muted-foreground">Se sim, o responsável ou a administração gera os certificados na aba Certificados, para quem tem presença.</p>
         </fieldset>
       )}
       <div className="space-y-2">

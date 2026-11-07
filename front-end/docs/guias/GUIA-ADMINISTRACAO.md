@@ -51,7 +51,7 @@ Se faltar algo, o campo fica vermelho e explica o que fazer.
 
 Ao clicar em um item, você vê a foto, as próximas datas, as vagas, a lista de espera, o responsável e um **mapa com o endereço**.
 
-Nessa página você pode abrir a **Chamada**, **Editar**, **Duplicar** (bom para repetir no próximo semestre) e **Excluir**. Se o item emite certificado, é aqui também que você pode **Liberar certificados**.
+Nessa página você pode abrir a **Chamada**, **Editar**, **Duplicar** (bom para repetir no próximo semestre) e **Excluir**. A página tem abas: **Visão geral**, **Inscritos** (tabela com idade, bairro, dependentes e cuidados), **Diário de presença** e **Certificados**.
 
 ![Página de uma oficina](../img/admin-item.png)
 
@@ -107,7 +107,19 @@ Em Eventos, Atividades, Oficinas, Assistência e Centros, escolha ver em **Tabel
 
 ## Presença: sempre no diário
 
-A página de cada item mostra o **Diário de presença**: um dia por linha, com quantos vieram. Clique no dia para abrir a chamada. O quadro de inscritos mostra quem é cada pessoa, os dependentes e os cuidados.
+Na aba **Diário de presença** de cada item há um dia por linha, com quantos vieram. Clique no dia para abrir a chamada.
+
+## Certificados
+
+Fica em **Gestão > Certificados** e na aba **Certificados** de cada item. Clique em **Gerar certificados** e siga três passos:
+
+1. **De quais atividades?** Uma ou várias. Com várias, dê um nome ao conjunto, como "Trilha de Artes".
+2. **Quais presenças?** Todas, um período ou dias escolhidos. Depois, escolha entre **um certificado para o conjunto** ou **um certificado por presença**.
+3. **Para quem?** Aparece quem tem presença no que você escolheu, com um mínimo de presenças se quiser. Quem conduziu também pode receber o seu.
+
+As pessoas recebem um aviso e baixam em **Certificados**. Cada um tem QR Code para conferir a autenticidade. Se precisar, cancele na lista de gerados.
+
+![Certificados](../img/admin-certificados.png)
 
 ## Relatórios
 

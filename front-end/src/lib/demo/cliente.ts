@@ -3,7 +3,7 @@
 import { criarBanco, USUARIOS_DEMO, type BancoDemo } from "./dados"
 import { definirDemo } from "./modo"
 
-const CHAVE_BANCO = "cc-demo-banco-v8"
+const CHAVE_BANCO = "cc-demo-banco-v9"
 const CHAVE_USUARIO = "cc-demo-usuario"
 
 type Linha = Record<string, unknown>
@@ -62,7 +62,7 @@ function usuarioAuth() {
 const NOMES: Record<string, string> = {
   eventos: "evento", atividades: "atividade", oficinas: "oficina", centros: "centro", assistencia: "assistência",
   presencas: "presença", profiles: "usuário", metas: "meta", convites: "convite", pedidos_voluntario: "pedido de voluntário",
-  mensagens: "comunicado", fichas: "ficha", dependentes: "familiar", acompanhamento: "acompanhamento",
+  mensagens: "comunicado", certificados: "certificado", fichas: "ficha", dependentes: "familiar", acompanhamento: "acompanhamento",
 }
 const NAO_AUDITAR = new Set(["auditoria", "notificacoes", "seguranca", "consentimentos", "registros"])
 

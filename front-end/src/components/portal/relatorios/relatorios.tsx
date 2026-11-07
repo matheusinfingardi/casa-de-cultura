@@ -14,6 +14,7 @@ import { chaveData, dataBR } from "@/lib/formatar"
 import { baixarArquivo, gerarCsv } from "@/lib/ics"
 import { ehResponsavelFamiliar } from "@/lib/familia"
 import { rotaAdmin } from "@/lib/itens"
+import { listarCertificados } from "@/lib/services/certificados"
 import { carregarDashboard, type DadosDashboard } from "@/lib/services/dashboard"
 import { listarFichas, listarMetas, listarRegistros, listarTodosDependentes, salvarMeta, type Dependente, type Ficha, type Meta, type StatusDia } from "@/lib/services/extras"
 import { ITEM_TIPO_LABELS, ITEM_TIPOS, type ItemTipo } from "@/lib/services/presencas"
@@ -90,6 +91,7 @@ export default function Relatorios() {
   const [tipo, setTipo] = useState<ItemTipo | "">("")
   const [aba, setAba] = useState<Aba>("panorama")
   const [dependentes, setDependentes] = useState<Dependente[]>([])
+  const [certificados, setCertificados] = useState(0)
   const [grupo, setGrupo] = useState<GrupoPessoas>("frequentes")
   const [editando, setEditando] = useState<string | null>(null)
 
@@ -100,6 +102,7 @@ export default function Relatorios() {
     listarFichas().then(setFichas)
     listarMetas().then(setMetas)
     listarTodosDependentes().then(setDependentes)
+    listarCertificados().then((l) => setCertificados(l.length))
   }, [demo])
 
   const r = useMemo(() => {
@@ -159,7 +162,7 @@ export default function Relatorios() {
     const muitoFirmes = pessoas.filter((p) => (p.ass.taxa ?? 0) >= 90 && p.ass.total >= 5).length
     const voltaram = pessoas.filter((p) => p.voltou).length
     const turmasCheias = porItem.filter((i) => i.vagas && i.inscritos / i.vagas >= 0.9).length
-    const comCertificado = [...dados.eventos, ...dados.atividades, ...dados.oficinas].filter((i) => (i as { certificado_liberado?: boolean }).certificado_liberado).length
+    const comCertificado = certificados
     const dTaxa = delta(taxa(atual), taxa(anterior))
     const boas: { valor: string; texto: string; icon: LucideIcon }[] = []
     if (dTaxa && dTaxa > 0) boas.push({ valor: `+${dTaxa}`, texto: "pontos de presença em relação ao período anterior", icon: TrendingUp })
@@ -167,7 +170,7 @@ export default function Relatorios() {
     if (voltaram) boas.push({ valor: String(voltaram), texto: voltaram === 1 ? "pessoa voltou a vir depois de faltar 3 vezes seguidas" : "pessoas voltaram a vir depois de faltar 3 vezes seguidas", icon: RotateCcw })
     if (novas) boas.push({ valor: String(novas), texto: novas === 1 ? "pessoa nova chegou à Casa" : "pessoas novas chegaram à Casa", icon: Sprout })
     if (turmasCheias) boas.push({ valor: String(turmasCheias), texto: turmasCheias === 1 ? "turma está com as vagas quase todas preenchidas" : "turmas estão com as vagas quase todas preenchidas", icon: Users })
-    if (comCertificado) boas.push({ valor: String(comCertificado), texto: comCertificado === 1 ? "atividade já liberou certificados" : "atividades já liberaram certificados", icon: CalendarHeart })
+    if (comCertificado) boas.push({ valor: String(comCertificado), texto: comCertificado === 1 ? "certificado gerado" : "certificados gerados", icon: CalendarHeart })
 
     const assistidos = dados.usuarios.filter((u) => u.role === "cliente")
     const fichasA = fichas.filter((f) => assistidos.some((a) => a.id === f.id))
@@ -193,7 +196,7 @@ export default function Relatorios() {
       inscricoes: dados.presencas.filter((p) => itens.has(p.item_id)).length,
       temFichas: fichasA.length > 0,
     }
-  }, [dados, filtrar, periodo, tipo, registros, fichas, dependentes, demo])
+  }, [dados, filtrar, periodo, tipo, registros, fichas, dependentes, certificados, demo])
 
   function exportar() {
     if (!r) return

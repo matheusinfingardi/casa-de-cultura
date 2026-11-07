@@ -43,12 +43,12 @@ Se a câmera não funcionar, digite o código que aparece abaixo do QR Code. Se 
 
 ## Certificados
 
-Se a atividade emite certificado, quando ela terminar:
+Abra **Certificados**:
 
-1. Abra a chamada e clique em **Liberar certificados**.
-2. Quem tem presença recebe um aviso e pode baixar o seu.
+- **Meus certificados:** baixe o seu pelo trabalho que conduziu.
+- **Das minhas atividades:** gere os das pessoas inscritas. Escolha uma atividade ou um conjunto, quais presenças contam e para quem. Pode ser um certificado para o conjunto ou um por presença.
 
-**Você também tem certificado** pelo trabalho que conduziu. Abra **Certificados** e clique em **Baixar meu certificado**. Ele mostra os encontros e as horas.
+Também dá para gerar na aba **Certificados** de cada atividade.
 
 ## Sem internet
 
@@ -66,11 +66,12 @@ Escolha entre **Só os meus** e **Todos da Casa**, em formato de mês, semana ou
 
 ## Minhas atividades
 
-Mostra tudo o que está sob sua responsabilidade. Abra uma atividade para ver:
+Mostra tudo o que está sob sua responsabilidade. Abra uma atividade e use as abas:
 
-- o diário de presença: cada dia, com quantos vieram e as chamadas que faltam;
-- quem está inscrito, os dependentes e os cuidados de cada pessoa;
-- as próximas datas, a lista de espera e o mapa.
+- **Visão geral:** próximas datas, lista de espera e mapa;
+- **Inscritos:** tabela com idade, bairro, dependentes e cuidados;
+- **Diário de presença:** cada dia, com quantos vieram e as chamadas que faltam;
+- **Certificados:** gere os das pessoas inscritas.
 
 ![Página de uma atividade](../img/voluntario-atividade.png)
 

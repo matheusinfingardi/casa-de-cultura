@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import Link from "next/link"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { CalendarPlus, ClipboardCheck, Copy, Pencil, SearchX, Trash2, UserRound } from "lucide-react"
 
 import { Badge } from "@/components/ui/badge"
@@ -17,9 +17,11 @@ import { dataExtenso, faixaHorario, iniciais } from "@/lib/formatar"
 import { baixarIcs } from "@/lib/ics"
 import DiarioPresenca from "@/components/comum/diario-presenca"
 import QuadroInscritos from "@/components/comum/quadro-inscritos"
-import LiberarCertificado from "@/components/comum/liberar-certificado"
+import AbasItem, { lerAba, type AbaItem } from "@/components/comum/abas-item"
+import CertificadosGestao from "@/components/comum/certificados-gestao"
+import { useAuth } from "@/components/auth/auth-provider"
 import MapaLocal from "@/components/comum/mapa-local"
-import { API_DO_TIPO, carregarItem, enderecoDaUnidade, enderecoDoMapa, paraView, proximasDatas, rotaAdmin, type ItemView } from "@/lib/itens"
+import { API_DO_TIPO, carregarItem, enderecoDaUnidade, enderecoDoMapa, listarItensView, paraView, proximasDatas, rotaAdmin, type ItemView } from "@/lib/itens"
 import { notify } from "@/lib/notify"
 import { listarEspera, registrosDoItem, type Espera, type Registro } from "@/lib/services/extras"
 import { ITEM_TIPO_LABELS, ITEM_TIPO_TABLE, listarPresencasDoItem, type ItemTipo, type PresencaDoItem } from "@/lib/services/presencas"
@@ -42,7 +44,13 @@ function Bloco({ titulo, acao, children }: { titulo: string; acao?: React.ReactN
 
 export default function DetalheItem({ tipo, id }: { tipo: ItemTipo; id: string }) {
   const router = useRouter()
+  const params = useSearchParams()
   const demo = useDemo()
+  const { user } = useAuth()
+  const abas: [AbaItem, string][] = tipo === "centro" || !demo
+    ? [["geral", "Visão geral"], ["inscritos", "Inscritos"]]
+    : [["geral", "Visão geral"], ["inscritos", "Inscritos"], ["diario", "Diário de presença"], ["certificados", "Certificados"]]
+  const [aba, setAba] = useState<AbaItem>(lerAba(params.get("aba"), abas))
   const [item, setItem] = useState<ItemView | null | undefined>(undefined)
   const [inscritos, setInscritos] = useState<PresencaDoItem[]>([])
   const [espera, setEspera] = useState<Espera[]>([])
@@ -50,6 +58,7 @@ export default function DetalheItem({ tipo, id }: { tipo: ItemTipo; id: string }
   const [usuarios, setUsuarios] = useState<Usuario[]>([])
   const [naUnidade, setNaUnidade] = useState<ItemView[]>([])
   const [excluindo, setExcluindo] = useState(false)
+  const [todos, setTodos] = useState<ItemView[]>([])
   const [endUnidade, setEndUnidade] = useState<string | undefined>()
 
   useEffect(() => {
@@ -62,7 +71,7 @@ export default function DetalheItem({ tipo, id }: { tipo: ItemTipo; id: string }
   }, [tipo, id])
 
   useEffect(() => {
-    if (demo && item) { listarEspera(tipo, id).then(setEspera); registrosDoItem(tipo, id).then(setRegistros) }
+    if (demo && item) { listarEspera(tipo, id).then(setEspera); registrosDoItem(tipo, id).then(setRegistros); listarItensView().then(setTodos) }
     if (item) enderecoDaUnidade(item).then(setEndUnidade)
     if (demo && item && tipo === "centro") {
       Promise.all((["evento", "atividade", "oficina", "assistencia"] as ItemTipo[]).map(async (t) => {
@@ -87,7 +96,6 @@ export default function DetalheItem({ tipo, id }: { tipo: ItemTipo; id: string }
     if (!item) return
     const resto = { ...(item.bruto as unknown as Record<string, unknown>) }
     delete resto.id
-    resto.certificado_liberado = false
     const copia = await API_DO_TIPO[tipo].criar({ ...resto, nome: `${item.nome} (cópia)` } as never)
     notify.success("Cópia criada. Ajuste o que precisar.")
     router.push(`${rotaAdmin(tipo, (copia as { id: string }).id)}/editar`)
@@ -108,7 +116,17 @@ export default function DetalheItem({ tipo, id }: { tipo: ItemTipo; id: string }
         }
       />
 
-      <div className="grid items-start gap-6 lg:grid-cols-3">
+      <AbasItem abas={abas} atual={aba} onChange={setAba} />
+
+      {aba === "inscritos" && (
+        <Bloco titulo={`Inscritos (${inscritos.length})`} acao={<Button asChild size="sm" variant="outline"><Link href={`/portal/presenca/${tipo}/${id}`}>Gerenciar lista</Link></Button>}>
+          <QuadroInscritos inscritos={inscritos} hrefPessoa={(p) => `/portal/assistidos/${p}`} />
+        </Bloco>
+      )}
+      {aba === "diario" && <DiarioPresenca item={item} registros={registros} hrefChamada={(d) => `/portal/presenca/${tipo}/${id}?data=${d}`} />}
+      {aba === "certificados" && <CertificadosGestao itens={todos} itemFixo={item} autor={(user?.user_metadata?.nome as string) ?? "Coordenação"} hrefVer={(c) => `/portal/certificados/${c}`} />}
+
+      {aba === "geral" && <div className="grid items-start gap-6 lg:grid-cols-3">
         <div className="space-y-6 lg:col-span-2">
           <section className="overflow-hidden rounded-2xl border bg-card shadow-sm">
             <CapaItem tipo={tipo} imagem={item.imagem_url} className="h-64" />
@@ -161,12 +179,6 @@ export default function DetalheItem({ tipo, id }: { tipo: ItemTipo; id: string }
           )}
 
           <MapaLocal endereco={enderecoDoMapa(item, endUnidade)} />
-
-          {demo && tipo !== "centro" && <DiarioPresenca item={item} registros={registros} hrefChamada={(d) => `/portal/presenca/${tipo}/${id}?data=${d}`} />}
-
-          <Bloco titulo={`Inscritos (${inscritos.length})`} acao={<Button asChild size="sm" variant="outline"><Link href={`/portal/presenca/${tipo}/${id}`}>Gerenciar lista</Link></Button>}>
-            <QuadroInscritos inscritos={inscritos} hrefPessoa={(p) => `/portal/assistidos/${p}`} />
-          </Bloco>
         </div>
 
         <aside className="space-y-6">
@@ -189,8 +201,6 @@ export default function DetalheItem({ tipo, id }: { tipo: ItemTipo; id: string }
             </Bloco>
           )}
 
-          <LiberarCertificado item={item} presentes={demo ? new Set(registros.filter((r) => r.status === "presente").map((r) => r.cliente_id)).size : inscritos.filter((p) => p.status === "presente").length} aoMudar={() => carregarItem(tipo, id).then(setItem)} />
-
           <Bloco titulo="Responsável">
             {item.responsavel ? (
               <div className="flex items-center gap-3">
@@ -209,7 +219,7 @@ export default function DetalheItem({ tipo, id }: { tipo: ItemTipo; id: string }
           </Bloco>
 
         </aside>
-      </div>
+      </div>}
 
       <Confirmar
         aberto={excluindo}
