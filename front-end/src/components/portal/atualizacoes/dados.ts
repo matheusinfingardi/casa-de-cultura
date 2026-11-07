@@ -2,6 +2,7 @@
 // acrescentar um item NO TOPO de CHANGELOG (linguagem simples, sem termos técnicos).
 
 export type Novidade = {
+  versao: string
   data: string // AAAA-MM-DD
   titulo: string
   itens: string[]
@@ -9,6 +10,24 @@ export type Novidade = {
 
 export const CHANGELOG: Novidade[] = [
   {
+    versao: "1.1.0",
+    data: "2026-11-07",
+    titulo: "Formulários novos, Visão geral, Ajuda e Suporte Técnico",
+    itens: [
+      "Formulários de eventos, atividades, oficinas, centros e assistência refeitos: mais simples, em seções, com avisos claros quando falta algo.",
+      "Atividades semanais agora gravam todos os dias escolhidos (antes só um dia era salvo).",
+      "Listas com busca, filtros, ordenação e confirmação antes de excluir.",
+      "Visão geral nova: calendário de verdade, agenda do dia, indicadores e alertas do que precisa de atenção.",
+      "Oficinas mostram quantas vagas já foram preenchidas e avisam quando lotam.",
+      "Botão “Inscritos” em cada item para marcar presença e adicionar ou remover pessoas.",
+      "Usuários com busca e filtro por papel; dar ou tirar administrador pede confirmação.",
+      "Nova página Ajuda, com perguntas frequentes e o botão Falar com o Suporte Técnico (abre um e-mail pronto para o T.I.).",
+      "Menu reorganizado por área: Programação, Atendimento, Pessoas e Suporte.",
+      "Telas de “página não encontrada” e de erro mais amigáveis.",
+    ],
+  },
+  {
+    versao: "1.0.1",
     data: "2026-11-07",
     titulo: "Três portas de entrada e novo painel do assistido",
     itens: [
@@ -24,6 +43,7 @@ export const CHANGELOG: Novidade[] = [
     ],
   },
   {
+    versao: "1.0.0",
     data: "2026-06-16",
     titulo: "Login e painel para quem participa",
     itens: [
@@ -35,11 +55,13 @@ export const CHANGELOG: Novidade[] = [
     ],
   },
   {
+    versao: "0.9.0",
     data: "2026-06-15",
     titulo: "Cadastro de Assistência",
     itens: ["Criar, editar, consultar e excluir atendimentos de assistência."],
   },
   {
+    versao: "0.8.0",
     data: "2026-06-14",
     titulo: "Atividades e Eventos",
     itens: [
@@ -48,6 +70,7 @@ export const CHANGELOG: Novidade[] = [
     ],
   },
   {
+    versao: "0.7.0",
     data: "2026-06-09",
     titulo: "Centros e Oficinas",
     itens: [
@@ -57,11 +80,13 @@ export const CHANGELOG: Novidade[] = [
     ],
   },
   {
+    versao: "0.6.0",
     data: "2026-05-29",
     titulo: "Uso no celular",
     itens: ["O portal passou a se ajustar a telas pequenas, com menu próprio para celular."],
   },
   {
+    versao: "0.5.0",
     data: "2026-05-21",
     titulo: "Primeira versão",
     itens: [
@@ -115,13 +140,35 @@ export const INTEGRACOES: Integracao[] = [
     ],
   },
   {
-    nome: "Hospedagem do site",
+    nome: "Hospedagem do site (Vercel)",
     para: "Colocar o sistema no ar para o público.",
-    status: "pendente",
+    status: "atencao",
     responsavel: "Equipe toda",
     precisa: [
-      "Escolher onde publicar (por exemplo Vercel) e registrar as duas chaves do Supabase no ambiente de produção.",
+      "Conferir que a pasta raiz do projeto na Vercel é front-end e que as chaves do banco estão cadastradas no ambiente de produção.",
       "Definir o endereço (domínio) oficial.",
+    ],
+  },
+  {
+    nome: "Suporte Técnico (e-mail do T.I.)",
+    para: "Receber os chamados enviados pelo botão “Falar com o Suporte Técnico”.",
+    status: "atencao",
+    responsavel: "Equipe toda",
+    precisa: [
+      "O T.I. informar o e-mail oficial e cadastrar NEXT_PUBLIC_SUPORTE_EMAIL na Vercel (hoje usa um endereço de exemplo).",
+      "(Opcional) cadastrar NEXT_PUBLIC_SUPORTE_WHATSAPP para exibir o botão de WhatsApp.",
+      "No futuro, trocar o e-mail por um sistema de chamados com acompanhamento (depende do back-end).",
+    ],
+  },
+  {
+    nome: "Migração do banco (Supabase → Postgres próprio)",
+    para: "A equipe de back-end quer sair do Supabase e criar um banco e uma API próprios.",
+    status: "pendente",
+    responsavel: "Back-end",
+    precisa: [
+      "Ler o PDF de orientações enviado à equipe de back-end.",
+      "Publicar uma API de testes (staging) seguindo o contrato; o front-end então troca as chamadas em cerca de um dia.",
+      "Migrar usuários preservando as senhas e normalizar os dados antigos de oficinas e atividades.",
     ],
   },
   {
@@ -130,7 +177,7 @@ export const INTEGRACOES: Integracao[] = [
     status: "pendente",
     responsavel: "Back-end",
     precisa: [
-      "Criar um espaço de armazenamento de arquivos (Storage) para envio de fotos. Hoje o sistema só aceita o endereço (link) de uma imagem.",
+      "Criar um espaço de armazenamento de arquivos (Storage) para envio de fotos e as colunas de imagem e descrição nas tabelas. Esses campos foram retirados dos formulários porque nunca eram salvos.",
       "Definir limite de tamanho e quem pode enviar.",
     ],
   },

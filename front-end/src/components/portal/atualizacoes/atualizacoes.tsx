@@ -34,10 +34,10 @@ export default function Atualizacoes() {
 
         <TabsContent value="changelog" className="space-y-4 pt-2">
           {CHANGELOG.map((n, idx) => (
-            <Card key={n.data + n.titulo} className="p-5 space-y-3">
+            <Card key={n.versao} className="p-5 space-y-3">
               <div className="flex flex-wrap items-center gap-2">
                 <h2 className="font-semibold">{n.titulo}</h2>
-                {idx === 0 && <Badge>Mais recente</Badge>}
+                <Badge variant={idx === 0 ? "default" : "outline"}>v{n.versao}</Badge>{idx === 0 && <Badge variant="secondary">Mais recente</Badge>}
               </div>
               <p className="text-xs text-muted-foreground">{formatarData(n.data)}</p>
               <ul className="space-y-2">

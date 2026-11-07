@@ -6,7 +6,7 @@ import Link from "next/link"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+import { Campo } from "@/components/comum/campo"
 import { cadastrarAdmin } from "@/lib/services/auth"
 import { traduzirErro } from "@/components/auth/traduzir-erro"
 
@@ -68,32 +68,9 @@ export default function AdminSignupPage() {
         )}
 
         <div className="space-y-4">
-          <div className="space-y-2">
-            <Label>Nome</Label>
-            <Input
-              placeholder="Seu nome"
-              value={nome}
-              onChange={(e) => setNome(e.target.value)}
-            />
-          </div>
-          <div className="space-y-2">
-            <Label>Email</Label>
-            <Input
-              type="email"
-              placeholder="Digite seu email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-          </div>
-          <div className="space-y-2">
-            <Label>Senha</Label>
-            <Input
-              type="password"
-              placeholder="Crie uma senha"
-              value={senha}
-              onChange={(e) => setSenha(e.target.value)}
-            />
-          </div>
+          <Campo label="Nome">{(p) => <Input {...p} autoComplete="name" placeholder="Seu nome" value={nome} onChange={(e) => setNome(e.target.value)} />}</Campo>
+          <Campo label="E-mail">{(p) => <Input {...p} type="email" autoComplete="email" placeholder="Digite seu e-mail" value={email} onChange={(e) => setEmail(e.target.value)} />}</Campo>
+          <Campo label="Senha">{(p) => <Input {...p} type="password" autoComplete="new-password" placeholder="Crie uma senha" value={senha} onChange={(e) => setSenha(e.target.value)} />}</Campo>
           <Button
             className="w-full h-11 cursor-pointer"
             onClick={handleSubmit}

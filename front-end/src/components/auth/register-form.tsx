@@ -1,9 +1,10 @@
 "use client"
 
 import { useState } from "react"
+import { Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+import { Campo } from "@/components/comum/campo"
 
 interface Props {
   onSubmit: (nome: string, email: string, senha: string) => void
@@ -23,41 +24,17 @@ export default function RegisterForm({ onSubmit, loading }: Props) {
         onSubmit(nome, email, senha)
       }}
     >
-      <div className="space-y-2">
-        <Label>Nome</Label>
-        <Input
-          placeholder="Seu nome"
-          value={nome}
-          onChange={(e) => setNome(e.target.value)}
-        />
-      </div>
-      <div className="space-y-2">
-        <Label>Email</Label>
-        <Input
-          type="email"
-          autoComplete="email"
-          required
-          placeholder="Digite seu email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
-      </div>
-      <div className="space-y-2">
-        <Label>Senha</Label>
-        <Input
-          type="password"
-          autoComplete="new-password"
-          required
-          placeholder="Crie uma senha"
-          value={senha}
-          onChange={(e) => setSenha(e.target.value)}
-        />
-      </div>
-      <Button
-        className="w-full h-11 cursor-pointer"
-        type="submit"
-        disabled={loading}
-      >
+      <Campo label="Nome">
+        {(p) => <Input {...p} autoComplete="name" required placeholder="Seu nome" value={nome} onChange={(e) => setNome(e.target.value)} />}
+      </Campo>
+      <Campo label="E-mail">
+        {(p) => <Input {...p} type="email" autoComplete="email" required placeholder="Digite seu e-mail" value={email} onChange={(e) => setEmail(e.target.value)} />}
+      </Campo>
+      <Campo label="Senha" dica="Use pelo menos 6 caracteres.">
+        {(p) => <Input {...p} type="password" autoComplete="new-password" required minLength={6} placeholder="Crie uma senha" value={senha} onChange={(e) => setSenha(e.target.value)} />}
+      </Campo>
+      <Button type="submit" className="w-full h-11 cursor-pointer" disabled={loading}>
+        {loading && <Loader2 className="h-4 w-4 animate-spin" aria-hidden />}
         {loading ? "Cadastrando..." : "Criar Conta"}
       </Button>
     </form>
