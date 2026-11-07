@@ -57,7 +57,7 @@ Tudo abaixo funciona no **modo demonstração**. Os itens com 🔗 ainda precisa
 - **v1.3 Dia a dia:** check-in por QR Code, lista de espera 🔗, presença sem internet, aplicativo instalável, avisos 🔗, agenda em mês, semana e lista, arquivo de calendário, duplicar itens e apresentação inicial.
 - **v1.4 Pessoas:** ficha 🔗, histórico, família 🔗, pedidos de voluntariado 🔗, disponibilidade 🔗, convites 🔗, minha conta e recuperação de senha.
 - **v1.5 Gestão:** relatórios com planilha e PDF, metas 🔗, filtro por unidade 🔗 e histórico de ações 🔗.
-- **v1.6 LGPD e segurança:** termos, privacidade, consentimento 🔗, baixar e excluir dados 🔗, verificação em duas etapas 🔗, limite de tentativas, pergunta anti-robô, dados sensíveis escondidos e cabeçalhos de segurança.
+- **v1.6 LGPD e segurança:** termos, privacidade, consentimento 🔗, baixar e excluir dados 🔗, verificação em duas etapas 🔗, limite de tentativas, dados sensíveis escondidos e cabeçalhos de segurança.
 - **v2.0:** certificados com QR Code, fotos nos cadastros 🔗 e comunicados 🔗 (e-mail e WhatsApp simulados).
 
 ### v1.7 Cuidado e rotina ✅ protótipo (esta entrega)

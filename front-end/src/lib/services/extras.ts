@@ -148,8 +148,10 @@ export async function cancelarConvite(id: string) {
 
 export type PedidoVoluntario = { id: string; nome: string; email: string; telefone: string; area: string; disponibilidade: string; status: "pendente" | "aprovado" | "recusado"; created_at: string }
 export const listarPedidos = () => lista<PedidoVoluntario>("pedidos_voluntario", { col: "created_at", asc: false })
-export async function criarPedido(p: Omit<PedidoVoluntario, "id" | "status" | "created_at">) {
-  await supabase.from("pedidos_voluntario").insert([{ ...p, status: "pendente" }])
+/** Devolve false se o pedido não pôde ser guardado (a tabela ainda não existe no banco real). */
+export async function criarPedido(p: Omit<PedidoVoluntario, "id" | "status" | "created_at">): Promise<boolean> {
+  const { error } = await supabase.from("pedidos_voluntario").insert([{ ...p, status: "pendente" }])
+  return !error
 }
 export async function responderPedido(p: PedidoVoluntario, aprovado: boolean) {
   await supabase.from("pedidos_voluntario").update({ status: aprovado ? "aprovado" : "recusado" }).eq("id", p.id)

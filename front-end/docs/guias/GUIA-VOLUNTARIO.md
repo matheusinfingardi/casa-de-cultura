@@ -6,7 +6,7 @@ Este guia é para quem conduz atividades, oficinas e eventos. Com o sistema voc�
 
 Na página inicial, clique em **Sou voluntário** e entre com seu e-mail e senha.
 
-Ainda não é voluntário? Em **Ainda não tem conta?**, clique em **Quero ajudar** e envie seu pedido. Quem cria o acesso é a coordenação.
+Ainda não é voluntário? Em **Ainda não tem conta?**, clique em **Quero ajudar** e preencha o pedido. A coordenação analisa e cria o seu acesso.
 
 ## Compromissos dia a dia
 

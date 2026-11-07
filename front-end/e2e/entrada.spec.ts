@@ -30,15 +30,26 @@ test("a demonstração abre cada portal pela rota escondida", async ({ page }) =
   }
 })
 
-test("cadastro exige aceite dos termos e a resposta certa", async ({ page }) => {
+test("demonstração não mostra e-mails nem senhas de teste", async ({ page }) => {
+  await page.goto("/demonstracao")
+  await expect(page.getByRole("button", { name: "Entrar como voluntário" })).toBeVisible()
+  await expect(page.getByText(/12345678|admin@admin\.com/)).toHaveCount(0)
+})
+
+test("pedido de voluntário tem formulário fora da demonstração", async ({ page }) => {
+  await page.goto("/quero-ser-voluntario")
+  await expect(page.getByLabel("Nome completo")).toBeVisible()
+  await expect(page.getByText("Em breve")).toHaveCount(0)
+})
+
+test("cadastro exige aceite dos termos e não pede conta de robô", async ({ page }) => {
   await page.goto("/auth?perfil=assistido&mode=register")
   await page.getByLabel("Nome").fill("Teste")
   await page.getByLabel("E-mail").fill("t@t.com")
   await page.getByLabel("Senha").fill("123456")
-  await page.getByLabel(/quanto é/).fill("999")
+  await expect(page.getByLabel(/quanto é/)).toHaveCount(0)
   await page.getByRole("button", { name: "Criar conta" }).click()
   await expect(page.getByText("É preciso aceitar para criar a conta")).toBeVisible()
-  await expect(page.getByText("Resposta incorreta")).toBeVisible()
 })
 
 test("página inexistente mostra aviso amigável", async ({ page }) => {

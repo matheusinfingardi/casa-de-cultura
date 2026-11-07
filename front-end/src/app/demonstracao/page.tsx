@@ -6,10 +6,10 @@ import PaginaSimples from "@/components/comum/pagina-simples"
 import { iniciarSessaoDemo } from "@/lib/demo/cliente"
 import type { Perfil } from "@/lib/perfis"
 
-const OPCOES: { perfil: Perfil; titulo: string; texto: string; rota: string; email: string; icon: typeof HandHeart }[] = [
-  { perfil: "assistido", titulo: "Assistido", texto: "Encontrar atividades, se inscrever e acompanhar a participação.", rota: "/painel", email: "assistido@assistido.com", icon: HeartHandshake },
-  { perfil: "voluntario", titulo: "Voluntário", texto: "Ver os compromissos dia a dia e fazer a chamada.", rota: "/painel", email: "voluntario@voluntario.com", icon: HandHeart },
-  { perfil: "admin", titulo: "Administração", texto: "Cadastrar, cuidar das pessoas e acompanhar resultados.", rota: "/portal", email: "admin@admin.com", icon: ShieldCheck },
+const OPCOES: { perfil: Perfil; titulo: string; texto: string; rota: string; icon: typeof HandHeart }[] = [
+  { perfil: "assistido", titulo: "Assistido", texto: "Encontrar atividades, se inscrever e acompanhar a participação.", rota: "/painel", icon: HeartHandshake },
+  { perfil: "voluntario", titulo: "Voluntário", texto: "Ver os compromissos dia a dia e fazer a chamada.", rota: "/painel", icon: HandHeart },
+  { perfil: "admin", titulo: "Administração", texto: "Cadastrar, cuidar das pessoas e acompanhar resultados.", rota: "/portal", icon: ShieldCheck },
 ]
 
 /** Endereço não divulgado na página inicial. Passe só para quem vai testar. */
@@ -23,10 +23,6 @@ export default function DemonstracaoPage() {
             <h2 className="mt-4 text-xl font-semibold">{o.titulo}</h2>
             <p className="mt-1 flex-1 text-muted-foreground">{o.texto}</p>
             <Button className="mt-5 w-full" aria-label={`Entrar como ${o.titulo.toLowerCase()}`} onClick={() => { iniciarSessaoDemo(o.perfil); window.location.assign(o.rota) }}>Entrar sem senha</Button>
-            <dl className="mt-4 space-y-2 border-t pt-4 text-sm">
-              <div><dt className="text-muted-foreground">Ou faça login com o e-mail</dt><dd className="font-medium">{o.email}</dd></div>
-              <div><dt className="text-muted-foreground">Senha</dt><dd className="font-medium">12345678</dd></div>
-            </dl>
           </li>
         ))}
       </ul>

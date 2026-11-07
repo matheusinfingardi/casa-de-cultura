@@ -1,6 +1,6 @@
 "use client"
 
-import { useId, useState } from "react"
+import { useState } from "react"
 import Link from "next/link"
 import { Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -17,23 +17,16 @@ export default function RegisterForm({ onSubmit, loading }: Props) {
   const [email, setEmail] = useState("")
   const [senha, setSenha] = useState("")
   const [aceite, setAceite] = useState(false)
-  // Pergunta simples contra robôs. Deriva de useId para ser igual no servidor e no navegador.
-  const semente = [...useId()].reduce((t, c) => t + c.charCodeAt(0), new Date().getDate())
-  const conta = { a: 2 + (semente % 7), b: 1 + (semente % 5) }
-  const [resposta, setResposta] = useState("")
-  const [erros, setErros] = useState<{ aceite?: string; conta?: string }>({})
+  const [erros, setErros] = useState<{ aceite?: string }>({})
 
   return (
     <form
       className="space-y-4"
       onSubmit={(e) => {
         e.preventDefault()
-        const novos = {
-          aceite: aceite ? undefined : "É preciso aceitar para criar a conta",
-          conta: Number(resposta) === conta.a + conta.b ? undefined : "Resposta incorreta. Tente de novo",
-        }
+        const novos = { aceite: aceite ? undefined : "É preciso aceitar para criar a conta" }
         setErros(novos)
-        if (!novos.aceite && !novos.conta) onSubmit(nome, email, senha)
+        if (!novos.aceite) onSubmit(nome, email, senha)
       }}
     >
       <Campo label="Nome">
@@ -44,9 +37,6 @@ export default function RegisterForm({ onSubmit, loading }: Props) {
       </Campo>
       <Campo label="Senha" dica="Use pelo menos 6 caracteres.">
         {(p) => <Input {...p} type="password" autoComplete="new-password" required minLength={6} placeholder="Crie uma senha" value={senha} onChange={(e) => setSenha(e.target.value)} />}
-      </Campo>
-      <Campo label={`Para confirmar que você é uma pessoa: quanto é ${conta.a} + ${conta.b}?`} erro={erros.conta}>
-        {(p) => <Input {...p} inputMode="numeric" required value={resposta} onChange={(e) => setResposta(e.target.value)} />}
       </Campo>
       <div>
         <label className="flex items-start gap-2 text-sm">
