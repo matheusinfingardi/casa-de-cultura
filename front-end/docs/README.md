@@ -7,6 +7,7 @@
 | [guias/GUIA-VOLUNTARIO.md](guias/GUIA-VOLUNTARIO.md) | Voluntários / suporte | Passo a passo do portal do voluntário |
 | [guias/GUIA-ADMINISTRACAO.md](guias/GUIA-ADMINISTRACAO.md) | Administração | Passo a passo do portal administrativo |
 | [comunicados/](comunicados/) | Grupo do projeto | Resumo de cada atualização (use o `TEMPLATE.md`) |
+| [adr/](adr/) | Equipe técnica | Decisões técnicas registradas |
 
 As imagens dos guias estão em `img/`. As novidades também aparecem dentro do sistema em **Atualizações** (arquivo `src/components/portal/atualizacoes/dados.ts`).
 
