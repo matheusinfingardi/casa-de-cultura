@@ -81,7 +81,7 @@ export default function Suporte({ destaque }: { destaque?: boolean }) {
 
   return (
     <>
-      <Button size={destaque ? "lg" : "default"} onClick={() => setAberto(true)}>
+      <Button size={destaque ? "lg" : "default"} className="w-full" onClick={() => setAberto(true)}>
         <LifeBuoy className="h-4 w-4" aria-hidden /> Falar com o Suporte Técnico
       </Button>
 

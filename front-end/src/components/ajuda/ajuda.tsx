@@ -4,69 +4,83 @@ import { useMemo, useState } from "react"
 import { ChevronDown, Search, SearchX } from "lucide-react"
 
 import { Input } from "@/components/ui/input"
-import PageHeader from "@/components/comum/page-header"
 import EstadoVazio from "@/components/comum/estado-vazio"
 import { APP_VERSAO } from "@/lib/config"
 import type { Perfil } from "@/lib/perfis"
-import { PERGUNTAS, PRIMEIROS_PASSOS } from "./conteudo"
+import { PRIMEIROS_PASSOS, TEMAS } from "./conteudo"
 import Suporte from "./suporte"
 
 export default function Ajuda({ perfil }: { perfil: Perfil }) {
+  const temas = TEMAS[perfil]
   const [busca, setBusca] = useState("")
+  const [tema, setTema] = useState(temas[0].id)
+  const termo = busca.trim().toLowerCase()
+
   const perguntas = useMemo(() => {
-    const t = busca.trim().toLowerCase()
-    return PERGUNTAS[perfil].filter((q) => !t || `${q.p} ${q.r}`.toLowerCase().includes(t))
-  }, [busca, perfil])
+    if (termo) return temas.flatMap((t) => t.perguntas).filter((q) => `${q.p} ${q.r}`.toLowerCase().includes(termo))
+    return temas.find((t) => t.id === tema)?.perguntas ?? []
+  }, [termo, temas, tema])
 
   return (
-    <div className="mx-auto max-w-3xl space-y-8">
-      <PageHeader titulo="Ajuda" descricao="Respostas rápidas para as dúvidas mais comuns. Se não resolver, fale com o Suporte Técnico." />
-
-      <section aria-labelledby="passos">
-        <h2 id="passos" className="mb-3 text-lg font-semibold">Primeiros passos</h2>
-        <ol className="grid gap-3 sm:grid-cols-3">
-          {PRIMEIROS_PASSOS[perfil].map((p, i) => (
-            <li key={p.titulo} className="rounded-2xl border bg-card p-4 shadow-sm">
-              <span className="mb-2 flex h-7 w-7 items-center justify-center rounded-full bg-primary text-sm font-semibold text-primary-foreground" aria-hidden>{i + 1}</span>
-              <p className="font-medium">{p.titulo}</p>
-              <p className="mt-1 text-sm text-muted-foreground">{p.texto}</p>
-            </li>
-          ))}
-        </ol>
-      </section>
-
-      <section aria-labelledby="faq" className="space-y-3">
-        <h2 id="faq" className="text-lg font-semibold">Perguntas frequentes</h2>
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" aria-hidden />
-          <Input className="pl-9" placeholder="Buscar nas perguntas" aria-label="Buscar nas perguntas frequentes" value={busca} onChange={(e) => setBusca(e.target.value)} />
+    <div className="space-y-8">
+      <header className="rounded-3xl bg-primary px-6 py-10 text-center text-primary-foreground md:py-12">
+        <h1 className="text-3xl font-bold md:text-4xl">Como podemos ajudar?</h1>
+        <div className="relative mx-auto mt-5 max-w-2xl">
+          <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" aria-hidden />
+          <Input className="h-14 pl-12 text-base text-foreground" placeholder="Digite sua dúvida. Ex.: esqueci a senha" aria-label="Buscar nas perguntas" value={busca} onChange={(e) => setBusca(e.target.value)} />
         </div>
-        {perguntas.length === 0 ? (
-          <EstadoVazio icon={SearchX} titulo="Nenhuma pergunta encontrada" texto="Tente outras palavras ou fale com o Suporte Técnico logo abaixo." />
-        ) : (
-          <div className="space-y-2">
-            {perguntas.map((q) => (
-              <details key={q.p} className="group rounded-xl border bg-card px-4 py-3 shadow-sm open:shadow-md">
-                <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-sm font-medium">
-                  {q.p}
-                  <ChevronDown className="h-4 w-4 shrink-0 text-muted-foreground transition-transform group-open:rotate-180" aria-hidden />
-                </summary>
-                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{q.r}</p>
-              </details>
+      </header>
+
+      {!termo && (
+        <section aria-labelledby="passos">
+          <h2 id="passos" className="mb-3 text-xl font-semibold">Comece por aqui</h2>
+          <ol className="grid gap-4 md:grid-cols-3">
+            {PRIMEIROS_PASSOS[perfil].map((p, i) => (
+              <li key={p.titulo} className="flex gap-4 rounded-2xl border bg-card p-5 shadow-sm">
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary font-semibold text-primary-foreground" aria-hidden>{i + 1}</span>
+                <div><p className="font-semibold">{p.titulo}</p><p className="mt-0.5 text-muted-foreground">{p.texto}</p></div>
+              </li>
             ))}
-          </div>
-        )}
-      </section>
+          </ol>
+        </section>
+      )}
 
-      <section className="rounded-2xl border border-primary/30 bg-primary/5 p-6 text-center">
-        <h2 className="text-lg font-semibold">Ainda precisa de ajuda?</h2>
-        <p className="mx-auto mb-4 mt-1 max-w-md text-sm text-muted-foreground">
-          Nossa equipe de T.I. responde por e-mail. Descreva o problema e nós preenchemos os dados técnicos para você.
-        </p>
-        <Suporte destaque />
-      </section>
+      <div className="grid items-start gap-6 lg:grid-cols-[1fr_22rem]">
+        <section aria-labelledby="duvidas" className="min-w-0 space-y-4">
+          <h2 id="duvidas" className="text-xl font-semibold">{termo ? `Resultados para “${busca}”` : "Dúvidas por assunto"}</h2>
+          {!termo && (
+            <div className="flex flex-wrap gap-2" role="group" aria-label="Assuntos">
+              {temas.map((t) => (
+                <button key={t.id} type="button" aria-pressed={tema === t.id} onClick={() => setTema(t.id)} className={`rounded-full border px-4 py-2 text-sm font-medium ${tema === t.id ? "border-primary bg-primary text-primary-foreground" : "bg-card hover:bg-muted"}`}>
+                  {t.titulo}
+                </button>
+              ))}
+            </div>
+          )}
+          {perguntas.length === 0 ? (
+            <EstadoVazio icon={SearchX} titulo="Não encontramos nada" texto="Tente outras palavras ou fale com o Suporte Técnico." />
+          ) : (
+            <div className="divide-y overflow-hidden rounded-2xl border bg-card shadow-sm">
+              {perguntas.map((q) => (
+                <details key={q.p} className="group">
+                  <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-5 py-4 font-medium hover:bg-muted/40">
+                    {q.p}
+                    <ChevronDown className="h-5 w-5 shrink-0 text-muted-foreground transition-transform group-open:rotate-180" aria-hidden />
+                  </summary>
+                  <p className="px-5 pb-5 leading-relaxed text-muted-foreground">{q.r}</p>
+                </details>
+              ))}
+            </div>
+          )}
+        </section>
 
-      <p className="text-center text-xs text-muted-foreground">Casa de Cultura Evailton Vilela · versão {APP_VERSAO}</p>
+        <aside className="space-y-3 rounded-2xl border bg-card p-6 shadow-sm lg:sticky lg:top-24">
+          <h2 className="text-xl font-semibold">Ainda com dúvida?</h2>
+          <p className="text-muted-foreground">Fale com o T.I. Conte o que aconteceu e nós anexamos os dados técnicos para você.</p>
+          <Suporte />
+          <p className="pt-2 text-sm text-muted-foreground">Versão {APP_VERSAO}</p>
+        </aside>
+      </div>
     </div>
   )
 }

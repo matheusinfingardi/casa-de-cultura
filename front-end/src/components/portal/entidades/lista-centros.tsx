@@ -4,7 +4,7 @@ import { Building2 } from "lucide-react"
 import ListaEntidade from "@/components/comum/lista-entidade"
 import { centrosApi } from "@/lib/services/entidades"
 import type { Centro } from "@/lib/tipos"
-import { BotaoInscritos, SemResponsavel } from "./acoes"
+import { SemResponsavel } from "./acoes"
 
 export default function ListaCentros() {
   return (
@@ -15,7 +15,7 @@ export default function ListaCentros() {
       icon={Building2}
       singular="centro"
       novoHref="/portal/centros/novo"
-      editarHref={(i) => `/portal/centros/${i.id}`}
+      detalheHref={(i) => `/portal/centros/${i.id}`}
       carregar={centrosApi.listar}
       excluir={(i) => centrosApi.excluir(i.id)}
       nome={(i) => i.nome}
@@ -27,7 +27,6 @@ export default function ListaCentros() {
         { chave: "telefone", titulo: "Telefone", render: (i) => i.telefone || "—" },
         { chave: "resp", titulo: "Responsável", render: (i) => i.responsavel || <SemResponsavel />, secundaria: true },
       ]}
-      acoesExtras={(i) => <BotaoInscritos tipo="centro" id={i.id} nome={i.nome} />}
     />
   )
 }

@@ -56,10 +56,10 @@ export default function CalendarioMes({
         </div>
       </div>
 
-      <div className="grid grid-cols-7 text-center text-xs font-medium text-muted-foreground" aria-hidden>
+      <div className="grid grid-cols-7 text-center text-sm font-medium text-muted-foreground" aria-hidden>
         {SEMANA.map((d) => <div key={d} className="pb-2">{d}</div>)}
       </div>
-      <div className="grid grid-cols-7 gap-px overflow-hidden rounded-xl border bg-border" role="grid">
+      <div className="grid grid-cols-7 gap-px overflow-hidden rounded-xl border bg-border">
         {gradeDoMes(ano, mes).map(({ data, doMes }) => {
           const k = chaveData(data)
           const itens = porDia.get(k) ?? []
@@ -69,13 +69,12 @@ export default function CalendarioMes({
             <button
               key={k}
               type="button"
-              role="gridcell"
               onClick={() => onSelecionar(k)}
-              aria-selected={sel}
+              aria-pressed={sel}
               aria-label={`${data.toLocaleDateString("pt-BR", { day: "numeric", month: "long" })}${ehHoje ? ", hoje" : ""}, ${itens.length ? `${itens.length} compromisso${itens.length > 1 ? "s" : ""}` : "sem compromissos"}`}
               className={`flex min-h-14 flex-col items-stretch gap-1 bg-card p-1.5 text-left transition-colors hover:bg-muted sm:min-h-24 sm:p-2 ${doMes ? "" : "bg-muted/40 text-muted-foreground"} ${sel ? "outline outline-2 -outline-offset-2 outline-primary" : ""}`}
             >
-              <span className={`flex h-6 w-6 items-center justify-center rounded-full text-xs font-medium ${ehHoje ? "bg-primary text-primary-foreground" : ""}`}>{data.getDate()}</span>
+              <span className={`flex h-7 w-7 items-center justify-center rounded-full text-sm font-medium ${ehHoje ? "bg-primary text-primary-foreground" : ""}`}>{data.getDate()}</span>
               {/* celular: pontos */}
               <span className="flex flex-wrap gap-0.5 sm:hidden" aria-hidden>
                 {itens.slice(0, 4).map((o) => <span key={o.chave} className={`h-1.5 w-1.5 rounded-full ${TIPO_AGENDA_INFO[o.tipo].ponto}`} />)}
@@ -83,11 +82,11 @@ export default function CalendarioMes({
               {/* computador: títulos */}
               <span className="hidden min-w-0 flex-col gap-0.5 sm:flex" aria-hidden>
                 {itens.slice(0, 2).map((o) => (
-                  <span key={o.chave} className={`truncate rounded px-1 py-0.5 text-[11px] leading-tight ${TIPO_AGENDA_INFO[o.tipo].chip}`}>
+                  <span key={o.chave} className={`truncate rounded px-1 py-0.5 text-xs leading-tight ${TIPO_AGENDA_INFO[o.tipo].chip}`}>
                     {o.inicio && <span className="font-semibold">{o.inicio.slice(0, 5)} </span>}{o.titulo}
                   </span>
                 ))}
-                {itens.length > 2 && <span className="px-1 text-[11px] text-muted-foreground">+{itens.length - 2} mais</span>}
+                {itens.length > 2 && <span className="px-1 text-xs text-muted-foreground">+{itens.length - 2} mais</span>}
               </span>
             </button>
           )

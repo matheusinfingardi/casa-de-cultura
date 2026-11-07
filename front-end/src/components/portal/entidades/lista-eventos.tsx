@@ -6,7 +6,7 @@ import ListaEntidade from "@/components/comum/lista-entidade"
 import { eventosApi } from "@/lib/services/entidades"
 import { capitalizar, chaveData, dataBR, faixaHorario } from "@/lib/formatar"
 import type { Evento } from "@/lib/tipos"
-import { BotaoInscritos, SemResponsavel } from "./acoes"
+import { SemResponsavel } from "./acoes"
 import { TIPOS_EVENTO } from "./form-evento"
 import { useContagens } from "./use-contagens"
 
@@ -21,7 +21,7 @@ export default function ListaEventos() {
       icon={CalendarDays}
       singular="evento"
       novoHref="/portal/eventos/novo"
-      editarHref={(i) => `/portal/eventos/${i.id}`}
+      detalheHref={(i) => `/portal/eventos/${i.id}`}
       carregar={eventosApi.listar}
       excluir={(i) => eventosApi.excluir(i.id)}
       nome={(i) => i.nome}
@@ -40,7 +40,6 @@ export default function ListaEventos() {
         { chave: "resp", titulo: "Responsável", render: (i) => i.responsavel || <SemResponsavel />, secundaria: true },
         { chave: "insc", titulo: "Inscritos", render: (i) => contar("evento", i.id).total, ordem: (i) => contar("evento", i.id).total },
       ]}
-      acoesExtras={(i) => <BotaoInscritos tipo="evento" id={i.id} nome={i.nome} />}
     />
   )
 }

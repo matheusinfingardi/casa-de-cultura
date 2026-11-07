@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation"
 import { Input } from "@/components/ui/input"
 import { Campo, Secao } from "@/components/comum/campo"
 import { CampoHorarios, CampoResponsavel, CampoSelect } from "@/components/comum/campos"
+import CamposExtras, { extrasIniciais } from "@/components/comum/campos-extras"
 import FormShell from "@/components/comum/form-shell"
 import { useFormulario } from "@/components/comum/use-formulario"
 import { eventosApi } from "@/lib/services/entidades"
@@ -37,6 +38,7 @@ export default function FormEvento({ item }: { item?: Evento }) {
       nome: item?.nome ?? "", tipo: item?.tipo ?? "", data: item?.data?.slice(0, 10) ?? "", local: item?.local ?? "",
       horarioInicio: item?.horarioInicio?.slice(0, 5) ?? "", horarioFim: item?.horarioFim?.slice(0, 5) ?? "",
       responsavel: item?.responsavel ?? "", responsavel_id: item?.responsavel_id ?? null,
+      ...extrasIniciais(item),
     },
     validar
   )
@@ -48,16 +50,17 @@ export default function FormEvento({ item }: { item?: Evento }) {
       titulo={item ? "Editar evento" : "Novo evento"}
       descricao="Eventos acontecem em uma data específica e aparecem no calendário da Visão geral."
       migalhas={[{ label: "Programação" }, { label: "Eventos", href: "/portal/eventos" }, { label: item ? item.nome : "Novo" }]}
-      voltarHref="/portal/eventos"
+      voltarHref={item ? `/portal/eventos/${item.id}` : "/portal/eventos"}
       sujo={f.sujo}
       salvando={f.salvando}
       rotuloSalvar={item ? "Salvar alterações" : "Criar evento"}
       onSubmit={(ev) =>
         f.enviar(ev, async (dados) => {
+          let alvo = item?.id
           if (item) await eventosApi.atualizar(item.id, dados)
-          else await eventosApi.criar(dados)
+          else alvo = (await eventosApi.criar(dados)).id
           notify.success(item ? "Evento atualizado" : "Evento criado")
-          router.push("/portal/eventos")
+          router.push(`/portal/eventos/${alvo}`)
         })
       }
     >
@@ -85,6 +88,8 @@ export default function FormEvento({ item }: { item?: Evento }) {
           {(p) => <Input {...p} value={v.local} placeholder="Ex.: Praça Central" onChange={(x) => f.definir("local", x.target.value)} />}
         </Campo>
       </Secao>
+
+      <CamposExtras valores={v} definir={(c, x) => f.definir(c, x)} />
 
       <Secao titulo="Responsável">
         <CampoResponsavel valorId={v.responsavel_id ?? null} onChange={(id, nome) => { f.definir("responsavel_id", id); f.definir("responsavel", nome) }} />

@@ -44,3 +44,8 @@ next-env.d.ts
 # ferramentas locais
 .claude/
 CLAUDE.md
+
+# testes
+/test-results/
+/playwright-report/
+/.lighthouseci/

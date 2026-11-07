@@ -4,9 +4,9 @@ import type { Atividade, DiaSemana, Evento, Horario, Oficina, Recorrencia } from
 export type TipoAgenda = "evento" | "atividade" | "oficina"
 
 export const TIPO_AGENDA_INFO: Record<TipoAgenda, { label: string; plural: string; cor: string; ponto: string; chip: string }> = {
-  evento: { label: "Evento", plural: "Eventos", cor: "text-violet-700", ponto: "bg-violet-500", chip: "bg-violet-100 text-violet-800" },
-  atividade: { label: "Atividade", plural: "Atividades", cor: "text-sky-700", ponto: "bg-sky-500", chip: "bg-sky-100 text-sky-800" },
-  oficina: { label: "Oficina", plural: "Oficinas", cor: "text-amber-700", ponto: "bg-amber-500", chip: "bg-amber-100 text-amber-800" },
+  evento: { label: "Evento", plural: "Eventos", cor: "text-violet-700", ponto: "bg-violet-500", chip: "bg-violet-100 text-violet-900 dark:bg-violet-900 dark:text-violet-100" },
+  atividade: { label: "Atividade", plural: "Atividades", cor: "text-sky-700", ponto: "bg-sky-500", chip: "bg-sky-100 text-sky-900 dark:bg-sky-900 dark:text-sky-100" },
+  oficina: { label: "Oficina", plural: "Oficinas", cor: "text-amber-700", ponto: "bg-amber-500", chip: "bg-amber-100 text-amber-900 dark:bg-amber-900 dark:text-amber-100" },
 }
 
 export type Ocorrencia = {

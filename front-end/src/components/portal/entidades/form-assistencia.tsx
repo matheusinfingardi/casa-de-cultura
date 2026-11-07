@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation"
 import { Input } from "@/components/ui/input"
 import { Campo, Secao } from "@/components/comum/campo"
 import { CampoResponsavel, CampoSelect } from "@/components/comum/campos"
+import CamposExtras, { extrasIniciais } from "@/components/comum/campos-extras"
 import FormShell from "@/components/comum/form-shell"
 import { useFormulario } from "@/components/comum/use-formulario"
 import { assistenciaApi } from "@/lib/services/entidades"
@@ -27,6 +28,7 @@ export default function FormAssistencia({ item }: { item?: Assistencia }) {
     {
       nome: item?.nome ?? "", tipo: item?.tipo ?? "", local: item?.local ?? "",
       responsavel: item?.responsavel ?? "", responsavel_id: item?.responsavel_id ?? null,
+      ...extrasIniciais(item),
     },
     validar
   )
@@ -37,16 +39,17 @@ export default function FormAssistencia({ item }: { item?: Assistencia }) {
       titulo={item ? "Editar assistência" : "Nova assistência"}
       descricao="Serviços de apoio oferecidos às famílias atendidas, como orientação jurídica ou cesta básica."
       migalhas={[{ label: "Atendimento" }, { label: "Assistência", href: "/portal/assistencia" }, { label: item ? item.nome : "Nova" }]}
-      voltarHref="/portal/assistencia"
+      voltarHref={item ? `/portal/assistencia/${item.id}` : "/portal/assistencia"}
       sujo={f.sujo}
       salvando={f.salvando}
       rotuloSalvar={item ? "Salvar alterações" : "Criar assistência"}
       onSubmit={(ev) =>
         f.enviar(ev, async (dados) => {
+          let alvo = item?.id
           if (item) await assistenciaApi.atualizar(item.id, dados)
-          else await assistenciaApi.criar(dados)
+          else alvo = (await assistenciaApi.criar(dados)).id
           notify.success(item ? "Assistência atualizada" : "Assistência criada")
-          router.push("/portal/assistencia")
+          router.push(`/portal/assistencia/${alvo}`)
         })
       }
     >
@@ -61,6 +64,8 @@ export default function FormAssistencia({ item }: { item?: Assistencia }) {
           {(p) => <Input {...p} value={v.local} placeholder="Ex.: Sala 5" onChange={(x) => f.definir("local", x.target.value)} />}
         </Campo>
       </Secao>
+
+      <CamposExtras valores={v} definir={(c, x) => f.definir(c, x)} />
 
       <Secao titulo="Responsável">
         <CampoResponsavel valorId={v.responsavel_id ?? null} onChange={(id, nome) => { f.definir("responsavel_id", id); f.definir("responsavel", nome) }} />

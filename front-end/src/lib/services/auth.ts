@@ -1,3 +1,5 @@
+import { CONTAS_TESTE, SENHA_TESTE } from "@/lib/demo/dados";
+import { iniciarSessaoDemo } from "@/lib/demo/cliente";
 import { supabase } from "@/lib/supabase";
 
 export async function cadastrar(nome: string, email: string, senha: string) {
@@ -37,6 +39,13 @@ export async function cadastrarAdmin(nome: string, email: string, senha: string)
 }
 
 export async function entrar(email: string, senha: string) {
+  // Contas de teste abrem a demonstração, sem tocar no banco real.
+  const perfilTeste = CONTAS_TESTE[email.trim().toLowerCase()]
+  if (perfilTeste && senha === SENHA_TESTE) {
+    iniciarSessaoDemo(perfilTeste)
+    const usuario = await supabase.auth.getUser()
+    return { data: usuario.data, error: null, demonstracao: true }
+  }
   const { data, error } = await supabase.auth.signInWithPassword({
     email,
     password: senha,
@@ -60,4 +69,18 @@ export async function obterSessaoUsuario() {
 export function aoMudarSessao(cb: (user: import("@supabase/supabase-js").User | null) => void) {
   const { data } = supabase.auth.onAuthStateChange((_evento, session) => cb(session?.user ?? null))
   return () => data.subscription.unsubscribe()
+}
+
+export async function pedirRecuperacaoSenha(email: string) {
+  return supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: typeof window !== "undefined" ? `${window.location.origin}/auth/redefinir` : undefined,
+  })
+}
+
+export async function alterarSenha(senha: string) {
+  return supabase.auth.updateUser({ password: senha })
+}
+
+export async function alterarNome(nome: string) {
+  return supabase.auth.updateUser({ data: { nome } })
 }

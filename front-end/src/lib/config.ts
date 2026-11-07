@@ -8,4 +8,4 @@ export const SUPORTE_WHATSAPP = process.env.NEXT_PUBLIC_SUPORTE_WHATSAPP ?? ""
 
 export const SUPORTE_CONFIGURADO = !!process.env.NEXT_PUBLIC_SUPORTE_EMAIL
 
-export const APP_VERSAO = "1.1.0"
+export const APP_VERSAO = "1.6.0"

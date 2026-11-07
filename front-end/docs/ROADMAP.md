@@ -50,60 +50,24 @@ Três portais, um só aplicativo, um só login:
 - Menu reorganizado, páginas 404/erro/carregando, camada de serviços isolada (pronta para trocar de back-end).
 - Correções: atividade semanal gravava só um dia; formatos de recorrência divergentes; campos que nunca eram salvos.
 
-### v1.2 — Confiança e qualidade 📅
-Objetivo: tornar o que existe **robusto e verificável**.
-- Testes automatizados: unitários (Vitest + Testing Library) para validação, agenda e hooks; end-to-end (Playwright) para cadastro, inscrição e presença.
-- Integração contínua (GitHub Actions): lint, tipagem, testes e build a cada Pull Request; deploy de prévia por PR na Vercel.
-- Monitoramento de erros (Sentry ou similar) e página de status do app.
-- Auditoria de acessibilidade (axe + leitor de tela) e correções (foco, contraste, ordem de tabulação, anúncios `aria-live`).
-- Orçamento de desempenho (Lighthouse CI): imagens otimizadas com `next/image`, divisão de código e *skeleton* em todas as telas.
-- Tema claro/escuro e ajuste de tamanho de fonte.
-- Decisão registrada (ADR) sobre estratégia de dados: Supabase × Postgres próprio 🔗.
+### v1.2 a v1.6 e parte da v2.0 ✅ protótipo (esta entrega)
+Tudo abaixo funciona no **modo demonstração**. Os itens com 🔗 ainda precisam do back-end para funcionar com dados reais.
 
-### v1.3 — Operação do dia a dia 📅
-Objetivo: **menos trabalho manual** para voluntários e administração.
-- **Check-in por QR Code**: o voluntário abre a câmera e lê o código do assistido (ou o assistido lê o QR da atividade) 🔗.
-- **Controle de vagas**: oficina lotada bloqueia nova inscrição e abre **lista de espera** com promoção automática 🔗.
-- **Presença em lote offline**: o voluntário marca sem internet e o app sincroniza depois (PWA + fila local).
-- **Aplicativo instalável (PWA)**: ícone na tela inicial, abre em tela cheia, carrega mais rápido.
-- **Notificações dentro do app** (sino) para: inscrição confirmada, atividade alterada, vaga liberada 🔗.
-- Duplicar atividade/oficina ("copiar para o próximo semestre").
-- Calendário com visões **semana** e **lista**, e exportação `.ics` (Google/Outlook/iPhone).
-- Tour guiado no primeiro acesso de cada perfil.
+- **v1.2 Confiança e qualidade:** testes unitários e de ponta a ponta, integração contínua, auditoria de acessibilidade, tema escuro, tamanho de letra e página de status.
+- **v1.3 Dia a dia:** check-in por QR Code, lista de espera 🔗, presença sem internet, aplicativo instalável, avisos 🔗, agenda em mês, semana e lista, arquivo de calendário, duplicar itens e apresentação inicial.
+- **v1.4 Pessoas:** ficha 🔗, histórico, família 🔗, pedidos de voluntariado 🔗, disponibilidade 🔗, convites 🔗, minha conta e recuperação de senha.
+- **v1.5 Gestão:** relatórios com planilha e PDF, metas 🔗, filtro por unidade 🔗 e histórico de ações 🔗.
+- **v1.6 LGPD e segurança:** termos, privacidade, consentimento 🔗, baixar e excluir dados 🔗, verificação em duas etapas 🔗, limite de tentativas, pergunta anti-robô, dados sensíveis escondidos e cabeçalhos de segurança.
+- **v2.0:** certificados com QR Code, fotos nos cadastros 🔗 e comunicados 🔗 (e-mail e WhatsApp simulados).
 
-### v1.4 — Pessoas e atendimento 📅
-Objetivo: conhecer melhor quem é atendido, com cuidado e segurança.
-- **Ficha do assistido**: dados de contato, responsável legal, dependentes, necessidades, observações 🔗.
-- **Histórico de atendimentos** por pessoa (assistências recebidas, oficinas, presenças).
-- **Núcleo familiar**: um responsável gerencia inscrições dos filhos pela mesma conta 🔗.
-- **Cadastro de voluntários** com disponibilidade e aprovação pela administração 🔗.
-- **Convites**: a administração convida voluntários e novos administradores por e-mail (substitui a rota aberta `/admin-signup`) 🔗.
-- Perfil do usuário: editar nome, telefone, senha; **"Esqueci minha senha"** 🔗.
+### Fora do escopo do front-end
+- **Site público:** responsabilidade da equipe do site.
+- **API pública e webhooks:** responsabilidade do back-end.
 
-### v1.5 — Relatórios e gestão 📅
-Objetivo: **prestar contas e decidir com dados**.
-- **Relatórios** com filtros (período, centro, tipo): frequência por turma, evasão, ocupação de vagas, público atendido.
-- **Exportação** em PDF e planilha (CSV/XLSX) para prestação de contas a financiadores.
-- **Metas** por trimestre (ex.: 200 atendimentos) com acompanhamento no painel.
-- Gráficos de tendência na Visão geral (comparar mês a mês).
-- **Filtro por centro** em todo o portal (visão por unidade).
-- Trilha de auditoria: quem criou/alterou/excluiu o quê 🔗.
-
-### v1.6 — LGPD e segurança 📅
-- Termos de uso e política de privacidade; **consentimento** registrado no cadastro 🔗.
-- "**Meus dados**": o usuário baixa ou pede a exclusão da própria conta 🔗.
-- Autenticação em dois fatores para administradores 🔗.
-- Proteção contra abuso (limite de tentativas, *captcha* no cadastro) 🔗.
-- Mascaramento de dados sensíveis nas telas e nos relatórios conforme o perfil.
-- Revisão de segurança do front (cabeçalhos CSP, dependências, segredos).
-
-### v2.0 — Plataforma e comunidade 💡
-- **Site público** da Casa de Cultura: agenda pública, página de cada evento, notícias, doações e "seja voluntário".
-- **Integrações de comunicação**: lembretes por e-mail e WhatsApp 🔗.
-- **Imagens e documentos**: fotos de eventos e oficinas, anexos em atendimentos (armazenamento de arquivos) 🔗.
-- **Certificados** de participação em PDF com verificação por QR.
-- **API pública/OpenAPI** e *webhooks* para parceiros 🔗.
-- Multi-unidade completo (várias Casas de Cultura na mesma plataforma).
+### Ainda não feito
+- Alertas de erro por serviço externo (exige contratar, por exemplo, o Sentry).
+- Exportação em `.xlsx` (hoje a planilha sai em CSV).
+- Catálogo de componentes (Storybook).
 
 ---
 

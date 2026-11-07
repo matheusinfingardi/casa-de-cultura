@@ -1,77 +1,59 @@
 # Guia do Voluntário
 
-**Para quem é:** pessoas que conduzem atividades, oficinas, eventos, centros ou assistências.
-**O que você faz aqui:** ver o que está sob sua responsabilidade e **registrar a presença** de cada pessoa — de preferência pelo celular, durante a atividade.
+Este guia é para quem conduz atividades, oficinas e eventos. Com o sistema você vê seus compromissos e registra quem participou.
 
-> O acesso de voluntário é criado pela **coordenação**. Se você ainda não consegue entrar, peça que ela mude seu papel para "Voluntário" na área *Usuários*.
+## Como entrar
 
----
+Na página inicial, clique em **Sou voluntário** e entre com seu e-mail e senha.
 
-## 1. Como entrar
+Ainda não é voluntário? Clique em **Quero ser voluntário** e envie seu pedido. Quem cria o acesso é a coordenação.
 
-Na tela inicial escolha **"Sou voluntário"** e entre com seu e-mail e senha.
+## Seus compromissos
 
-![Entrada do voluntário](../img/voluntario-01-login.png)
+A tela inicial mostra o que acontece hoje e tudo o que está sob sua responsabilidade.
 
-> Se você escolher a porta errada, não tem problema: o sistema avisa e leva você para a sua área.
+![Compromissos](../img/voluntario-inicio.png)
 
----
+Não aparece nada? A coordenação precisa escolher você como responsável pelo item.
 
-## 2. Meus compromissos
+## Como registrar a presença
 
-A tela inicial lista tudo o que a coordenação atribuiu a você. Cada cartão mostra o **tipo** (Atividade, Oficina…), o **local** e o botão **Registrar presença**.
+1. Clique no compromisso.
+2. Para cada pessoa, clique em **Presente** ou **Ausente**.
+3. Pronto. A marcação é salva na hora.
 
-![Meus compromissos](../img/voluntario-02-compromissos.png)
+![Registro de presença](../img/voluntario-presenca.png)
 
-> Não aparece nada? A coordenação precisa escolher você como **"Voluntário responsável"** no cadastro do item. Use **Ajuda → Suporte Técnico** se precisar.
+Dicas:
 
----
+- **Marcar todos como presentes:** depois é só corrigir quem faltou.
+- **Errou?** Clique na opção certa.
+- **Alguém não está na lista?** Use **Adicionar assistido**, no fim da página.
 
-## 3. Registrar a presença
+## Check-in por QR Code
 
-1. Toque no compromisso (ou em **Registrar presença**).
-2. No alto você vê os números: **Inscritos, Presentes, Aguardando e Ausentes**.
-3. Para cada pessoa, toque em uma das opções:
-   - **Presente** — veio;
-   - **Ausente** — não veio;
-   - **Marcada** — ainda não registrado.
-4. A alteração é **salva na hora** (não existe botão "Salvar").
+1. Abra **Check-in**.
+2. Escolha o compromisso.
+3. Clique em **Ligar câmera** e aponte para o código da pessoa.
 
-![Tela de presença](../img/voluntario-03-presenca.png)
+Se a câmera não funcionar, digite o código que aparece abaixo do QR Code.
 
-### Atalhos úteis
-- **Marcar todos como presentes**: marca a turma inteira; depois corrija só quem faltou.
-- **Buscar na lista**: encontre alguém pelo nome ou e-mail.
-- Errou? Basta tocar de novo na opção correta.
+![Check-in](../img/voluntario-checkin.png)
 
----
+## Sem internet
 
-## 4. Alguém veio, mas não estava na lista
+Pode continuar marcando a presença. Um aviso mostra o que ficou guardado, e tudo é enviado quando a conexão voltar.
 
-1. No cartão **Adicionar assistido**, digite parte do **nome ou e-mail**.
-2. Toque em **Adicionar** na pessoa certa.
-3. Marque como **Presente**.
+## No celular
 
-![Adicionando uma pessoa à lista](../img/voluntario-04-adicionar.png)
+O sistema foi feito para ser usado durante a atividade, no celular. Dá para instalar: no menu do navegador, escolha **Adicionar à tela inicial**.
 
-> A pessoa precisa ter **conta de assistido**. Se não encontrar, peça que ela se cadastre pela tela inicial ("Crie seu cadastro de assistido").
+![No celular](../img/voluntario-celular.png)
 
-## 5. Remover alguém da lista
-Toque na **lixeira** ao lado do nome e confirme. A pessoa pode ser adicionada de novo depois.
+## Sua disponibilidade
 
----
+Em **Disponibilidade**, marque os dias e horários em que pode ajudar. A coordenação usa essa informação para organizar a programação.
 
-## 6. No celular
+## Precisa de ajuda?
 
-Tudo foi pensado para telas pequenas: botões grandes, lista rolável e busca no topo.
-
-![Presença no celular](../img/voluntario-05-celular.png)
-
----
-
-## 7. Perguntas rápidas
-
-**Posso criar uma atividade?** A criação é feita pela coordenação; envie sua sugestão pelo Suporte Técnico.
-**Minha internet caiu.** A marcação precisa de internet. (Uso sem internet está no plano de evolução do sistema.)
-**Errei uma marcação.** Toque de novo na opção correta; a lista atualiza na hora.
-**Quem vê o que eu marco?** A coordenação e o próprio assistido (na tela *Minhas inscrições*).
+Abra **Ajuda**. Se não encontrar a resposta, clique em **Falar com o Suporte Técnico**.

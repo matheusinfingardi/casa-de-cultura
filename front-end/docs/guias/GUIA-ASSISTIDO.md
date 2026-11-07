@@ -1,105 +1,73 @@
 # Guia do Assistido
 
-**Para quem é:** famílias e participantes da Casa de Cultura Evailton Vilela.
-**O que você faz aqui:** descobrir atividades, oficinas, eventos e atendimentos, se inscrever e acompanhar sua presença.
-Funciona no **celular**, tablet e computador — nada para instalar.
+Este guia é para quem participa das atividades da Casa de Cultura. Com o sistema você encontra o que fazer, se inscreve e acompanha sua participação. Funciona no celular e no computador.
 
----
+## Como entrar
 
-## 1. Como entrar
+Na página inicial, clique em **Sou assistido**. Digite seu e-mail e sua senha e clique em **Entrar**.
 
-Abra o endereço do sistema. Na tela inicial, escolha **"Sou assistido"**.
+Primeira vez? Clique em **Crie seu cadastro**, preencha seus dados e aceite os termos.
 
-![Tela inicial com as três opções de entrada](../img/comum-01-inicio.png)
+![Tela de entrada](../img/assistido-login.png)
 
-### Já tenho cadastro
-1. Digite seu **e-mail** e sua **senha**.
-2. Toque em **Entrar** (ou aperte Enter).
+Esqueceu a senha? Clique em **Esqueci minha senha** e receba um link por e-mail.
 
-![Tela de entrada do assistido](../img/assistido-01-login.png)
+## Sua tela inicial
 
-### Primeira vez aqui? Crie seu cadastro
-1. Na tela inicial, toque em **"Crie seu cadastro de assistido"** (ou na aba **Cadastrar**).
-2. Preencha **nome, e-mail e uma senha**.
-3. Toque em **Criar Conta**. Depois entre com os mesmos dados.
+Aqui você vê seu próximo compromisso, seu QR Code e suas inscrições.
 
-![Cadastro de assistido](../img/assistido-02-cadastro.png)
+![Tela inicial](../img/assistido-inicio.png)
 
-> 💡 Dica: anote seu e-mail e senha em um lugar seguro. Se esquecer, use o botão de **Suporte Técnico** na página Ajuda.
+## Como se inscrever
 
----
+1. Abra **Explorar**.
+2. Use a busca ou os botões para filtrar por tipo.
+3. Clique no que interessar.
+4. Clique em **Quero participar**.
 
-## 2. Sua tela inicial
+![Explorar](../img/assistido-explorar.png)
 
-Ao entrar você vê um resumo: quantas **inscrições** você tem, quantas **presenças** foram confirmadas e quantas opções estão **disponíveis** para você.
+![Página de uma oficina](../img/assistido-item.png)
 
-![Tela inicial do assistido](../img/assistido-03-inicio.png)
+## Quando a turma está cheia
 
-O menu no alto tem 4 áreas:
+Clique em **Entrar na lista de espera**. Se abrir uma vaga, você entra sozinho e recebe um aviso no sino.
 
-| Área | Para que serve |
-|---|---|
-| **Início** | Resumo e suas inscrições mais recentes |
-| **Minhas inscrições** | Tudo em que você está inscrito e sua presença |
-| **Explorar** | Descobrir e se inscrever em novidades |
-| **Ajuda** | Perguntas frequentes e Suporte Técnico |
+![Lista de espera](../img/assistido-lotado.png)
 
----
+## Suas inscrições
 
-## 3. Como se inscrever
-
-1. Toque em **Explorar**.
-2. Procure o que interessa: digite no campo **Buscar** ou use os botões de tipo (*Atividade, Evento, Oficina, Centro, Assistência*).
-3. Toque em **Inscrever-me** no item escolhido.
-4. Pronto! Aparece a mensagem **"Inscrição realizada!"** e o item passa para *Minhas inscrições*.
-
-![Explorar: lista do que está disponível](../img/assistido-04-explorar.png)
-
-Usando o filtro por tipo (exemplo: só **Oficinas**):
-
-![Explorar filtrando oficinas](../img/assistido-05-filtro.png)
-
----
-
-## 4. Acompanhar suas inscrições
-
-Em **Minhas inscrições** você vê cada item e a situação:
+Em **Inscrições** você vê sua situação em cada item:
 
 | Situação | O que significa |
 |---|---|
-| **Marcada** | Você está inscrito; ainda não houve registro de presença |
-| **Presente** | O voluntário confirmou que você participou ✅ |
-| **Ausente** | O voluntário registrou que você não compareceu |
+| Marcada | Você está inscrito |
+| Presente | Sua presença foi confirmada |
+| Ausente | Foi registrada uma falta |
 
-![Minhas inscrições](../img/assistido-06-inscricoes.png)
+Nos itens com presença confirmada, aparece o botão **Certificado**. Para sair de um item, clique em **Cancelar inscrição**.
 
-## 5. Cancelar uma inscrição
+![Minhas inscrições](../img/assistido-inscricoes.png)
 
-1. Em **Minhas inscrições**, toque em **Cancelar inscrição** no item.
-2. O sistema pergunta se tem certeza. Toque em **Cancelar inscrição** para confirmar, ou em **Manter inscrição** para desistir de cancelar.
+## No dia da atividade
 
-![Confirmação de cancelamento](../img/assistido-07-cancelar.png)
+Na tela de Início, abra **Meu QR Code** e mostre ao voluntário. A presença é registrada na hora.
 
-Você pode se inscrever novamente depois, se quiser.
+![Meu QR Code](../img/assistido-qr.png)
 
----
+## Agenda e família
 
-## 6. Precisa de ajuda?
+- **Agenda:** mostra seus compromissos e pode ser enviada ao calendário do celular.
+- **Família:** cadastre filhos e dependentes e escolha a atividade de cada um.
 
-Abra **Ajuda** no menu. Lá estão os primeiros passos, as perguntas mais comuns e o botão **"Falar com o Suporte Técnico"**.
+## Sua conta
 
-![Ajuda no celular](../img/assistido-08-ajuda-celular.png)
+Clique no círculo com suas iniciais, no alto da tela. Lá você pode:
 
-### Como pedir ajuda ao Suporte Técnico
-1. Toque em **Falar com o Suporte Técnico**.
-2. Escolha o **assunto** e conte **o que está acontecendo**.
-3. Toque em **Enviar por e-mail**. Seu aplicativo de e-mail abre com a mensagem pronta (já inclui dados técnicos que ajudam a equipe). Basta **enviar**.
+- mudar seus dados e sua senha;
+- aumentar as letras ou usar o tema escuro;
+- baixar seus dados ou excluir sua conta.
 
----
+## Precisa de ajuda?
 
-## 7. Perguntas rápidas
-
-**Não aparece nada em Explorar.** Pode ser que você já esteja inscrito em tudo ou que a Casa ainda não tenha cadastrado novidades.
-**Esqueci minha senha.** Peça ajuda pelo Suporte Técnico informando o e-mail do cadastro.
-**Posso me inscrever em mais de uma coisa?** Sim.
-**Posso usar no celular?** Sim, foi feito para isso.
+Abra **Ajuda**. Se não encontrar a resposta, clique em **Falar com o Suporte Técnico**.

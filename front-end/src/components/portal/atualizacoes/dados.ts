@@ -10,6 +10,26 @@ export type Novidade = {
 
 export const CHANGELOG: Novidade[] = [
   {
+    versao: "1.6.0",
+    data: "2026-11-07",
+    titulo: "Protótipo completo com demonstração",
+    itens: [
+      "Agora dá para conhecer os três portais sem senha, com dados de exemplo, pela página inicial.",
+      "Contas de teste no login: admin@admin.com, voluntario@voluntario.com e assistido@assistido.com (senha 12345678).",
+      "Visão geral mais simples: o que acontece hoje, a semana e o que precisa de atenção.",
+      "Nova Agenda com visão de mês, semana e lista, e arquivo para o calendário do celular.",
+      "Cada evento, atividade, oficina, assistência e centro tem sua própria página.",
+      "Usuários organizados por grupo, com ficha da pessoa, pedidos de voluntariado e convites.",
+      "Ajuda e Atualizações mais largas e mais fáceis de ler; letras maiores em todo o sistema.",
+      "Lista de espera: quando abre vaga, a primeira pessoa entra sozinha e recebe um aviso.",
+      "Check-in por QR Code e presença que funciona sem internet.",
+      "Relatórios com planilha e PDF, metas, histórico de ações e comunicados.",
+      "Família, certificados, disponibilidade do voluntário e sino de avisos.",
+      "Tema escuro, tamanho das letras e aplicativo instalável no celular.",
+      "Termos de uso, privacidade, baixar ou excluir meus dados e verificação em duas etapas.",
+    ],
+  },
+  {
     versao: "1.1.0",
     data: "2026-11-07",
     titulo: "Formulários novos, Visão geral, Ajuda e Suporte Técnico",
@@ -182,6 +202,17 @@ export const INTEGRACOES: Integracao[] = [
     ],
   },
   {
+    nome: "Novas tabelas do banco",
+    para: "Fazer funcionar na conta real o que hoje só funciona na demonstração.",
+    status: "pendente",
+    responsavel: "Back-end",
+    precisa: [
+      "Criar as tabelas de avisos, lista de espera, ficha, família, convites, pedidos de voluntariado, metas, histórico, comunicados e consentimento.",
+      "Criar as colunas de descrição, foto e unidade nos cadastros.",
+      "A lista completa está no PDF enviado à equipe de back-end.",
+    ],
+  },
+  {
     nome: "Notificações e lembretes",
     para: "Avisar assistidos e voluntários por e-mail ou WhatsApp sobre atividades.",
     status: "pendente",
@@ -194,7 +225,7 @@ export const INTEGRACOES: Integracao[] = [
 ]
 
 export const STATUS_INFO: Record<StatusIntegracao, { label: string; classe: string }> = {
-  ativa: { label: "Funcionando", classe: "bg-green-100 text-green-800" },
-  atencao: { label: "Funcionando, com pendências", classe: "bg-amber-100 text-amber-800" },
-  pendente: { label: "Ainda não feita", classe: "bg-slate-100 text-slate-700" },
+  ativa: { label: "Funcionando", classe: "bg-green-100 text-green-900 dark:bg-green-900 dark:text-green-100" },
+  atencao: { label: "Funcionando, com pendências", classe: "bg-amber-100 text-amber-900 dark:bg-amber-900 dark:text-amber-100" },
+  pendente: { label: "Ainda não feita", classe: "bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-100" },
 }

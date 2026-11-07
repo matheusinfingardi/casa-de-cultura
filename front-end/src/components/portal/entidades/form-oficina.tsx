@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation"
 import { Input } from "@/components/ui/input"
 import { Campo, Secao } from "@/components/comum/campo"
 import { CampoHorarios, CampoResponsavel, CampoSelect } from "@/components/comum/campos"
+import CamposExtras, { extrasIniciais } from "@/components/comum/campos-extras"
 import FormShell from "@/components/comum/form-shell"
 import { useFormulario } from "@/components/comum/use-formulario"
 import { oficinasApi } from "@/lib/services/entidades"
@@ -39,6 +40,7 @@ export default function FormOficina({ item }: { item?: Oficina }) {
       dia: normalizarDia(item?.dia) ?? item?.dia ?? "", vagas: item?.vagas ?? 15,
       horarioInicio: item?.horarioInicio?.slice(0, 5) ?? "", horarioFim: item?.horarioFim?.slice(0, 5) ?? "",
       responsavel: item?.responsavel ?? "", responsavel_id: item?.responsavel_id ?? null,
+      ...extrasIniciais(item),
     },
     validar
   )
@@ -49,16 +51,17 @@ export default function FormOficina({ item }: { item?: Oficina }) {
       titulo={item ? "Editar oficina" : "Nova oficina"}
       descricao="Oficinas são turmas com vagas limitadas, que acontecem num dia fixo da semana."
       migalhas={[{ label: "Programação" }, { label: "Oficinas", href: "/portal/oficinas" }, { label: item ? item.nome : "Nova" }]}
-      voltarHref="/portal/oficinas"
+      voltarHref={item ? `/portal/oficinas/${item.id}` : "/portal/oficinas"}
       sujo={f.sujo}
       salvando={f.salvando}
       rotuloSalvar={item ? "Salvar alterações" : "Criar oficina"}
       onSubmit={(ev) =>
         f.enviar(ev, async (dados) => {
+          let alvo = item?.id
           if (item) await oficinasApi.atualizar(item.id, dados)
-          else await oficinasApi.criar(dados)
+          else alvo = (await oficinasApi.criar(dados)).id
           notify.success(item ? "Oficina atualizada" : "Oficina criada")
-          router.push("/portal/oficinas")
+          router.push(`/portal/oficinas/${alvo}`)
         })
       }
     >
@@ -91,6 +94,8 @@ export default function FormOficina({ item }: { item?: Oficina }) {
           {(p) => <Input {...p} value={v.local} placeholder="Ex.: Ateliê" onChange={(x) => f.definir("local", x.target.value)} />}
         </Campo>
       </Secao>
+
+      <CamposExtras valores={v} definir={(c, x) => f.definir(c, x)} />
 
       <Secao titulo="Responsável">
         <CampoResponsavel valorId={v.responsavel_id ?? null} onChange={(id, nome) => { f.definir("responsavel_id", id); f.definir("responsavel", nome) }} />

@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge"
 import ListaEntidade from "@/components/comum/lista-entidade"
 import { assistenciaApi } from "@/lib/services/entidades"
 import type { Assistencia } from "@/lib/tipos"
-import { BotaoInscritos, SemResponsavel } from "./acoes"
+import { SemResponsavel } from "./acoes"
 import { TIPOS_ASSISTENCIA } from "./form-assistencia"
 import { useContagens } from "./use-contagens"
 
@@ -20,7 +20,7 @@ export default function ListaAssistencia() {
       singular="assistência"
       genero="f"
       novoHref="/portal/assistencia/novo"
-      editarHref={(i) => `/portal/assistencia/${i.id}`}
+      detalheHref={(i) => `/portal/assistencia/${i.id}`}
       carregar={assistenciaApi.listar}
       excluir={(i) => assistenciaApi.excluir(i.id)}
       nome={(i) => i.nome}
@@ -34,7 +34,6 @@ export default function ListaAssistencia() {
         { chave: "resp", titulo: "Responsável", render: (i) => i.responsavel || <SemResponsavel />, secundaria: true },
         { chave: "insc", titulo: "Atendidos", render: (i) => contar("assistencia", i.id).total, ordem: (i) => contar("assistencia", i.id).total },
       ]}
-      acoesExtras={(i) => <BotaoInscritos tipo="assistencia" id={i.id} nome={i.nome} />}
     />
   )
 }

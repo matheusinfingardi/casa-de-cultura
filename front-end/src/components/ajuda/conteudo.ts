@@ -2,50 +2,87 @@ import type { Perfil } from "@/lib/perfis"
 
 export type Passo = { titulo: string; texto: string }
 export type Pergunta = { p: string; r: string }
+export type Tema = { id: string; titulo: string; perguntas: Pergunta[] }
 
 export const PRIMEIROS_PASSOS: Record<Perfil, Passo[]> = {
   assistido: [
-    { titulo: "Explore", texto: "Abra a aba Explorar para ver atividades, oficinas, eventos e atendimentos disponíveis." },
-    { titulo: "Inscreva-se", texto: "Toque em “Inscrever-me” no que for do seu interesse. Pode se inscrever em mais de um." },
-    { titulo: "Acompanhe", texto: "Em Minhas inscrições você vê sua presença em cada item e pode cancelar se precisar." },
+    { titulo: "Explore", texto: "Veja atividades, oficinas, eventos e atendimentos." },
+    { titulo: "Inscreva-se", texto: "Abra o item e toque em “Quero participar”." },
+    { titulo: "Compareça", texto: "Mostre seu QR Code ao voluntário e acompanhe sua presença." },
   ],
   voluntario: [
-    { titulo: "Veja seus compromissos", texto: "Na tela inicial aparecem os itens que a administração atribuiu a você." },
-    { titulo: "Abra a presença", texto: "Toque em “Registrar presença” no compromisso do dia." },
-    { titulo: "Marque quem veio", texto: "Para cada pessoa, escolha Presente, Ausente ou Aguardando. Você também pode adicionar alguém que esqueceu de se inscrever." },
+    { titulo: "Veja seus compromissos", texto: "Tudo o que foi atribuído a você aparece na tela inicial." },
+    { titulo: "Abra a presença", texto: "Toque no compromisso do dia." },
+    { titulo: "Marque quem veio", texto: "Toque em Presente ou Ausente, ou leia o QR Code da pessoa." },
   ],
   admin: [
-    { titulo: "Cadastre a programação", texto: "Em Programação e Atendimento, crie eventos, atividades, oficinas, centros e assistências." },
-    { titulo: "Defina os voluntários", texto: "Em Pessoas › Usuários, mude o papel de quem vai ajudar para “Voluntário” e depois escolha-o como responsável nos cadastros." },
-    { titulo: "Acompanhe na Visão geral", texto: "O calendário e os indicadores mostram a agenda do mês, inscrições e o que precisa de atenção." },
+    { titulo: "Cadastre", texto: "Crie eventos, atividades, oficinas, centros e assistências." },
+    { titulo: "Escolha voluntários", texto: "Em Usuários, defina quem é voluntário e atribua os itens." },
+    { titulo: "Acompanhe", texto: "Use a Visão geral no dia a dia e os Relatórios para prestar contas." },
   ],
 }
 
-export const PERGUNTAS: Record<Perfil, Pergunta[]> = {
+export const TEMAS: Record<Perfil, Tema[]> = {
   assistido: [
-    { p: "Como me inscrevo em uma atividade?", r: "Vá em Explorar, encontre a atividade (use a busca ou os filtros por tipo) e toque em “Inscrever-me”. Ela passa a aparecer em Minhas inscrições." },
-    { p: "Como cancelo uma inscrição?", r: "Em Minhas inscrições, toque em “Cancelar inscrição” no item e confirme. Você pode se inscrever novamente depois." },
-    { p: "O que significa “Marcada”, “Presente” e “Ausente”?", r: "Marcada: você está inscrito e ainda não houve registro. Presente: o voluntário confirmou que você participou. Ausente: o voluntário registrou que você não compareceu." },
-    { p: "Esqueci minha senha. E agora?", r: "No momento a recuperação de senha automática ainda não está disponível. Use o botão de Suporte Técnico nesta página e informe o e-mail do seu cadastro; a equipe de T.I. ajudará." },
-    { p: "Não vejo nada em Explorar.", r: "Pode ser que a Casa de Cultura ainda não tenha cadastrado itens, ou que você já esteja inscrito em todos. Se acredita que é um erro, fale com o Suporte Técnico." },
-    { p: "Posso usar pelo celular?", r: "Sim. O sistema foi feito para funcionar bem em celulares, tablets e computadores." },
+    { id: "inscricoes", titulo: "Inscrições", perguntas: [
+      { p: "Como me inscrevo?", r: "Em Explorar, abra o item e toque em “Quero participar”. Ele passa a aparecer em Inscrições e na sua Agenda." },
+      { p: "A turma está cheia. E agora?", r: "Toque em “Entrar na lista de espera”. Quando abrir uma vaga, você entra automaticamente e recebe um aviso no sino." },
+      { p: "Como cancelo?", r: "Em Inscrições, toque em “Cancelar inscrição” e confirme. Você pode se inscrever de novo depois." },
+      { p: "O que significa Marcada, Presente e Ausente?", r: "Marcada: você está inscrito. Presente: o voluntário confirmou que você veio. Ausente: ele registrou que você faltou." },
+    ] },
+    { id: "dia", titulo: "No dia da atividade", perguntas: [
+      { p: "O que é o meu QR Code?", r: "É o seu cartão digital. Mostre ao voluntário para ele registrar sua presença na hora. Fica em Início › Meu QR Code." },
+      { p: "Como coloco na agenda do celular?", r: "Em Agenda, toque em “Baixar para o calendário” e abra o arquivo no celular." },
+    ] },
+    { id: "familia", titulo: "Família e certificados", perguntas: [
+      { p: "Posso cuidar das inscrições dos meus filhos?", r: "Sim. Em Família, cadastre seus filhos e escolha a atividade de cada um." },
+      { p: "Como consigo meu certificado?", r: "Em Inscrições, toque em “Certificado” nos itens em que sua presença foi confirmada. Dá para imprimir ou salvar em PDF." },
+    ] },
+    { id: "conta", titulo: "Minha conta", perguntas: [
+      { p: "Esqueci minha senha.", r: "Na tela de entrada, toque em “Esqueci minha senha”. Você recebe um link por e-mail para criar outra." },
+      { p: "As letras estão pequenas.", r: "Em Minha conta › Aparência, escolha “Grande” ou “Maior”. Lá também fica o tema escuro." },
+      { p: "Posso ver ou apagar meus dados?", r: "Sim. Em Minha conta › Meus dados, baixe tudo o que guardamos ou peça a exclusão da conta." },
+      { p: "Posso instalar no celular?", r: "Sim. No menu do navegador, toque em “Adicionar à tela inicial”. O sistema abre como um aplicativo." },
+    ] },
   ],
   voluntario: [
-    { p: "Não aparece nenhum compromisso para mim.", r: "A administração precisa escolher você como “Voluntário responsável” no cadastro da atividade, oficina, evento, centro ou assistência. Peça que ela confira em Usuários que seu papel é “Voluntário”." },
-    { p: "Como registro a presença?", r: "Na tela inicial, toque no compromisso e depois em “Registrar presença”. Para cada pessoa, toque em Presente, Ausente ou Aguardando. A alteração é salva na hora." },
-    { p: "Uma pessoa veio, mas não estava na lista.", r: "Na tela de presença, use “Adicionar assistido”, digite o nome ou e-mail e toque em Adicionar. Depois marque como Presente. Ela precisa ter conta de assistido." },
-    { p: "Posso marcar todos de uma vez?", r: "Sim: use “Marcar todos como presentes” e depois corrija só quem faltou." },
-    { p: "Errei uma marcação. Como corrijo?", r: "Basta tocar de novo no status correto. Para tirar alguém da lista, use o ícone de lixeira e confirme." },
-    { p: "Quero criar uma atividade nova.", r: "A criação de atividades é feita pela administração. Envie sua sugestão pelo Suporte Técnico ou diretamente à coordenação." },
+    { id: "presenca", titulo: "Presença", perguntas: [
+      { p: "Como registro a presença?", r: "Na tela inicial, abra o compromisso. Para cada pessoa, toque em Presente ou Ausente. Salva na hora." },
+      { p: "Posso marcar todos de uma vez?", r: "Sim. Use “Marcar todos como presentes” e depois corrija só quem faltou." },
+      { p: "Como uso o QR Code?", r: "Em Check-in, escolha o compromisso e aponte a câmera para o código do assistido. Se a câmera não funcionar, digite o código." },
+      { p: "A internet caiu. E agora?", r: "Continue marcando. Guardamos no aparelho e enviamos sozinhos quando a conexão voltar. Um aviso mostra quantas marcações estão pendentes." },
+    ] },
+    { id: "lista", titulo: "Lista de pessoas", perguntas: [
+      { p: "Alguém veio, mas não estava na lista.", r: "Use “Adicionar assistido”, digite o nome ou e-mail e toque em Adicionar. A pessoa precisa ter cadastro." },
+      { p: "Errei uma marcação.", r: "Toque de novo na opção certa. Para tirar alguém da lista, use a lixeira e confirme." },
+    ] },
+    { id: "rotina", titulo: "Minha rotina", perguntas: [
+      { p: "Não aparece nenhum compromisso.", r: "A administração precisa escolher você como voluntário responsável no cadastro do item." },
+      { p: "Como informo meus horários livres?", r: "Em Disponibilidade, marque os dias e o período. A administração vê isso na sua ficha." },
+      { p: "Quero criar uma atividade.", r: "A criação é feita pela administração. Envie sua sugestão pelo Suporte ou fale com a coordenação." },
+    ] },
   ],
   admin: [
-    { p: "Como crio um evento, atividade ou oficina?", r: "No menu lateral escolha o tipo e clique em “Novo …”. Preencha os campos obrigatórios (marcados com *). Se algo estiver incorreto, os campos ficam em vermelho com a explicação." },
-    { p: "Qual a diferença entre evento, atividade e oficina?", r: "Evento: acontece em uma data específica (festival, feira). Atividade: encontro que se repete toda semana ou ocorre uma vez (aula, treino). Oficina: turma com vagas limitadas em um dia fixo da semana." },
-    { p: "Como torno alguém voluntário?", r: "Em Pessoas › Usuários, altere o papel da pessoa para “Voluntário”. Depois selecione-a em “Voluntário responsável” no cadastro do item." },
-    { p: "Como vejo quem está inscrito?", r: "Nas listas, use o botão “Inscritos” do item. Lá você marca presença, adiciona ou remove pessoas." },
-    { p: "O que são os alertas em “Precisa de atenção”?", r: "São pendências detectadas automaticamente: itens sem voluntário responsável, oficinas com vagas esgotadas e ausência de voluntários cadastrados." },
-    { p: "Cadastrei algo e não aparece no calendário.", r: "Eventos precisam de data; atividades de data única também. Atividades semanais e oficinas aparecem nos dias da semana escolhidos. Confira também os filtros de tipo acima do calendário." },
-    { p: "Posso excluir um cadastro por engano?", r: "A exclusão pede confirmação, mas é definitiva. Se excluir algo importante, avise o T.I. o quanto antes: pode ser possível recuperar do backup do banco de dados." },
-    { p: "Onde vejo o que mudou no sistema?", r: "Em Suporte › Atualizações. A aba Changelog lista as novidades e a aba Integrações mostra o que falta para cada serviço externo." },
+    { id: "cadastro", titulo: "Cadastros", perguntas: [
+      { p: "Qual a diferença entre evento, atividade e oficina?", r: "Evento: acontece em uma data (festival, feira). Atividade: encontro que se repete (aula, treino). Oficina: turma com vagas limitadas num dia fixo." },
+      { p: "Como crio um item?", r: "No menu, escolha o tipo e clique em “Novo”. Campos com * são obrigatórios. Se faltar algo, o campo fica vermelho e explica o que fazer." },
+      { p: "Como copio um item para o próximo semestre?", r: "Abra a página do item e clique em “Duplicar”. Ajuste o que mudou e salve." },
+      { p: "Excluí algo por engano.", r: "A exclusão é definitiva. Avise o T.I. o quanto antes: pode dar para recuperar do backup." },
+    ] },
+    { id: "pessoas", titulo: "Pessoas", perguntas: [
+      { p: "Como torno alguém voluntário?", r: "Em Usuários, mude o papel da pessoa para Voluntário. Depois escolha-a como responsável no cadastro do item." },
+      { p: "Como respondo quem quer ser voluntário?", r: "Em Usuários › Pedidos, clique em “Aprovar e convidar” ou “Recusar”." },
+      { p: "Como vejo a ficha de alguém?", r: "Em Usuários, clique no nome. Os dados sensíveis ficam escondidos até você clicar em “Mostrar dados”." },
+    ] },
+    { id: "acompanhar", titulo: "Acompanhamento", perguntas: [
+      { p: "O que é “Precisa de atenção”?", r: "Pendências encontradas pelo sistema: pedidos sem resposta, itens sem responsável e oficinas sem vagas." },
+      { p: "Como gero um relatório?", r: "Em Relatórios, escolha período, área e unidade. Depois baixe a planilha ou salve em PDF." },
+      { p: "Como aviso as pessoas?", r: "Em Comunicados, escolha quem recebe, escreva e envie. O aviso aparece no sino de cada pessoa." },
+      { p: "Consigo saber quem alterou algo?", r: "Sim, em Histórico de ações: quem criou, alterou ou excluiu cada informação." },
+    ] },
+    { id: "seguranca", titulo: "Segurança", perguntas: [
+      { p: "Como protejo minha conta?", r: "Em Minha conta, ative a verificação em duas etapas. Ao entrar, o sistema pede também um código do celular." },
+      { p: "O sistema está fora do ar?", r: "Veja em Status do sistema. Se algo estiver com problema, abra um chamado pelo Suporte." },
+    ] },
   ],
 }

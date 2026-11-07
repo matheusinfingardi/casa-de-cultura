@@ -18,7 +18,7 @@ export default function AgendaDia({ data, itens }: { data: string; itens: Ocorre
           {itens.map((o) => (
             <li key={o.chave}>
               <Link href={o.href} className="block rounded-xl border p-3 transition-colors hover:bg-muted">
-                <span className={`mb-1 inline-block rounded-full px-2 py-0.5 text-[11px] font-medium ${TIPO_AGENDA_INFO[o.tipo].chip}`}>{TIPO_AGENDA_INFO[o.tipo].label}</span>
+                <span className={`mb-1 inline-block rounded-full px-2 py-0.5 text-xs font-medium ${TIPO_AGENDA_INFO[o.tipo].chip}`}>{TIPO_AGENDA_INFO[o.tipo].label}</span>
                 <span className="block text-sm font-medium">{o.titulo}</span>
                 <span className="mt-1 flex items-center gap-1 text-xs text-muted-foreground"><Clock className="h-3 w-3" aria-hidden />{faixaHorario(o.inicio, o.fim)}</span>
                 {o.local && <span className="flex items-center gap-1 text-xs text-muted-foreground"><MapPin className="h-3 w-3" aria-hidden />{o.local}</span>}

@@ -1,0 +1,36 @@
+name: Front-end
+
+on:
+  push:
+    branches: [main, dev]
+    paths: ["front-end/**", ".github/workflows/front-end.yml"]
+  pull_request:
+    paths: ["front-end/**", ".github/workflows/front-end.yml"]
+
+defaults:
+  run:
+    working-directory: front-end
+
+jobs:
+  qualidade:
+    runs-on: ubuntu-latest
+    env:
+      NEXT_PUBLIC_SUPABASE_URL: http://localhost:54321
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: chave-de-teste
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: front-end/package-lock.json
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:e2e
+      - name: Desempenho e acessibilidade (Lighthouse)
+        run: npx --yes @lhci/cli@0.14 autorun
+        continue-on-error: true

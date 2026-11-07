@@ -2,13 +2,14 @@
 
 import { useEffect, useMemo, useState } from "react"
 import Link from "next/link"
-import { ArrowDown, ArrowUp, ArrowUpDown, Pencil, Plus, Search, Trash2, type LucideIcon } from "lucide-react"
+import { ArrowDown, ArrowUp, ArrowUpDown, ChevronRight, Plus, Search, Trash2, type LucideIcon } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Skeleton } from "@/components/ui/skeleton"
 import { notify } from "@/lib/notify"
+import { useUnidade } from "@/components/portal/unidade"
 import PageHeader, { type Migalha } from "./page-header"
 import EstadoVazio from "./estado-vazio"
 import Confirmar from "./confirmar"
@@ -39,21 +40,19 @@ type Props<T extends { id: string }> = {
   singular: string // "evento"
   genero?: "m" | "f"
   novoHref: string
-  editarHref: (item: T) => string
+  detalheHref: (item: T) => string
   carregar: () => Promise<T[]>
   excluir: (item: T) => Promise<void>
   nome: (item: T) => string
   colunas: Coluna<T>[]
   busca: (item: T) => string
   filtros?: Filtro<T>[]
-  /** ações extras por linha (ex.: ver inscritos) */
-  acoesExtras?: (item: T) => React.ReactNode
   ordemInicial?: string
 }
 
 export default function ListaEntidade<T extends { id: string }>({
-  titulo, descricao, migalhas, icon, singular, genero = "m", novoHref, editarHref, carregar, excluir, nome,
-  colunas, busca, filtros = [], acoesExtras, ordemInicial,
+  titulo, descricao, migalhas, icon, singular, genero = "m", novoHref, detalheHref, carregar, excluir, nome,
+  colunas, busca, filtros = [], ordemInicial,
 }: Props<T>) {
   const [itens, setItens] = useState<T[] | null>(null)
   const [termo, setTermo] = useState("")
@@ -62,6 +61,7 @@ export default function ListaEntidade<T extends { id: string }>({
     ordemInicial ? { chave: ordemInicial, asc: true } : null
   )
   const [aExcluir, setAExcluir] = useState<T | null>(null)
+  const { filtrar } = useUnidade()
 
   useEffect(() => {
     let ativo = true
@@ -73,7 +73,7 @@ export default function ListaEntidade<T extends { id: string }>({
   const visiveis = useMemo(() => {
     if (!itens) return []
     const t = termo.trim().toLowerCase()
-    let out = itens.filter(
+    let out = filtrar(itens).filter(
       (i) =>
         (!t || busca(i).toLowerCase().includes(t)) &&
         filtros.every((f) => !valoresFiltro[f.chave] || f.pegar(i) === valoresFiltro[f.chave])
@@ -87,7 +87,7 @@ export default function ListaEntidade<T extends { id: string }>({
       })
     }
     return out
-  }, [itens, termo, valoresFiltro, ordem, colunas, filtros, busca])
+  }, [itens, termo, valoresFiltro, ordem, colunas, filtros, busca, filtrar])
 
   function alternarOrdem(chave: string) {
     setOrdem((o) => (o?.chave === chave ? (o.asc ? { chave, asc: false } : null) : { chave, asc: true }))
@@ -137,7 +137,7 @@ export default function ListaEntidade<T extends { id: string }>({
               aria-label={f.label}
               value={valoresFiltro[f.chave] ?? ""}
               onChange={(e) => setValoresFiltro((v) => ({ ...v, [f.chave]: e.target.value }))}
-              className="h-9 rounded-md border bg-background px-3 text-sm"
+              className="h-11 rounded-xl border bg-card px-3 text-sm"
             >
               <option value="">{f.label}: todos</option>
               {f.opcoes.map((o) => <option key={o.valor} value={o.valor}>{o.label}</option>)}
@@ -173,40 +173,34 @@ export default function ListaEntidade<T extends { id: string }>({
           {/* Celular: um cartão por item */}
           <div className="flex flex-col gap-3 md:hidden">
             {visiveis.map((i) => (
-              <Card key={i.id} className="p-4 space-y-3">
-                <p className="font-semibold">{primeira.render(i)}</p>
-                <dl className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
+              <Card key={i.id} className="space-y-3 p-4">
+                <Link href={detalheHref(i)} className="flex items-center justify-between gap-2 text-base font-semibold">
+                  <span className="min-w-0">{primeira.render(i)}</span>
+                  <ChevronRight className="h-5 w-5 shrink-0 text-muted-foreground" aria-hidden />
+                </Link>
+                <dl className="space-y-2 text-sm">
                   {demais.map((c) => (
-                    <div key={c.chave} className="min-w-0">
-                      <dt className="text-xs text-muted-foreground">{c.titulo}</dt>
-                      <dd className="truncate">{c.render(i)}</dd>
+                    <div key={c.chave} className="flex justify-between gap-4">
+                      <dt className="shrink-0 text-muted-foreground">{c.titulo}</dt>
+                      <dd className="min-w-0 text-right">{c.render(i)}</dd>
                     </div>
                   ))}
                 </dl>
-                <div className="flex flex-wrap gap-2 pt-1">
-                  {acoesExtras?.(i)}
-                  <Button size="sm" variant="outline" asChild className="flex-1">
-                    <Link href={editarHref(i)}><Pencil className="h-3.5 w-3.5" aria-hidden /> Editar</Link>
-                  </Button>
-                  <Button size="sm" variant="outline" className="text-red-600" onClick={() => setAExcluir(i)} aria-label={`Excluir ${nome(i)}`}>
-                    <Trash2 className="h-3.5 w-3.5" aria-hidden />
-                  </Button>
-                </div>
               </Card>
             ))}
           </div>
 
           {/* Computador: tabela */}
-          <Card className="hidden md:block overflow-hidden p-0">
+          <Card className="hidden gap-0 overflow-hidden p-0 md:block">
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
-                <thead className="bg-muted/50 text-left text-xs uppercase tracking-wide text-muted-foreground">
+                <thead className="bg-muted/50 text-left text-sm text-muted-foreground">
                   <tr>
                     {colunas.map((c) => (
-                      <th key={c.chave} scope="col" className={`px-4 py-3 font-medium whitespace-nowrap ${c.secundaria ? "hidden lg:table-cell" : ""}`}
+                      <th key={c.chave} scope="col" className={`px-4 py-3 font-semibold whitespace-nowrap ${c.secundaria ? "hidden xl:table-cell" : ""}`}
                         aria-sort={ordem?.chave === c.chave ? (ordem.asc ? "ascending" : "descending") : undefined}>
                         {c.ordem ? (
-                          <button type="button" onClick={() => alternarOrdem(c.chave)} className="inline-flex items-center gap-1 uppercase hover:text-foreground">
+                          <button type="button" onClick={() => alternarOrdem(c.chave)} className="inline-flex items-center gap-1 hover:text-foreground">
                             {c.titulo}
                             {ordem?.chave === c.chave ? (ordem.asc ? <ArrowUp className="h-3 w-3" aria-hidden /> : <ArrowDown className="h-3 w-3" aria-hidden />) : <ArrowUpDown className="h-3 w-3 opacity-40" aria-hidden />}
                           </button>
@@ -220,17 +214,16 @@ export default function ListaEntidade<T extends { id: string }>({
                   {visiveis.map((i) => (
                     <tr key={i.id} className="hover:bg-muted/30">
                       {colunas.map((c, idx) => (
-                        <td key={c.chave} className={`px-4 py-3 ${idx === 0 ? "font-medium" : "text-muted-foreground"} ${c.secundaria ? "hidden lg:table-cell" : ""}`}>
-                          {c.render(i)}
+                        <td key={c.chave} className={`px-4 py-3.5 ${idx === 0 ? "font-medium" : "text-muted-foreground"} ${c.secundaria ? "hidden xl:table-cell" : ""}`}>
+                          {idx === 0 ? <Link href={detalheHref(i)} className="hover:text-primary hover:underline">{c.render(i)}</Link> : c.render(i)}
                         </td>
                       ))}
                       <td className="px-4 py-2">
                         <div className="flex justify-end gap-1.5">
-                          {acoesExtras?.(i)}
                           <Button size="sm" variant="outline" asChild>
-                            <Link href={editarHref(i)} aria-label={`Editar ${nome(i)}`}><Pencil className="h-3.5 w-3.5" aria-hidden /> Editar</Link>
+                            <Link href={detalheHref(i)} aria-label={`Abrir ${nome(i)}`}>Abrir</Link>
                           </Button>
-                          <Button size="sm" variant="ghost" className="text-red-600 hover:text-red-700" onClick={() => setAExcluir(i)} aria-label={`Excluir ${nome(i)}`}>
+                          <Button size="icon-sm" variant="ghost" className="text-red-700 hover:text-red-800 dark:text-red-300" onClick={() => setAExcluir(i)} aria-label={`Excluir ${nome(i)}`}>
                             <Trash2 className="h-4 w-4" aria-hidden />
                           </Button>
                         </div>

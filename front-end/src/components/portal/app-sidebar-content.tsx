@@ -1,57 +1,20 @@
 "use client"
 
+import Image from "next/image"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
+import { LogOut, UserRound } from "lucide-react"
 import { useSidebar } from "@/components/ui/sidebar"
-import { Separator } from "@/components/ui/separator"
 import { useAuth } from "@/components/auth/auth-provider"
 import { sair } from "@/lib/services/auth"
+import { NAV_ADMIN, rotaAtiva } from "@/lib/nav"
 
-import { LogOut } from "lucide-react"
-import { NAV_ADMIN, rotaAtiva, type NavItem } from "@/lib/nav"
-
-function NavSection({ title, items }: { title: string; items: NavItem[] }) {
+export default function AppSidebarContent() {
   const pathname = usePathname()
-  const { setOpenMobile } = useSidebar()
-
-  return (
-    <div className="px-2">
-      <p className="px-3 mb-2 text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
-        {title}
-      </p>
-      <div className="flex flex-col gap-1">
-        {items.map((item) => {
-          const active = rotaAtiva(pathname, item.url)
-          return (
-            <Link
-              key={item.title}
-              href={item.url}
-              aria-current={active ? "page" : undefined}
-              onClick={() => setOpenMobile(false)}
-              className={`
-                flex items-center gap-3 px-3 h-10 rounded-xl text-sm font-medium transition-all
-                ${active
-                  ? "bg-primary text-primary-foreground"
-                  : "text-foreground hover:bg-muted"
-                }
-              `}
-            >
-              <item.icon className={`w-5 h-5 shrink-0 ${active ? "text-white" : "text-muted-foreground"}`} />
-              {item.title}
-            </Link>
-          )
-        })}
-      </div>
-    </div>
-  )
-}
-
-function UserFooter() {
-  const { user } = useAuth()
   const router = useRouter()
   const { setOpenMobile } = useSidebar()
-
-  const nome = (user?.user_metadata?.nome as string | undefined) ?? user?.email ?? "Administrador"
+  const { user } = useAuth()
+  const nome = (user?.user_metadata?.nome as string | undefined) ?? user?.email ?? "Administração"
 
   async function handleSair() {
     await sair()
@@ -60,50 +23,53 @@ function UserFooter() {
   }
 
   return (
-    <div className="mt-auto px-2 pt-2">
-      <Separator className="mb-3" />
-      <div className="px-3 mb-2">
-        <p className="text-sm font-medium truncate">{nome}</p>
-        {user?.email && (
-          <p className="text-xs text-muted-foreground truncate">{user.email}</p>
-        )}
-      </div>
-      <button
-        onClick={handleSair}
-        className="flex items-center gap-3 px-3 h-12 w-full rounded-xl text-sm font-medium text-foreground hover:bg-muted transition-all cursor-pointer"
-      >
-        <LogOut className="w-5 h-5 shrink-0 text-muted-foreground" />
-        Sair
-      </button>
-    </div>
-  )
-}
+    <div className="flex h-full min-h-0 flex-col">
+      <Link href="/portal" onClick={() => setOpenMobile(false)} className="flex shrink-0 items-center gap-3 px-5 py-3">
+        <Image src="/logo-evailton.png" alt="" width={44} height={44} className="h-11 w-11 rounded-full border bg-white object-contain" />
+        <span className="leading-tight">
+          <span className="block font-semibold">Casa de Cultura</span>
+          <span className="block text-sm text-muted-foreground">Administração</span>
+        </span>
+      </Link>
 
-export default function AppSidebarContent() {
-  return (
-    <div className="flex flex-col py-3 gap-3 h-full overflow-y-auto">
-      <div className="px-5 py-2">
-        <Link href="/portal">
-          <div className="rounded-2xl overflow-hidden border bg-white shadow-sm w-fit">
-            <img
-              src="/logo-evailton.png"
-              alt="Casa de Cultura Evailton Vilela"
-              className="w-24 object-cover"
-            />
+      <nav aria-label="Menu principal" className="min-h-0 flex-1 space-y-3 overflow-y-auto px-3 pb-3">
+        {NAV_ADMIN.map((g) => (
+          <div key={g.titulo}>
+            <p className="mb-0.5 px-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">{g.titulo}</p>
+            <ul className="space-y-0.5">
+              {g.itens.map((item) => {
+                const ativo = rotaAtiva(pathname, item.url)
+                return (
+                  <li key={item.url}>
+                    <Link
+                      href={item.url}
+                      aria-current={ativo ? "page" : undefined}
+                      onClick={() => setOpenMobile(false)}
+                      className={`flex h-9 items-center gap-3 rounded-xl px-3 text-sm font-medium transition-colors ${ativo ? "bg-primary text-primary-foreground" : "hover:bg-muted"}`}
+                    >
+                      <item.icon className={`size-[1.15rem] shrink-0 ${ativo ? "" : "text-muted-foreground"}`} aria-hidden />
+                      {item.title}
+                    </Link>
+                  </li>
+                )
+              })}
+            </ul>
           </div>
-          <div className="mt-4">
-            <h2 className="text-sm font-semibold">Casa de Cultura</h2>
-            <p className="text-xs text-muted-foreground mt-1">Administração</p>
-          </div>
+        ))}
+      </nav>
+
+      <div className="flex shrink-0 items-center gap-1 border-t p-2">
+        <Link href="/portal/conta" onClick={() => setOpenMobile(false)} className="flex min-w-0 flex-1 items-center gap-3 rounded-xl px-3 py-1.5 hover:bg-muted">
+          <UserRound className="size-[1.15rem] shrink-0 text-muted-foreground" aria-hidden />
+          <span className="min-w-0">
+            <span className="block truncate text-sm font-medium">{nome}</span>
+            <span className="block text-xs text-muted-foreground">Minha conta</span>
+          </span>
         </Link>
+        <button type="button" onClick={handleSair} aria-label="Sair" title="Sair" className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl hover:bg-muted">
+          <LogOut className="size-[1.15rem] text-muted-foreground" aria-hidden />
+        </button>
       </div>
-
-      <Separator />
-      {NAV_ADMIN.map((g) => (
-        <NavSection key={g.titulo} title={g.titulo} items={g.itens} />
-      ))}
-
-      <UserFooter />
     </div>
   )
 }

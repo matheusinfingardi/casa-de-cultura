@@ -3,9 +3,10 @@
 import { useEffect } from "react"
 import { TriangleAlert } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { registrarErro } from "@/lib/monitoramento"
 
 export default function Erro({ error, reset }: { error: Error & { digest?: string }; reset: () => void }) {
-  useEffect(() => { console.error(error) }, [error])
+  useEffect(() => { console.error(error); registrarErro(error.message) }, [error])
   return (
     <main className="flex min-h-screen flex-col items-center justify-center gap-4 px-6 text-center" role="alert">
       <span className="flex h-14 w-14 items-center justify-center rounded-full bg-red-100 text-red-700"><TriangleAlert className="h-7 w-7" aria-hidden /></span>

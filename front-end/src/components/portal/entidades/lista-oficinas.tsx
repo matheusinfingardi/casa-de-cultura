@@ -6,7 +6,7 @@ import ListaEntidade from "@/components/comum/lista-entidade"
 import { oficinasApi } from "@/lib/services/entidades"
 import { faixaHorario } from "@/lib/formatar"
 import type { Oficina } from "@/lib/tipos"
-import { BotaoInscritos, SemResponsavel } from "./acoes"
+import { SemResponsavel } from "./acoes"
 import { NIVEIS } from "./form-oficina"
 import { useContagens } from "./use-contagens"
 
@@ -21,7 +21,7 @@ export default function ListaOficinas() {
       singular="oficina"
       genero="f"
       novoHref="/portal/oficinas/novo"
-      editarHref={(i) => `/portal/oficinas/${i.id}`}
+      detalheHref={(i) => `/portal/oficinas/${i.id}`}
       carregar={oficinasApi.listar}
       excluir={(i) => oficinasApi.excluir(i.id)}
       nome={(i) => i.nome}
@@ -44,7 +44,6 @@ export default function ListaOficinas() {
         { chave: "local", titulo: "Local", render: (i) => i.local, secundaria: true },
         { chave: "resp", titulo: "Responsável", render: (i) => i.responsavel || <SemResponsavel />, secundaria: true },
       ]}
-      acoesExtras={(i) => <BotaoInscritos tipo="oficina" id={i.id} nome={i.nome} />}
     />
   )
 }

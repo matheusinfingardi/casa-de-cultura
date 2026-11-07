@@ -315,3 +315,24 @@ export async function listarResumoPresencas(): Promise<PresencaResumo[]> {
   }
   return (data ?? []) as PresencaResumo[]
 }
+
+/** Mapa pessoa -> número de inscrições. */
+export async function contarInscricoesPorPessoa(): Promise<Record<string, number>> {
+  const lista = await listarResumoPresencas()
+  const mapa: Record<string, number> = {}
+  for (const p of lista) mapa[p.cliente_id] = (mapa[p.cliente_id] ?? 0) + 1
+  return mapa
+}
+
+/** Inscrições de uma pessoa (ficha do usuário). */
+export async function listarInscricoesDe(clienteId: string): Promise<MinhaPresenca[]> {
+  const { data, error } = await supabase
+    .from("presencas")
+    .select("id, status, item_tipo, item_id, item_nome")
+    .eq("cliente_id", clienteId)
+  if (error) {
+    console.error("Erro ao listar inscrições:", error)
+    return []
+  }
+  return data as MinhaPresenca[]
+}

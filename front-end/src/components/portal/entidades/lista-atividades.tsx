@@ -5,7 +5,7 @@ import ListaEntidade from "@/components/comum/lista-entidade"
 import { atividadesApi } from "@/lib/services/entidades"
 import { normalizarRecorrencia, resumoRecorrencia } from "@/lib/agenda"
 import type { Atividade } from "@/lib/tipos"
-import { BotaoInscritos, SemResponsavel } from "./acoes"
+import { SemResponsavel } from "./acoes"
 import { useContagens } from "./use-contagens"
 
 export default function ListaAtividades() {
@@ -19,7 +19,7 @@ export default function ListaAtividades() {
       singular="atividade"
       genero="f"
       novoHref="/portal/atividades/novo"
-      editarHref={(i) => `/portal/atividades/${i.id}`}
+      detalheHref={(i) => `/portal/atividades/${i.id}`}
       carregar={atividadesApi.listar}
       excluir={(i) => atividadesApi.excluir(i.id)}
       nome={(i) => i.nome}
@@ -35,7 +35,6 @@ export default function ListaAtividades() {
         { chave: "resp", titulo: "Responsável", render: (i) => i.responsavel || <SemResponsavel />, secundaria: true },
         { chave: "insc", titulo: "Inscritos", render: (i) => contar("atividade", i.id).total, ordem: (i) => contar("atividade", i.id).total },
       ]}
-      acoesExtras={(i) => <BotaoInscritos tipo="atividade" id={i.id} nome={i.nome} />}
     />
   )
 }

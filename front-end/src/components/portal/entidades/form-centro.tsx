@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation"
 import { Input } from "@/components/ui/input"
 import { Campo, Secao } from "@/components/comum/campo"
 import { CampoResponsavel } from "@/components/comum/campos"
+import CamposExtras, { extrasIniciais } from "@/components/comum/campos-extras"
 import FormShell from "@/components/comum/form-shell"
 import { useFormulario } from "@/components/comum/use-formulario"
 import { centrosApi } from "@/lib/services/entidades"
@@ -26,6 +27,7 @@ export default function FormCentro({ item }: { item?: Centro }) {
     {
       nome: item?.nome ?? "", endereco: item?.endereco ?? "", telefone: item?.telefone ?? "",
       responsavel: item?.responsavel ?? "", responsavel_id: item?.responsavel_id ?? null,
+      ...extrasIniciais(item, false),
     },
     validar
   )
@@ -36,16 +38,17 @@ export default function FormCentro({ item }: { item?: Centro }) {
       titulo={item ? "Editar centro" : "Novo centro"}
       descricao="Centros são as unidades físicas onde o projeto atua."
       migalhas={[{ label: "Atendimento" }, { label: "Centros", href: "/portal/centros" }, { label: item ? item.nome : "Novo" }]}
-      voltarHref="/portal/centros"
+      voltarHref={item ? `/portal/centros/${item.id}` : "/portal/centros"}
       sujo={f.sujo}
       salvando={f.salvando}
       rotuloSalvar={item ? "Salvar alterações" : "Criar centro"}
       onSubmit={(ev) =>
         f.enviar(ev, async (dados) => {
+          let alvo = item?.id
           if (item) await centrosApi.atualizar(item.id, dados)
-          else await centrosApi.criar(dados)
+          else alvo = (await centrosApi.criar(dados)).id
           notify.success(item ? "Centro atualizado" : "Centro criado")
-          router.push("/portal/centros")
+          router.push(`/portal/centros/${alvo}`)
         })
       }
     >
@@ -63,6 +66,8 @@ export default function FormCentro({ item }: { item?: Centro }) {
           {(p) => <Input {...p} type="tel" inputMode="tel" autoComplete="tel" placeholder="(32) 99999-9999" value={v.telefone} onChange={(x) => f.definir("telefone", mascararTelefone(x.target.value))} />}
         </Campo>
       </Secao>
+
+      <CamposExtras valores={v} definir={(c, x) => f.definir(c, x)} comUnidade={false} />
 
       <Secao titulo="Responsável">
         <CampoResponsavel valorId={v.responsavel_id ?? null} onChange={(id, nome) => { f.definir("responsavel_id", id); f.definir("responsavel", nome) }} />

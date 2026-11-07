@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation"
 import { Input } from "@/components/ui/input"
 import { Campo, Secao } from "@/components/comum/campo"
 import { CampoRecorrencia, CampoResponsavel } from "@/components/comum/campos"
+import CamposExtras, { extrasIniciais } from "@/components/comum/campos-extras"
 import FormShell from "@/components/comum/form-shell"
 import { useFormulario } from "@/components/comum/use-formulario"
 import { atividadesApi } from "@/lib/services/entidades"
@@ -46,6 +47,7 @@ export default function FormAtividade({ item }: { item?: Atividade }) {
     {
       nome: item?.nome ?? "", local: item?.local ?? "",
       responsavel: item?.responsavel ?? "", responsavel_id: item?.responsavel_id ?? null,
+      ...extrasIniciais(item),
       recorrencia: item ? normalizarRecorrencia(item.recorrencia) : { tipo: "Semanal", horarios: {} },
     },
     validar
@@ -58,16 +60,17 @@ export default function FormAtividade({ item }: { item?: Atividade }) {
       titulo={item ? "Editar atividade" : "Nova atividade"}
       descricao="Atividades são encontros que se repetem toda semana (ou acontecem uma única vez), como aulas e treinos."
       migalhas={[{ label: "Programação" }, { label: "Atividades", href: "/portal/atividades" }, { label: item ? item.nome : "Nova" }]}
-      voltarHref="/portal/atividades"
+      voltarHref={item ? `/portal/atividades/${item.id}` : "/portal/atividades"}
       sujo={f.sujo}
       salvando={f.salvando}
       rotuloSalvar={item ? "Salvar alterações" : "Criar atividade"}
       onSubmit={(ev) =>
         f.enviar(ev, async (dados) => {
+          let alvo = item?.id
           if (item) await atividadesApi.atualizar(item.id, dados)
-          else await atividadesApi.criar(dados)
+          else alvo = (await atividadesApi.criar(dados)).id
           notify.success(item ? "Atividade atualizada" : "Atividade criada")
-          router.push("/portal/atividades")
+          router.push(`/portal/atividades/${alvo}`)
         })
       }
     >
@@ -83,6 +86,8 @@ export default function FormAtividade({ item }: { item?: Atividade }) {
       <Secao titulo="Quando acontece">
         <CampoRecorrencia valor={v.recorrencia} onChange={(r) => f.definir("recorrencia", r)} erros={detalhes} />
       </Secao>
+
+      <CamposExtras valores={v} definir={(c, x) => f.definir(c, x)} />
 
       <Secao titulo="Responsável">
         <CampoResponsavel valorId={v.responsavel_id ?? null} onChange={(id, nome) => { f.definir("responsavel_id", id); f.definir("responsavel", nome) }} />
