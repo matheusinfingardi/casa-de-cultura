@@ -53,7 +53,7 @@ Três portais, um só aplicativo, um só login:
 ### v1.2 a v1.6 e parte da v2.0 ✅ protótipo (esta entrega)
 Tudo abaixo funciona no **modo demonstração**. Os itens com 🔗 ainda precisam do back-end para funcionar com dados reais.
 
-- **v1.2 Confiança e qualidade:** testes unitários e de ponta a ponta, integração contínua, auditoria de acessibilidade, tema escuro, tamanho de letra e página de status.
+- **v1.2 Confiança e qualidade:** testes unitários e de ponta a ponta (rodam no computador; a integração contínua fica desligada e só roda se acionada à mão, para não gerar custo), auditoria de acessibilidade, tema escuro, tamanho de letra e página de status.
 - **v1.3 Dia a dia:** check-in por QR Code, lista de espera 🔗, presença sem internet, aplicativo instalável, avisos 🔗, agenda em mês, semana e lista, arquivo de calendário, duplicar itens e apresentação inicial.
 - **v1.4 Pessoas:** ficha 🔗, histórico, família 🔗, pedidos de voluntariado 🔗, disponibilidade 🔗, convites 🔗, minha conta e recuperação de senha.
 - **v1.5 Gestão:** relatórios com planilha e PDF, metas 🔗, filtro por unidade 🔗 e histórico de ações 🔗.

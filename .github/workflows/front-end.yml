@@ -1,11 +1,9 @@
 name: Front-end
 
+# Só roda quando alguém acionar manualmente, para não consumir minutos do GitHub Actions.
+# Para rodar os mesmos testes de graça, no computador: npm run lint, typecheck, test e test:e2e.
 on:
-  push:
-    branches: [main, dev]
-    paths: ["front-end/**", ".github/workflows/front-end.yml"]
-  pull_request:
-    paths: ["front-end/**", ".github/workflows/front-end.yml"]
+  workflow_dispatch:
 
 defaults:
   run:
