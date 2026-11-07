@@ -60,6 +60,13 @@ Tudo abaixo funciona no **modo demonstração**. Os itens com 🔗 ainda precisa
 - **v1.6 LGPD e segurança:** termos, privacidade, consentimento 🔗, baixar e excluir dados 🔗, verificação em duas etapas 🔗, limite de tentativas, pergunta anti-robô, dados sensíveis escondidos e cabeçalhos de segurança.
 - **v2.0:** certificados com QR Code, fotos nos cadastros 🔗 e comunicados 🔗 (e-mail e WhatsApp simulados).
 
+### v1.7 Cuidado e rotina ✅ protótipo (esta entrega)
+- **Pessoas:** página do assistido com necessidades, saúde, condição social, família ligada, assiduidade e acompanhamento 🔗.
+- **Voluntário:** compromissos dia a dia, chamada por data com check-in dentro da atividade 🔗 e ficha de disponibilidade 🔗.
+- **Assistido:** Atividades da Casa com fotos, abas do que participa e do que pode se inscrever; certificado novo.
+- **Administração:** quadro por tipo na Visão geral, relatórios com comparação e foto obrigatória 🔗.
+- **Mapa** do endereço em cada item, sem custo.
+
 ### Fora do escopo do front-end
 - **Site público:** responsabilidade da equipe do site.
 - **API pública e webhooks:** responsabilidade do back-end.
