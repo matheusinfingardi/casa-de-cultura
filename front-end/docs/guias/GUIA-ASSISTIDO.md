@@ -1,63 +1,68 @@
 # Guia do Assistido
 
-Este guia é para quem participa das atividades da Casa de Cultura. Com o sistema você encontra o que fazer, se inscreve e acompanha sua participação. Funciona no celular e no computador.
+Este guia é para quem participa das atividades da Casa de Cultura. Com o sistema você vê tudo o que a Casa oferece, se inscreve e acompanha sua participação. Funciona no celular e no computador.
 
 ## Como entrar
 
 Na página inicial, clique em **Sou assistido**. Digite seu e-mail e sua senha e clique em **Entrar**.
 
-Primeira vez? Clique em **Crie seu cadastro**, preencha seus dados e aceite os termos.
+Primeira vez? Em **Ainda não tem conta?**, clique em **Quero participar**, preencha seus dados e aceite os termos.
 
-![Tela de entrada](../img/assistido-login.png)
+![Página inicial](../img/comum-inicio.png)
 
-Esqueceu a senha? Clique em **Esqueci minha senha** e receba um link por e-mail.
+Esqueceu a senha? Na tela de entrada, clique em **Esqueci minha senha** e receba um link por e-mail.
 
 ## Sua tela inicial
 
-Aqui você vê seu próximo compromisso, seu QR Code e suas inscrições.
+Aqui você vê seu próximo compromisso, seu QR Code, os compromissos seguintes e sugestões do que mais pode fazer.
 
 ![Tela inicial](../img/assistido-inicio.png)
 
+## Atividades da Casa
+
+Esta tela mostra tudo o que a Casa de Cultura oferece. Use as abas no alto:
+
+| Aba | O que mostra |
+|---|---|
+| Tudo o que a Casa oferece | Todas as opções |
+| Posso me inscrever | O que ainda tem vaga e você não faz |
+| Já participo | O que você já faz ou em que está na lista de espera |
+
+Você também pode buscar pelo nome e filtrar por dia da semana e por tipo.
+
+![Atividades da Casa](../img/assistido-explorar.png)
+
 ## Como se inscrever
 
-1. Abra **Explorar**.
-2. Use a busca ou os botões para filtrar por tipo.
-3. Clique no que interessar.
-4. Clique em **Quero participar**.
+Clique em **Quero participar** no cartão. Se quiser saber mais antes, clique no nome: a página mostra a foto, as próximas datas e um mapa com o endereço.
 
-![Explorar](../img/assistido-explorar.png)
-
-![Página de uma oficina](../img/assistido-item.png)
+![Página de uma atividade](../img/assistido-item.png)
 
 ## Quando a turma está cheia
 
 Clique em **Entrar na lista de espera**. Se abrir uma vaga, você entra sozinho e recebe um aviso no sino.
 
-![Lista de espera](../img/assistido-lotado.png)
+## Minhas inscrições
 
-## Suas inscrições
-
-Em **Inscrições** você vê sua situação em cada item:
-
-| Situação | O que significa |
-|---|---|
-| Marcada | Você está inscrito |
-| Presente | Sua presença foi confirmada |
-| Ausente | Foi registrada uma falta |
-
-Nos itens com presença confirmada, aparece o botão **Certificado**. Para sair de um item, clique em **Cancelar inscrição**.
+Para cada item, você vê a próxima data e quantas vezes compareceu. Quando sua presença for confirmada, aparece o botão **Certificado**. Para sair de um item, clique em **Cancelar inscrição**.
 
 ![Minhas inscrições](../img/assistido-inscricoes.png)
 
+## Seu certificado
+
+Mostra seu nome, a atividade, os encontros e as horas. Clique em **Imprimir ou salvar PDF**.
+
+![Certificado](../img/assistido-certificado.png)
+
 ## No dia da atividade
 
-Na tela de Início, abra **Meu QR Code** e mostre ao voluntário. A presença é registrada na hora.
+Ao chegar, abra **Meu QR Code**, na tela de Início, e mostre ao voluntário. Ele lê o código e sua presença é marcada naquele dia.
 
 ![Meu QR Code](../img/assistido-qr.png)
 
 ## Agenda e família
 
-- **Agenda:** mostra seus compromissos e pode ser enviada ao calendário do celular.
+- **Agenda:** veja só os seus compromissos ou todos da Casa. Dá para enviar ao calendário do celular.
 - **Família:** cadastre filhos e dependentes e escolha a atividade de cada um.
 
 ## Sua conta

@@ -18,7 +18,7 @@ export default function MeuQrPage() {
 
   return (
     <div className="mx-auto max-w-md space-y-6">
-      <PageHeader titulo="Meu QR Code" descricao="Mostre esta tela ao voluntário para registrar sua presença." migalhas={[{ label: "Início", href: "/painel" }, { label: "Meu QR Code" }]} />
+      <PageHeader titulo="Meu QR Code" descricao="Ao chegar a uma atividade, mostre esta tela ao voluntário. Ele lê o código e marca sua presença naquele dia." migalhas={[{ label: "Início", href: "/painel" }, { label: "Meu QR Code" }]} />
       <div className="flex flex-col items-center gap-3 rounded-3xl border bg-card p-6 text-center shadow-sm">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         {img ? <img src={img} alt="Seu QR Code" className="h-72 w-72 rounded-xl bg-white" /> : <Skeleton className="h-72 w-72 rounded-xl" />}

@@ -14,7 +14,7 @@ export default function CapaItem({ tipo, imagem, className = "h-36" }: { tipo: I
   const { icon: Icon, fundo } = VISUAL[tipo]
   if (imagem) {
     // eslint-disable-next-line @next/next/no-img-element
-    return <img src={imagem} alt="" className={`w-full object-cover ${className}`} />
+    return <img src={imagem} alt="" loading="lazy" className={`w-full object-cover ${className}`} />
   }
   return (
     <div className={`flex w-full items-center justify-center bg-gradient-to-br ${fundo} ${className}`} aria-hidden>

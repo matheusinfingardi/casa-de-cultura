@@ -57,22 +57,47 @@ export function CartaoInscricao({ p, ocupado, onCancelar, comCertificado }: { p:
   )
 }
 
-/** Cartão de Explorar: leva à página do item, onde a pessoa decide se inscrever. */
-export function CartaoItem({ i, inscrito, lotado, vagas }: { i: ItemView; inscrito?: boolean; lotado?: boolean; vagas?: number | null }) {
+type AcoesAssistido = {
+  acao: string | null
+  inscrito: (i: ItemView) => MinhaPresenca | undefined
+  naEspera: (i: ItemView) => unknown
+  lotado: (i: ItemView) => boolean
+  vagasLivres: (i: ItemView) => number | null
+  inscrever: (i: ItemView) => void
+  entrarFila: (i: ItemView) => void
+}
+
+/** Cartão de item: foto, situação da pessoa e a ação possível, sem precisar abrir a página. */
+export function CartaoItem({ i, assistido: a }: { i: ItemView; assistido: AcoesAssistido }) {
+  const inscrito = !!a.inscrito(i)
+  const fila = !!a.naEspera(i)
+  const lotado = a.lotado(i)
+  const vagas = a.vagasLivres(i)
+  const href = `/painel/item/${i.tipo}/${i.id}`
   return (
-    <Link href={`/painel/item/${i.tipo}/${i.id}`} className="group flex w-full flex-col overflow-hidden rounded-2xl border bg-card shadow-sm transition-colors hover:border-primary">
-      <CapaItem tipo={i.tipo} imagem={i.imagem_url} className="h-20" />
+    <article className="flex w-full flex-col overflow-hidden rounded-2xl border bg-card shadow-sm transition-colors hover:border-primary">
+      <Link href={href} tabIndex={-1} aria-hidden><CapaItem tipo={i.tipo} imagem={i.imagem_url} className="h-40" /></Link>
       <div className="flex flex-1 flex-col gap-2 p-4">
         <div className="flex flex-wrap gap-1.5">
           <Badge variant="outline">{ITEM_TIPO_LABELS[i.tipo]}</Badge>
-          {inscrito && <Badge>Inscrito</Badge>}
-          {lotado && !inscrito && <Badge variant="destructive">Lotado</Badge>}
+          {inscrito && <Badge>Você participa</Badge>}
+          {fila && <Badge variant="secondary">Na lista de espera</Badge>}
+          {lotado && !inscrito && !fila && <Badge variant="destructive">Lotado</Badge>}
         </div>
-        <p className="text-lg font-semibold leading-snug group-hover:underline">{i.nome}</p>
+        <h3 className="text-lg font-semibold leading-snug"><Link href={href} className="hover:underline">{i.nome}</Link></h3>
         {i.quando && <p className="text-sm text-muted-foreground">{i.quando}</p>}
-        {i.local && <p className="mt-auto flex gap-1.5 text-sm text-muted-foreground"><MapPin className="mt-0.5 h-3.5 w-3.5 shrink-0" aria-hidden /><span className="min-w-0">{i.local}</span></p>}
-        {vagas !== null && vagas !== undefined && vagas > 0 && !inscrito && <p className="text-sm font-medium text-emerald-700 dark:text-emerald-300">{vagas} {vagas === 1 ? "vaga livre" : "vagas livres"}</p>}
+        {i.local && <p className="flex gap-1.5 text-sm text-muted-foreground"><MapPin className="mt-0.5 h-3.5 w-3.5 shrink-0" aria-hidden /><span className="min-w-0">{i.local}</span></p>}
+        <div className="mt-auto space-y-2 pt-2">
+          {vagas !== null && vagas > 0 && !inscrito && <p className="text-sm font-medium text-emerald-700 dark:text-emerald-300">{vagas} {vagas === 1 ? "vaga livre" : "vagas livres"}</p>}
+          {inscrito || fila ? (
+            <Button asChild variant="outline" className="w-full"><Link href={href}>Ver detalhes</Link></Button>
+          ) : lotado ? (
+            <Button variant="outline" className="w-full" disabled={!!a.acao} onClick={() => a.entrarFila(i)}>Entrar na lista de espera</Button>
+          ) : (
+            <Button className="w-full" disabled={!!a.acao} onClick={() => a.inscrever(i)}>Quero participar</Button>
+          )}
+        </div>
       </div>
-    </Link>
+    </article>
   )
 }

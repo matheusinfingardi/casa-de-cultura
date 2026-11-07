@@ -58,3 +58,20 @@ describe("cliente de demonstração", () => {
     expect(data.user?.id).toBe("usr-carlos")
   })
 })
+
+describe("presença por dia", () => {
+  beforeEach(() => { restaurarDadosDemo(); iniciarSessaoDemo("admin") })
+  it("os registros existem e nunca estão no futuro", async () => {
+    const { data } = await clienteDemo.from("registros").select("*")
+    const l = data as { data: string; status: string }[]
+    const hoje = new Date().toISOString().slice(0, 10)
+    expect(l.length).toBeGreaterThan(100)
+    expect(l.filter((r) => r.data > hoje)).toEqual([])
+  })
+  it("cada item tem foto", async () => {
+    for (const t of ["eventos", "atividades", "oficinas", "centros", "assistencia"]) {
+      const { data } = await clienteDemo.from(t).select("*")
+      expect((data as { imagem_url?: string }[]).every((x) => x.imagem_url?.startsWith("/demo/"))).toBe(true)
+    }
+  })
+})

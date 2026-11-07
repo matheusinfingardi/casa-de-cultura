@@ -6,14 +6,14 @@ export type Tema = { id: string; titulo: string; perguntas: Pergunta[] }
 
 export const PRIMEIROS_PASSOS: Record<Perfil, Passo[]> = {
   assistido: [
-    { titulo: "Explore", texto: "Veja atividades, oficinas, eventos e atendimentos." },
-    { titulo: "Inscreva-se", texto: "Abra o item e toque em “Quero participar”." },
+    { titulo: "Explore", texto: "Em Atividades da Casa, veja tudo o que é oferecido." },
+    { titulo: "Inscreva-se", texto: "Toque em “Quero participar” no que gostar." },
     { titulo: "Compareça", texto: "Mostre seu QR Code ao voluntário e acompanhe sua presença." },
   ],
   voluntario: [
     { titulo: "Veja seus compromissos", texto: "Tudo o que foi atribuído a você aparece na tela inicial." },
     { titulo: "Abra a presença", texto: "Toque no compromisso do dia." },
-    { titulo: "Marque quem veio", texto: "Toque em Presente ou Ausente, ou leia o QR Code da pessoa." },
+    { titulo: "Marque quem veio", texto: "Toque em Presente ou Ausente, ou leia o QR Code de quem chegou." },
   ],
   admin: [
     { titulo: "Cadastre", texto: "Crie eventos, atividades, oficinas, centros e assistências." },
@@ -25,18 +25,18 @@ export const PRIMEIROS_PASSOS: Record<Perfil, Passo[]> = {
 export const TEMAS: Record<Perfil, Tema[]> = {
   assistido: [
     { id: "inscricoes", titulo: "Inscrições", perguntas: [
-      { p: "Como me inscrevo?", r: "Em Explorar, abra o item e toque em “Quero participar”. Ele passa a aparecer em Inscrições e na sua Agenda." },
+      { p: "Como me inscrevo?", r: "Em Atividades da Casa, toque em “Quero participar”. O item passa a aparecer em Minhas inscrições e na sua Agenda." },
       { p: "A turma está cheia. E agora?", r: "Toque em “Entrar na lista de espera”. Quando abrir uma vaga, você entra automaticamente e recebe um aviso no sino." },
-      { p: "Como cancelo?", r: "Em Inscrições, toque em “Cancelar inscrição” e confirme. Você pode se inscrever de novo depois." },
+      { p: "Como cancelo?", r: "Em Minhas inscrições, toque em “Cancelar inscrição” e confirme. Você pode se inscrever de novo depois." },
       { p: "O que significa Marcada, Presente e Ausente?", r: "Marcada: você está inscrito. Presente: o voluntário confirmou que você veio. Ausente: ele registrou que você faltou." },
     ] },
     { id: "dia", titulo: "No dia da atividade", perguntas: [
-      { p: "O que é o meu QR Code?", r: "É o seu cartão digital. Mostre ao voluntário para ele registrar sua presença na hora. Fica em Início › Meu QR Code." },
+      { p: "O que é o meu QR Code?", r: "É o seu cartão digital. Mostre ao voluntário na chegada: ele lê o código e marca sua presença naquele dia. Fica em Início › Meu QR Code." },
       { p: "Como coloco na agenda do celular?", r: "Em Agenda, toque em “Baixar para o calendário” e abra o arquivo no celular." },
     ] },
     { id: "familia", titulo: "Família e certificados", perguntas: [
       { p: "Posso cuidar das inscrições dos meus filhos?", r: "Sim. Em Família, cadastre seus filhos e escolha a atividade de cada um." },
-      { p: "Como consigo meu certificado?", r: "Em Inscrições, toque em “Certificado” nos itens em que sua presença foi confirmada. Dá para imprimir ou salvar em PDF." },
+      { p: "Como consigo meu certificado?", r: "Em Minhas inscrições, toque em “Certificado” nos itens em que sua presença foi confirmada. Dá para imprimir ou salvar em PDF." },
     ] },
     { id: "conta", titulo: "Minha conta", perguntas: [
       { p: "Esqueci minha senha.", r: "Na tela de entrada, toque em “Esqueci minha senha”. Você recebe um link por e-mail para criar outra." },
@@ -47,9 +47,9 @@ export const TEMAS: Record<Perfil, Tema[]> = {
   ],
   voluntario: [
     { id: "presenca", titulo: "Presença", perguntas: [
-      { p: "Como registro a presença?", r: "Na tela inicial, abra o compromisso. Para cada pessoa, toque em Presente ou Ausente. Salva na hora." },
-      { p: "Posso marcar todos de uma vez?", r: "Sim. Use “Marcar todos como presentes” e depois corrija só quem faltou." },
-      { p: "Como uso o QR Code?", r: "Em Check-in, escolha o compromisso e aponte a câmera para o código do assistido. Se a câmera não funcionar, digite o código." },
+      { p: "Como registro a presença?", r: "Na tela inicial, abra o compromisso do dia. Para cada pessoa, toque em Presente ou Ausente. Salva na hora." },
+      { p: "Posso marcar todos de uma vez?", r: "Sim. Use “Marcar os restantes como presentes” e depois corrija só quem faltou." },
+      { p: "Como uso o QR Code?", r: "Abra o compromisso, escolha o dia e use “Check-in de quem chegou”: leia o QR Code do assistido ou digite o código. A presença é marcada naquela atividade e naquele dia." },
       { p: "A internet caiu. E agora?", r: "Continue marcando. Guardamos no aparelho e enviamos sozinhos quando a conexão voltar. Um aviso mostra quantas marcações estão pendentes." },
     ] },
     { id: "lista", titulo: "Lista de pessoas", perguntas: [
@@ -58,7 +58,7 @@ export const TEMAS: Record<Perfil, Tema[]> = {
     ] },
     { id: "rotina", titulo: "Minha rotina", perguntas: [
       { p: "Não aparece nenhum compromisso.", r: "A administração precisa escolher você como voluntário responsável no cadastro do item." },
-      { p: "Como informo meus horários livres?", r: "Em Disponibilidade, marque os dias e o período. A administração vê isso na sua ficha." },
+      { p: "Como informo meus horários livres?", r: "Em Minha ficha, marque dias e períodos e diga como pode ajudar. A administração vê isso na sua página." },
       { p: "Quero criar uma atividade.", r: "A criação é feita pela administração. Envie sua sugestão pelo Suporte ou fale com a coordenação." },
     ] },
   ],
@@ -72,7 +72,7 @@ export const TEMAS: Record<Perfil, Tema[]> = {
     { id: "pessoas", titulo: "Pessoas", perguntas: [
       { p: "Como torno alguém voluntário?", r: "Em Usuários, mude o papel da pessoa para Voluntário. Depois escolha-a como responsável no cadastro do item." },
       { p: "Como respondo quem quer ser voluntário?", r: "Em Usuários › Pedidos, clique em “Aprovar e convidar” ou “Recusar”." },
-      { p: "Como vejo a ficha de alguém?", r: "Em Usuários, clique no nome. Os dados sensíveis ficam escondidos até você clicar em “Mostrar dados”." },
+      { p: "Como vejo a ficha de alguém?", r: "Em Usuários, clique no nome. Você vê necessidades, família, assiduidade e o histórico de acompanhamento. Os dados pessoais ficam escondidos até você clicar em “Mostrar dados”." },
     ] },
     { id: "acompanhar", titulo: "Acompanhamento", perguntas: [
       { p: "O que é “Precisa de atenção”?", r: "Pendências encontradas pelo sistema: pedidos sem resposta, itens sem responsável e oficinas sem vagas." },

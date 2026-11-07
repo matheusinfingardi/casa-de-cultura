@@ -12,7 +12,7 @@ const csp = [
   "font-src 'self' data:",
   `connect-src 'self' ${supabase} ${supabase.replace(/^http/, "ws")} ${vercel}`,
   "media-src 'self' blob:",
-  `frame-src ${vercel}`,
+  `frame-src ${vercel} https://www.google.com https://maps.google.com`,
   "worker-src 'self'",
   "object-src 'none'",
   "base-uri 'self'",

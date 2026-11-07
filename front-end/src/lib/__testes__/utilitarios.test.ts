@@ -65,3 +65,20 @@ describe("arquivos", () => {
     expect(lerCodigo(" usr-ana ")).toBe("usr-ana")
   })
 })
+
+describe("assiduidade", () => {
+  it("conta faltas seguidas a partir da mais recente", async () => {
+    const { calcularAssiduidade, situacao } = await import("@/lib/assiduidade")
+    const a = calcularAssiduidade([
+      { data: "2026-10-01", status: "presente" }, { data: "2026-10-08", status: "ausente" },
+      { data: "2026-10-15", status: "ausente" }, { data: "2026-10-22", status: "ausente" },
+    ])
+    expect(a).toMatchObject({ total: 4, presentes: 1, faltas: 3, taxa: 25, faltasSeguidas: 3, ultimaPresenca: "2026-10-01" })
+    expect(situacao(a).rotulo).toBe("Precisa de contato")
+  })
+  it("sem registros não inventa número", async () => {
+    const { calcularAssiduidade, situacao } = await import("@/lib/assiduidade")
+    expect(calcularAssiduidade([]).taxa).toBeNull()
+    expect(situacao(calcularAssiduidade([])).rotulo).toBe("Sem registros")
+  })
+})

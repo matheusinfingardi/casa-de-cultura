@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation"
 import { Input } from "@/components/ui/input"
 import { Campo, Secao } from "@/components/comum/campo"
 import { CampoRecorrencia, CampoResponsavel } from "@/components/comum/campos"
-import CamposExtras, { extrasIniciais } from "@/components/comum/campos-extras"
+import CamposExtras, { erroFoto, extrasIniciais } from "@/components/comum/campos-extras"
 import FormShell from "@/components/comum/form-shell"
 import { useFormulario } from "@/components/comum/use-formulario"
 import { atividadesApi } from "@/lib/services/entidades"
@@ -35,6 +35,7 @@ function errosRecorrencia(r: AtividadeInput["recorrencia"]): ErrosRec | undefine
 type Valores = AtividadeInput
 function validar(v: Valores): Erros<Valores> {
   return {
+    imagem_url: erroFoto(v),
     nome: obrigatorio(v.nome, "Dê um nome à atividade"),
     local: obrigatorio(v.local, "Informe onde acontece"),
     recorrencia: errosRecorrencia(v.recorrencia) ? "invalido" : undefined,
@@ -87,7 +88,7 @@ export default function FormAtividade({ item }: { item?: Atividade }) {
         <CampoRecorrencia valor={v.recorrencia} onChange={(r) => f.definir("recorrencia", r)} erros={detalhes} />
       </Secao>
 
-      <CamposExtras valores={v} definir={(c, x) => f.definir(c, x)} />
+      <CamposExtras erroImagem={erros.imagem_url} valores={v} definir={(c, x) => f.definir(c, x)} />
 
       <Secao titulo="Responsável">
         <CampoResponsavel valorId={v.responsavel_id ?? null} onChange={(id, nome) => { f.definir("responsavel_id", id); f.definir("responsavel", nome) }} />

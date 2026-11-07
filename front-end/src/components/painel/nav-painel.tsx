@@ -2,15 +2,15 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { CalendarDays, ClipboardCheck, ClipboardList, Clock, Home, LifeBuoy, QrCode, Search, Users, type LucideIcon } from "lucide-react"
+import { CalendarDays, ClipboardCheck, ClipboardList, Home, IdCard, LifeBuoy, Search, Users, type LucideIcon } from "lucide-react"
 import type { Role } from "@/lib/services/usuarios"
 
 type Item = { titulo: string; url: string; icon: LucideIcon }
 
 const ASSISTIDO: Item[] = [
   { titulo: "Início", url: "/painel", icon: Home },
-  { titulo: "Explorar", url: "/painel/explorar", icon: Search },
-  { titulo: "Inscrições", url: "/painel/inscricoes", icon: ClipboardList },
+  { titulo: "Atividades da Casa", url: "/painel/explorar", icon: Search },
+  { titulo: "Minhas inscrições", url: "/painel/inscricoes", icon: ClipboardList },
   { titulo: "Agenda", url: "/painel/agenda", icon: CalendarDays },
   { titulo: "Família", url: "/painel/familia", icon: Users },
   { titulo: "Ajuda", url: "/painel/ajuda", icon: LifeBuoy },
@@ -18,9 +18,8 @@ const ASSISTIDO: Item[] = [
 
 const VOLUNTARIO: Item[] = [
   { titulo: "Compromissos", url: "/painel", icon: ClipboardCheck },
-  { titulo: "Check-in", url: "/painel/checkin", icon: QrCode },
   { titulo: "Agenda", url: "/painel/agenda", icon: CalendarDays },
-  { titulo: "Disponibilidade", url: "/painel/disponibilidade", icon: Clock },
+  { titulo: "Minha ficha", url: "/painel/ficha", icon: IdCard },
   { titulo: "Ajuda", url: "/painel/ajuda", icon: LifeBuoy },
 ]
 

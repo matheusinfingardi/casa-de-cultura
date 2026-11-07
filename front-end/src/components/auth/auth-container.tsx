@@ -4,7 +4,7 @@ import { useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { useRouter, useSearchParams } from "next/navigation"
-import { ArrowLeft, FlaskConical } from "lucide-react"
+import { ArrowLeft } from "lucide-react"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import LoginForm from "./login-form"
@@ -13,11 +13,9 @@ import { cadastrar, entrar } from "@/lib/services/auth"
 import { buscarMeuPerfil } from "@/lib/services/usuarios"
 import { traduzirErro } from "./traduzir-erro"
 import { notify } from "@/lib/notify"
-import { iniciarSessaoDemo } from "@/lib/demo/cliente"
 import { PERFIL_INFO, ROLE_PERFIL, isPerfil, rotaInicial, type Perfil } from "@/lib/perfis"
 
 type Mode = "login" | "register"
-const EMAIL_TESTE: Record<Perfil, string> = { admin: "admin@admin.com", voluntario: "voluntario@voluntario.com", assistido: "assistido@assistido.com" }
 const MAX_TENTATIVAS = 5
 const ESPERA_MS = 60_000
 
@@ -86,11 +84,6 @@ export default function AuthContainer() {
     }
   }
 
-  function abrirDemo() {
-    iniciarSessaoDemo(perfil)
-    window.location.href = perfil === "admin" ? "/portal" : "/painel"
-  }
-
   return (
     <div className="flex min-h-screen items-center justify-center p-4">
       <Card className="w-full max-w-md space-y-5 p-6 md:p-8">
@@ -129,15 +122,8 @@ export default function AuthContainer() {
           </p>
         )}
 
-        <Button variant="outline" className="w-full" onClick={abrirDemo}>
-          <FlaskConical className="h-4 w-4" aria-hidden /> Ver demonstração como {info.titulo.toLowerCase()}
-        </Button>
-        <p className="text-center text-sm text-muted-foreground">
-          Conta de teste: <span className="font-medium text-foreground">{EMAIL_TESTE[perfil]}</span>, senha <span className="font-medium text-foreground">12345678</span>
-        </p>
-
         <Link href="/" className="flex items-center justify-center gap-1 text-sm text-muted-foreground hover:text-foreground">
-          <ArrowLeft className="h-4 w-4" aria-hidden /> Escolher outro tipo de acesso
+          <ArrowLeft className="h-4 w-4" aria-hidden /> Voltar ao início
         </Link>
       </Card>
     </div>

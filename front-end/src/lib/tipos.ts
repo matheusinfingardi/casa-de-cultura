@@ -9,7 +9,7 @@ export type Responsavel = {
 }
 
 /** Campos opcionais que ainda não existem no banco real (só na demonstração). */
-export type Extras = { descricao?: string; imagem_url?: string; centro_id?: string }
+export type Extras = { descricao?: string; imagem_url?: string; centro_id?: string; endereco_mapa?: string }
 
 export type DiaSemana = "Segunda" | "Terça" | "Quarta" | "Quinta" | "Sexta" | "Sábado" | "Domingo"
 

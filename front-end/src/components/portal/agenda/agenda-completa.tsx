@@ -15,7 +15,7 @@ import type { Atividade, Evento, Oficina } from "@/lib/tipos"
 import AgendaDia from "@/components/portal/dashboard/agenda-dia"
 import CalendarioMes from "@/components/portal/dashboard/calendario-mes"
 
-export type Fontes = { eventos: Evento[]; atividades: Atividade[]; oficinas: Oficina[] }
+export type Fontes = { eventos: Evento[]; atividades: Atividade[]; oficinas: Oficina[]; meusIds?: string[] }
 type Visao = "mes" | "semana" | "lista"
 
 function ListaDias({ itens }: { itens: Ocorrencia[] }) {
@@ -92,6 +92,7 @@ export default function AgendaCompleta({
   const [mes, setMes] = useState(hoje.getMonth())
   const [selecionado, setSelecionado] = useState(chaveData(hoje))
   const [tipos, setTipos] = useState<Set<TipoAgenda>>(new Set(["evento", "atividade", "oficina"]))
+  const [escopo, setEscopo] = useState<"meus" | "todos">("meus")
   const [refSemana, setRefSemana] = useState(() => { const d = new Date(); d.setDate(d.getDate() - d.getDay()); return d })
 
   useEffect(() => {
@@ -103,12 +104,13 @@ export default function AgendaCompleta({
 
   const noPeriodo = (de: Date, ate: Date) => {
     if (!fontes) return []
-    const l = ocorrenciasNoPeriodo(fontes, de, ate).filter((o) => tipos.has(o.tipo))
+    const meus = fontes.meusIds
+    const l = ocorrenciasNoPeriodo(fontes, de, ate).filter((o) => tipos.has(o.tipo) && (!meus || escopo === "todos" || meus.includes(o.itemId)))
     return transformar ? l.map(transformar) : l
   }
-  const doMes = useMemo(() => noPeriodo(new Date(ano, mes, 1), new Date(ano, mes + 1, 0)), [fontes, ano, mes, tipos]) // eslint-disable-line react-hooks/exhaustive-deps
-  const daSemana = useMemo(() => noPeriodo(refSemana, new Date(refSemana.getFullYear(), refSemana.getMonth(), refSemana.getDate() + 6)), [fontes, refSemana, tipos]) // eslint-disable-line react-hooks/exhaustive-deps
-  const proximos = useMemo(() => { const a = new Date(); a.setDate(a.getDate() + 30); return noPeriodo(new Date(), a) }, [fontes, tipos]) // eslint-disable-line react-hooks/exhaustive-deps
+  const doMes = useMemo(() => noPeriodo(new Date(ano, mes, 1), new Date(ano, mes + 1, 0)), [fontes, ano, mes, tipos, escopo]) // eslint-disable-line react-hooks/exhaustive-deps
+  const daSemana = useMemo(() => noPeriodo(refSemana, new Date(refSemana.getFullYear(), refSemana.getMonth(), refSemana.getDate() + 6)), [fontes, refSemana, tipos, escopo]) // eslint-disable-line react-hooks/exhaustive-deps
+  const proximos = useMemo(() => { const a = new Date(); a.setDate(a.getDate() + 30); return noPeriodo(new Date(), a) }, [fontes, tipos, escopo]) // eslint-disable-line react-hooks/exhaustive-deps
 
   function mudarMes(delta: number) {
     const d = new Date(ano, mes + delta, 1)
@@ -128,12 +130,21 @@ export default function AgendaCompleta({
         acoes={<Button variant="outline" onClick={() => baixarIcs("agenda-casa-de-cultura.ics", proximos)}><Download className="h-4 w-4" aria-hidden /> Baixar para o calendário</Button>}
       />
 
+      <div className="flex flex-wrap gap-3">
+      {fontes?.meusIds && (
+        <div className="inline-flex rounded-xl border bg-card p-1" role="group" aria-label="O que mostrar na agenda">
+          {([["meus", "Só os meus"], ["todos", "Todos da Casa"]] as const).map(([v, r]) => (
+            <button key={v} type="button" aria-pressed={escopo === v} onClick={() => setEscopo(v)} className={`rounded-lg px-4 py-2 text-sm font-medium ${escopo === v ? "bg-primary text-primary-foreground" : "hover:bg-muted"}`}>{r}</button>
+          ))}
+        </div>
+      )}
       <div className="inline-flex rounded-xl border bg-card p-1" role="group" aria-label="Forma de ver a agenda">
         {VISOES.map(([v, r, I]) => (
           <button key={v} type="button" aria-pressed={visao === v} onClick={() => setVisao(v)} className={`flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium ${visao === v ? "bg-primary text-primary-foreground" : "hover:bg-muted"}`}>
             <I className="h-4 w-4" aria-hidden />{r}
           </button>
         ))}
+      </div>
       </div>
 
       {!fontes ? <Skeleton className="h-[32rem] rounded-2xl" /> : visao === "mes" ? (

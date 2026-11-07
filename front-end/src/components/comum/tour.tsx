@@ -13,12 +13,12 @@ const PASSOS: Record<Perfil, { titulo: string; texto: string }[]> = {
   ],
   voluntario: [
     { titulo: "Bem-vindo, voluntário", texto: "Aqui ficam os compromissos que a administração atribuiu a você." },
-    { titulo: "Registre a presença", texto: "Abra um compromisso e marque quem veio. Funciona até sem internet: enviamos quando a conexão voltar." },
-    { titulo: "Check-in por QR Code", texto: "Em Check-in, leia o código do assistido com a câmera e a presença é marcada na hora." },
+    { titulo: "Faça a chamada do dia", texto: "Abra um compromisso, escolha o dia e marque quem veio. Funciona até sem internet: enviamos quando a conexão voltar." },
+    { titulo: "Check-in de quem chegou", texto: "Dentro da chamada, leia o QR Code do assistido: a presença é marcada naquela atividade e naquele dia." },
   ],
   assistido: [
-    { titulo: "Que bom ter você aqui", texto: "Em Explorar você encontra atividades, oficinas, eventos e atendimentos." },
-    { titulo: "Inscreva-se", texto: "Abra o item e toque em Quero participar. Se a turma estiver cheia, você entra na lista de espera." },
+    { titulo: "Que bom ter você aqui", texto: "Em Atividades da Casa você vê tudo o que é oferecido, o que já faz e no que pode se inscrever." },
+    { titulo: "Inscreva-se", texto: "Toque em Quero participar. Se a turma estiver cheia, você entra na lista de espera." },
     { titulo: "Acompanhe tudo", texto: "Veja sua agenda, sua presença, seu QR Code e seus certificados." },
   ],
 }

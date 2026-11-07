@@ -16,7 +16,7 @@ export default function QueroSerVoluntarioPage() {
 
   return (
     <PaginaSimples titulo="Quero ser voluntário" descricao="Conte um pouco sobre você. A coordenação analisa e responde por e-mail." largura="max-w-lg">
-      <SoDemo perfil="assistido" rota="/quero-ser-voluntario">
+      <SoDemo perfil="assistido" rota="/quero-ser-voluntario" publico>
         {enviado ? (
           <p role="status" className="rounded-xl bg-green-50 p-4 text-green-900 dark:bg-green-950 dark:text-green-100">Pedido enviado! Obrigado por querer ajudar.</p>
         ) : (

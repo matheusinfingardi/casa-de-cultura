@@ -1,4 +1,7 @@
-// Dados fictícios da demonstração. Nomes, telefones e e-mails são inventados.
+// Dados fictícios da demonstração. Nomes, telefones, e-mails e situações são inventados.
+import { ocorrenciasNoPeriodo } from "@/lib/agenda"
+import type { Atividade, Evento, Oficina } from "@/lib/tipos"
+
 const p2 = (n: number) => String(n).padStart(2, "0")
 const emDias = (n: number) => {
   const d = new Date()
@@ -67,12 +70,12 @@ export function criarBanco(): BancoDemo {
   ]
 
   const eventos: Linha[] = [
-    { id: "evt-festival", nome: "Festival de Cultura Popular", tipo: "cultural", data: emDias(6), horarioInicio: "14:00", horarioFim: "20:00", local: "Parque Halfeld", centro_id: "cen-sede", descricao: "Apresentações de capoeira, congado, música e dança, com feira de artesanato das oficinas.", ...resp("usr-carlos") },
+    { id: "evt-festival", nome: "Festival de Cultura Popular", tipo: "cultural", data: emDias(6), horarioInicio: "14:00", horarioFim: "20:00", local: "Parque Halfeld", endereco_mapa: "Parque Halfeld, Juiz de Fora - MG", centro_id: "cen-sede", descricao: "Apresentações de capoeira, congado, música e dança, com feira de artesanato das oficinas.", ...resp("usr-carlos") },
     { id: "evt-saude", nome: "Feira de Saúde da Família", tipo: "saude", data: emDias(11), horarioInicio: "08:00", horarioFim: "13:00", local: "Núcleo Benfica", centro_id: "cen-norte", descricao: "Aferição de pressão, orientação nutricional, vacinação e encaminhamentos com a UBS do bairro.", ...resp("usr-juliana") },
     { id: "evt-sarau", nome: "Sarau de Poesia e Música", tipo: "cultural", data: emDias(2), horarioInicio: "19:00", horarioFim: "21:30", local: "Auditório da Sede", centro_id: "cen-sede", descricao: "Noite aberta para leitura de poemas autorais e música ao vivo.", ...resp("usr-andre") },
     { id: "evt-agasalho", nome: "Campanha do Agasalho", tipo: "social", data: emDias(18), horarioInicio: "09:00", horarioFim: "17:00", local: "Núcleo Linhares", centro_id: "cen-leste", descricao: "Arrecadação e distribuição de roupas de frio para as famílias atendidas.", ...semResp },
     { id: "evt-educacao", nome: "Encontro de Pais e Educadores", tipo: "educacao", data: emDias(25), horarioInicio: "18:30", horarioFim: "20:30", local: "Auditório da Sede", centro_id: "cen-sede", descricao: "Conversa sobre acompanhamento escolar e participação da família.", ...resp("usr-tereza") },
-    { id: "evt-natal", nome: "Natal Solidário", tipo: "social", data: emDias(38), horarioInicio: "15:00", horarioFim: "19:00", local: "Parque Halfeld", centro_id: "cen-sede", descricao: "Entrega de brinquedos, apresentação do coral infantil e lanche comunitário.", ...resp("usr-marina") },
+    { id: "evt-natal", nome: "Natal Solidário", tipo: "social", data: emDias(38), horarioInicio: "15:00", horarioFim: "19:00", local: "Parque Halfeld", endereco_mapa: "Parque Halfeld, Juiz de Fora - MG", centro_id: "cen-sede", descricao: "Entrega de brinquedos, apresentação do coral infantil e lanche comunitário.", ...resp("usr-marina") },
     { id: "evt-mostra", nome: "Mostra das Oficinas de Arte", tipo: "cultural", data: emDias(-9), horarioInicio: "16:00", horarioFim: "19:00", local: "Ateliê da Sede", centro_id: "cen-sede", descricao: "Exposição dos trabalhos produzidos no semestre.", ...resp("usr-juliana") },
     { id: "evt-profissao", nome: "Dia de Orientação Profissional", tipo: "educacao", data: emDias(-22), horarioInicio: "09:00", horarioFim: "12:00", local: "Núcleo Benfica", centro_id: "cen-norte", descricao: "Currículo, entrevista de emprego e encaminhamento para vagas.", ...resp("usr-paulo") },
   ]
@@ -152,8 +155,117 @@ export function criarBanco(): BancoDemo {
   }
   const fora = semAna.filter((a) => !naInfo().includes(a.id))
 
+  // Fotos de exemplo (licença livre; ver public/demo/CREDITOS.md).
+  for (const l of [eventos, atividades, oficinas, centros, assistencia]) for (const i of l) i.imagem_url = `/demo/${i.id}.jpg`
+
+  // --- Presença dia a dia -----------------------------------------------------
+  // Cada pessoa tem um padrão de frequência, para os relatórios contarem uma história coerente.
+  const padrao = (id: string) => {
+    if (id === "usr-ana") return { taxa: 0.82, sumiu: false }
+    const n = [...id].reduce((t, c) => t + c.charCodeAt(0), 0)
+    return { taxa: [0.95, 0.88, 0.8, 0.65, 0.92, 0.45][n % 6], sumiu: n % 9 === 0 }
+  }
+  const sorteio = (t: string) => ([...t].reduce((a, c) => (a * 31 + c.charCodeAt(0)) >>> 0, 7) % 100) / 100
+  const registros: Linha[] = []
+  const ate = new Date(); ate.setDate(ate.getDate() - 1)
+  const de = new Date(); de.setDate(de.getDate() - 56)
+  const passadas = ocorrenciasNoPeriodo(
+    { eventos: eventos as unknown as Evento[], atividades: atividades as unknown as Atividade[], oficinas: oficinas as unknown as Oficina[] },
+    de, ate
+  ).map((o) => ({ tipo: o.tipo as string, id: o.itemId, data: o.data }))
+  // Assistências não têm dia fixo: atendimentos nas últimas quartas-feiras.
+  for (const item of assistencia) {
+    for (let d = new Date(de); d <= ate; d.setDate(d.getDate() + 1)) {
+      if (d.getDay() === 3) passadas.push({ tipo: "assistencia", id: item.id as string, data: `${d.getFullYear()}-${p2(d.getMonth() + 1)}-${p2(d.getDate())}` })
+    }
+  }
+  const limiteSumico = emDias(-16)
+  // Uma chamada de propósito sem fazer, para o voluntário ver o aviso de pendência.
+  const ultimaViolao = passadas.filter((o) => o.id === "atv-violao").map((o) => o.data).sort().pop()
+  for (const o of passadas) {
+    if (o.id === "atv-violao" && o.data === ultimaViolao) continue
+    for (const ins of presencas.filter((x) => x.item_id === o.id)) {
+      const c = ins.cliente_id as string
+      const { taxa, sumiu } = padrao(c)
+      const veio = sumiu && o.data >= limiteSumico ? false : sorteio(`${c}${o.id}${o.data}`) < taxa
+      registros.push({ id: `reg-${registros.length}`, item_tipo: o.tipo, item_id: o.id, data: o.data, cliente_id: c, status: veio ? "presente" : "ausente" })
+    }
+  }
+
+  // --- Fichas -----------------------------------------------------------------
+  const BAIRROS = ["Centro", "Benfica", "Linhares", "São Pedro", "Santa Luzia", "Vitorino Braga", "Bairu", "Grama"]
+  const CONDICOES = [
+    { deficiencia: "", necessidades: "", saude: "", medicamentos: "", alergias: "", acessibilidade: "" },
+    { deficiencia: "Deficiência visual (baixa visão)", necessidades: "Prefere materiais com letras grandes e lugar perto da frente.", saude: "", medicamentos: "", alergias: "", acessibilidade: "Letras ampliadas" },
+    { deficiencia: "", necessidades: "Cuida da mãe idosa; precisa de horários pela manhã.", saude: "Hipertensão", medicamentos: "Losartana", alergias: "", acessibilidade: "" },
+    { deficiencia: "Mobilidade reduzida (usa muletas)", necessidades: "Precisa de sala no térreo.", saude: "", medicamentos: "", alergias: "", acessibilidade: "Rampa e sala no térreo" },
+    { deficiencia: "", necessidades: "", saude: "Asma", medicamentos: "Bombinha em caso de crise", alergias: "Poeira", acessibilidade: "" },
+    { deficiencia: "Transtorno do espectro autista", necessidades: "Funciona melhor em grupos pequenos e com a rotina avisada com antecedência.", saude: "", medicamentos: "", alergias: "", acessibilidade: "Ambiente com pouco barulho" },
+    { deficiencia: "", necessidades: "Procura orientação para voltar ao mercado de trabalho.", saude: "", medicamentos: "", alergias: "Dipirona", acessibilidade: "" },
+    { deficiencia: "Deficiência auditiva", necessidades: "Comunica-se melhor com contato visual; conhece Libras.", saude: "", medicamentos: "", alergias: "", acessibilidade: "Intérprete de Libras quando possível" },
+  ]
+  const SOCIAL = [
+    { beneficios: ["Bolsa Família", "CadÚnico"], renda: "Até 1 salário mínimo", moradia: "Alugada", escolaridade: "Ensino fundamental incompleto", trabalho: "Trabalho informal", transporte: "A pé" },
+    { beneficios: ["BPC"], renda: "1 salário mínimo", moradia: "Própria", escolaridade: "Ensino fundamental completo", trabalho: "Aposentado(a)", transporte: "Ônibus" },
+    { beneficios: ["CadÚnico"], renda: "Até 2 salários mínimos", moradia: "Cedida por familiar", escolaridade: "Ensino médio completo", trabalho: "Desempregado(a)", transporte: "Ônibus" },
+    { beneficios: [], renda: "Até 1 salário mínimo", moradia: "Alugada", escolaridade: "Ensino médio incompleto", trabalho: "Autônomo(a)", transporte: "Bicicleta" },
+  ]
+  const fichas: Linha[] = assistidos.map((a, i) => ({
+    id: a.id,
+    telefone: `(32) 9${String(8100 + i * 37).padStart(4, "0")}-${String(1200 + i * 53).padStart(4, "0")}`,
+    nascimento: `${1958 + ((i * 7) % 52)}-${p2((i % 12) + 1)}-${p2((i % 27) + 1)}`,
+    endereco: `Rua ${["das Flores", "Marechal Deodoro", "São Mateus", "Benjamin Constant", "Santa Rita", "Espírito Santo"][i % 6]}, ${100 + i * 13}`,
+    bairro: BAIRROS[i % BAIRROS.length],
+    responsavel_legal: "",
+    contato_emergencia: `${["Rosa", "João", "Maria", "Sebastião"][i % 4]} (familiar): (32) 9${String(7100 + i * 19).padStart(4, "0")}-${String(4400 + i * 11).padStart(4, "0")}`,
+    autoriza_imagem: i % 3 !== 0,
+    observacoes: "",
+    ...CONDICOES[i % CONDICOES.length],
+    ...SOCIAL[i % SOCIAL.length],
+  }))
+  const fichaAna = fichas.find((f) => f.id === "usr-ana")!
+  Object.assign(fichaAna, {
+    telefone: "(32) 99911-2233", nascimento: "1986-04-12", endereco: "Rua Benjamin Constant, 340", bairro: "Centro",
+    deficiencia: "", necessidades: "Mãe solo de dois filhos; prefere atividades à tarde, depois da escola das crianças.",
+    saude: "", medicamentos: "", alergias: "", acessibilidade: "",
+    beneficios: ["Bolsa Família", "CadÚnico"], renda: "Até 1 salário mínimo", moradia: "Alugada", escolaridade: "Ensino médio completo", trabalho: "Diarista", transporte: "Ônibus",
+    contato_emergencia: "Rosa Souza (mãe): (32) 98844-1020", autoriza_imagem: true,
+  })
+
+  // --- Família ----------------------------------------------------------------
+  const dependentes: Linha[] = [
+    { id: "dep-1", responsavel_id: "usr-ana", nome: "Pedro Souza", nascimento: "2016-02-20", parentesco: "Filho", atividade: "Capoeira Infantil", mora_junto: true, parente_id: null, telefone: "" },
+    { id: "dep-2", responsavel_id: "usr-ana", nome: "Laura Souza", nascimento: "2013-08-05", parentesco: "Filha", atividade: "Reforço Escolar", mora_junto: true, parente_id: null, telefone: "" },
+    { id: "dep-3", responsavel_id: "usr-ana", nome: "Beatriz Lima", nascimento: "1990-01-15", parentesco: "Irmã", atividade: "", mora_junto: false, parente_id: "usr-a0", telefone: "(32) 99822-1100" },
+    { id: "dep-4", responsavel_id: "usr-a0", nome: "Ana Souza", nascimento: "1986-04-12", parentesco: "Irmã", atividade: "", mora_junto: false, parente_id: "usr-ana", telefone: "(32) 99911-2233" },
+    { id: "dep-5", responsavel_id: "usr-a1", nome: "Fernanda Costa", nascimento: "1975-05-03", parentesco: "Mãe", atividade: "", mora_junto: true, parente_id: "usr-a2", telefone: "" },
+    { id: "dep-6", responsavel_id: "usr-a2", nome: "Diego Santos", nascimento: "2004-09-14", parentesco: "Filho", atividade: "", mora_junto: true, parente_id: "usr-a1", telefone: "" },
+    { id: "dep-7", responsavel_id: "usr-a4", nome: "Miguel Martins", nascimento: "2017-03-11", parentesco: "Neto", atividade: "Capoeira Infantil", mora_junto: true, parente_id: null, telefone: "" },
+  ]
+
+  // --- Acompanhamento da equipe -----------------------------------------------
+  const acompanhamento: Linha[] = [
+    { id: "aco-1", pessoa_id: "usr-ana", autor: "Marina Alves", tipo: "Atendimento", texto: "Conversamos sobre a rotina com os filhos. Ana quer concluir um curso de informática para buscar outro trabalho.", proximo_passo: "Avisar quando abrir vaga em Informática Básica.", created_at: haMeses(1, 12) },
+    { id: "aco-2", pessoa_id: "usr-ana", autor: "Juliana Rocha", tipo: "Encaminhamento", texto: "Encaminhada ao Acompanhamento Social para atualizar o CadÚnico.", proximo_passo: "Confirmar a atualização no próximo encontro.", created_at: haMeses(0, 2) },
+    ...assistidos.filter((a) => a.id !== "usr-ana").slice(0, 12).map((a, i) => ({
+      id: `aco-g${i}`, pessoa_id: a.id, autor: ["Marina Alves", "Juliana Rocha", "Tereza Campos"][i % 3], tipo: ["Ligação", "Atendimento", "Visita"][i % 3],
+      texto: ["Ligamos para saber como está e reforçar o convite para as atividades.", "Atendimento de acolhimento; pessoa relatou boa adaptação ao grupo.", "Visita à família para entender as dificuldades de transporte."][i % 3],
+      proximo_passo: ["", "Acompanhar a frequência no próximo mês.", "Verificar auxílio-transporte."][i % 3], created_at: haMeses(i % 4, 4 + i),
+    })),
+  ]
+
+  // --- Voluntários -------------------------------------------------------------
+  const G = (dias: string[], periodos: string[]) => Object.fromEntries(dias.map((d) => [d, periodos]))
+  const disponibilidade: Linha[] = [
+    { id: "usr-carlos", grade: G(["Segunda", "Quarta"], ["Noite"]), ...{ telefone: "(32) 99120-3344", areas: ["Música", "Informática"], formacao: "Licenciatura em Música", experiencia: "Dá aulas de violão há 8 anos. Ajudou a montar o laboratório de informática.", observacoes: "Posso substituir aos sábados, com aviso." } },
+    { id: "usr-juliana", grade: G(["Terça", "Quinta"], ["Manhã", "Tarde"]), telefone: "(32) 99120-5566", areas: ["Psicologia", "Artes"], formacao: "Psicologia", experiencia: "Atende famílias em situação de vulnerabilidade.", observacoes: "" },
+    { id: "usr-paulo", grade: G(["Sábado"], ["Manhã"]), telefone: "(32) 99120-7788", areas: ["Esporte", "Cozinha", "Eventos"], formacao: "Educação Física", experiencia: "Mestre de capoeira. Ajuda na organização de eventos.", observacoes: "" },
+    { id: "usr-tereza", grade: G(["Segunda", "Terça", "Quinta", "Sexta"], ["Tarde"]), telefone: "(32) 99120-9900", areas: ["Educação", "Assistência social"], formacao: "Pedagogia", experiencia: "Professora aposentada, cuida do reforço escolar.", observacoes: "" },
+    { id: "usr-andre", grade: G(["Quarta", "Sexta"], ["Noite"]), telefone: "(32) 99120-1212", areas: ["Música", "Fotografia"], formacao: "Comunicação Social", experiencia: "Rege o coral e registra os eventos em foto.", observacoes: "" },
+  ]
+
   return {
-    profiles, eventos, atividades, oficinas, centros, assistencia, presencas,
+    profiles, eventos, atividades, oficinas, centros, assistencia, presencas, registros, fichas, dependentes, acompanhamento, disponibilidade,
     lista_espera: fora.slice(0, 3).map((a, i) => ({ id: `esp-${i}`, item_tipo: "oficina", item_id: "ofi-info", item_nome: "Informática Básica", cliente_id: a.id, created_at: haMeses(0, 1 + i) })),
     notificacoes: [
       { id: "not-1", usuario_id: "usr-ana", titulo: "Festival confirmado", texto: "Sua inscrição no Festival de Cultura Popular foi confirmada.", href: "/painel/inscricoes", lida: false, created_at: haMeses(0, 1) },
@@ -161,14 +273,6 @@ export function criarBanco(): BancoDemo {
       { id: "not-3", usuario_id: "usr-carlos", titulo: "Nova atribuição", texto: "Você agora é responsável pela Informática Básica.", href: "/painel", lida: false, created_at: haMeses(0, 1) },
       { id: "not-4", usuario_id: "usr-marina", titulo: "Pedido de voluntariado", texto: "Luciana Prates pediu para ser voluntária.", href: "/portal/usuarios?aba=pedidos", lida: false, created_at: haMeses(0, 1) },
       { id: "not-5", usuario_id: "usr-marina", titulo: "Oficina lotada", texto: "Informática Básica atingiu o limite de vagas.", href: "/portal/oficinas/ofi-info", lida: false, created_at: haMeses(0, 1) },
-    ],
-    fichas: [
-      { id: "usr-ana", telefone: "(32) 99911-2233", nascimento: "1986-04-12", endereco: "Rua Benjamin Constant, 340 — Centro", responsavel_legal: "", necessidades: "Prefere atividades no período da tarde.", observacoes: "" },
-      { id: "usr-a0", telefone: "(32) 99822-1100", nascimento: "1999-09-03", endereco: "Rua Marechal Deodoro, 77 — Benfica", responsavel_legal: "", necessidades: "", observacoes: "" },
-    ],
-    dependentes: [
-      { id: "dep-1", responsavel_id: "usr-ana", nome: "Pedro Souza", nascimento: "2016-02-20", parentesco: "Filho", atividade: "Capoeira Infantil" },
-      { id: "dep-2", responsavel_id: "usr-ana", nome: "Laura Souza", nascimento: "2013-08-05", parentesco: "Filha", atividade: "Reforço Escolar" },
     ],
     convites: [
       { id: "con-1", email: "beatriz.alencar@email.com", role: "responsavel", status: "pendente", created_at: haMeses(0, 2) },
@@ -178,7 +282,6 @@ export function criarBanco(): BancoDemo {
       { id: "ped-1", nome: "Luciana Prates", email: "luciana.prates@email.com", telefone: "(32) 99100-4455", area: "Reforço escolar", disponibilidade: "Terças e quintas, à tarde", status: "pendente", created_at: haMeses(0, 3) },
       { id: "ped-2", nome: "Marcos Vinícius", email: "marcos.vinicius@email.com", telefone: "(32) 98877-1212", area: "Música", disponibilidade: "Sábados de manhã", status: "pendente", created_at: haMeses(0, 5) },
     ],
-    disponibilidade: [{ id: "usr-carlos", dias: ["Segunda", "Quarta", "Quinta"], periodo: "Tarde e noite", observacoes: "Posso substituir aos sábados, com aviso." }],
     metas: [
       { id: "met-1", titulo: "Pessoas atendidas no trimestre", alvo: 40, indicador: "assistidos" },
       { id: "met-2", titulo: "Inscrições no trimestre", alvo: 220, indicador: "inscricoes" },

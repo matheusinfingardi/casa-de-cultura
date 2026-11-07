@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation"
 import { Input } from "@/components/ui/input"
 import { Campo, Secao } from "@/components/comum/campo"
 import { CampoResponsavel, CampoSelect } from "@/components/comum/campos"
-import CamposExtras, { extrasIniciais } from "@/components/comum/campos-extras"
+import CamposExtras, { erroFoto, extrasIniciais } from "@/components/comum/campos-extras"
 import FormShell from "@/components/comum/form-shell"
 import { useFormulario } from "@/components/comum/use-formulario"
 import { assistenciaApi } from "@/lib/services/entidades"
@@ -16,6 +16,7 @@ export const TIPOS_ASSISTENCIA = ["Psicológica", "Jurídica", "Social", "Saúde
 
 function validar(v: AssistenciaInput): Erros<AssistenciaInput> {
   return {
+    imagem_url: erroFoto(v),
     nome: obrigatorio(v.nome, "Dê um nome ao atendimento"),
     tipo: obrigatorio(v.tipo, "Escolha o tipo de assistência"),
     local: obrigatorio(v.local, "Informe onde é prestado"),
@@ -65,7 +66,7 @@ export default function FormAssistencia({ item }: { item?: Assistencia }) {
         </Campo>
       </Secao>
 
-      <CamposExtras valores={v} definir={(c, x) => f.definir(c, x)} />
+      <CamposExtras erroImagem={erros.imagem_url} valores={v} definir={(c, x) => f.definir(c, x)} />
 
       <Secao titulo="Responsável">
         <CampoResponsavel valorId={v.responsavel_id ?? null} onChange={(id, nome) => { f.definir("responsavel_id", id); f.definir("responsavel", nome) }} />

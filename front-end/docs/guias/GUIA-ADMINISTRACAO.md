@@ -1,18 +1,21 @@
 # Guia da Administração
 
-Este guia é para a coordenação e a equipe administrativa. Aqui você cadastra a programação, organiza as pessoas e acompanha os resultados.
+Este guia é para a coordenação e a equipe administrativa. Aqui você cadastra a programação, conhece e acompanha as pessoas, e presta contas dos resultados.
 
 ## Como entrar
 
-Na página inicial, clique em **Administração** e entre com seu e-mail e senha.
+A entrada da administração **não aparece na página inicial**. Acesse o endereço do sistema com **/administracao** no final e entre com seu e-mail e senha.
 
 ## Visão geral
 
-É a tela do dia a dia. Mostra os números principais, a agenda da semana e o que precisa de atenção.
+É a tela do dia a dia, nesta ordem:
+
+1. os números principais;
+2. a agenda da semana;
+3. o quadro com eventos, atividades, oficinas e assistência;
+4. **Precisa de atenção**, com pendências como pessoas que faltaram muito, pedidos sem resposta e itens sem responsável.
 
 ![Visão geral](../img/admin-visao.png)
-
-Comece pelo quadro **Precisa de atenção**. Ele mostra pendências como pedidos sem resposta, itens sem responsável e turmas sem vagas.
 
 ## Agenda
 
@@ -34,7 +37,7 @@ Mostra tudo o que acontece, em três formatos: **Mês**, **Semana** e **Lista**.
 
 1. No menu, escolha o tipo.
 2. Clique em **Novo** (ou **Nova**).
-3. Preencha os campos com asterisco.
+3. Preencha os campos com asterisco. **A foto é obrigatória**: ela aparece para quem vai se inscrever.
 4. Clique em **Criar**.
 
 Se faltar algo, o campo fica vermelho e explica o que fazer.
@@ -43,25 +46,47 @@ Se faltar algo, o campo fica vermelho e explica o que fazer.
 
 ## A página de cada item
 
-Ao clicar em um item, você vê tudo sobre ele: próximas datas, vagas, inscritos, lista de espera e responsável.
+Ao clicar em um item, você vê a foto, as próximas datas, as vagas, a lista de espera, o responsável e um **mapa com o endereço**.
 
-Nessa página você também pode registrar a **Presença**, **Editar**, **Duplicar** (bom para repetir no próximo semestre) e **Excluir**.
+Nessa página você pode abrir a **Chamada**, **Editar**, **Duplicar** (bom para repetir no próximo semestre) e **Excluir**.
 
 ![Página de uma oficina](../img/admin-item.png)
 
-## Usuários
+## Usuários: conhecer e cuidar de cada pessoa
 
-As pessoas estão separadas em **Assistidos**, **Voluntários** e **Administração**. Também há as abas **Pedidos** e **Convites**.
+As pessoas estão separadas em **Assistidos**, **Voluntários** e **Administração**, além das abas **Pedidos** e **Convites**. Em Assistidos, filtre por quem **precisa de contato**, **tem deficiência** ou **recebe benefício**.
 
 ![Usuários](../img/admin-usuarios.png)
 
-- **Tornar alguém voluntário:** mude o **Papel** da pessoa.
-- **Ver a ficha:** clique no nome. Os dados sensíveis ficam escondidos até você clicar em **Mostrar dados**.
-- **Responder pedidos:** em **Pedidos**, clique em **Aprovar e convidar** ou **Recusar**.
+Clique no nome para abrir a página da pessoa:
+
+| Aba | O que tem |
+|---|---|
+| Resumo | Contato, assiduidade, último acompanhamento e família |
+| Necessidades e condições | Deficiência, o que ajuda essa pessoa, saúde e condição social |
+| Família | Parentes e ligação com a ficha de outros assistidos |
+| Participação | Presença em cada atividade e últimos encontros |
+| Acompanhamento | Visitas, ligações, encaminhamentos e próximos passos |
+
+![Página de uma pessoa](../img/admin-pessoa.png)
+
+Se a pessoa faltou 3 vezes seguidas, um aviso sugere entrar em contato.
+
+> **Cuidado:** essas informações são sensíveis. Registre só o necessário, com o consentimento da pessoa ou do responsável. Os dados pessoais ficam escondidos até você clicar em **Mostrar dados**.
+
+Na página de um voluntário, você vê em quais dias ele pode ajudar, de que forma e quais são seus compromissos.
 
 ## Relatórios
 
-Escolha o período, a área e a unidade. Depois, baixe a planilha ou salve em PDF para enviar a parceiros. Aqui também ficam as metas do trimestre.
+Escolha o período, a área e a unidade. Os números mostram a diferença em relação ao período anterior.
+
+| Aba | O que mostra |
+|---|---|
+| Panorama | Presença mês a mês, destaques e metas |
+| Participação | Tabela com cada item |
+| Pessoas | Quem precisa de contato e o perfil do público |
+
+Depois, baixe a planilha ou salve em PDF para enviar a parceiros.
 
 ![Relatórios](../img/admin-relatorios.png)
 

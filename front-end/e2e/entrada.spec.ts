@@ -1,12 +1,26 @@
 import { expect, test } from "@playwright/test"
 
-test("a demonstração abre cada portal pela página inicial", async ({ page }) => {
+test("a página inicial não mostra demonstração nem administração", async ({ page }) => {
+  await page.goto("/")
+  await expect(page.getByText("Como você quer entrar?")).toBeVisible()
+  await expect(page.getByText(/demonstração/i)).toHaveCount(0)
+  await expect(page.getByText("Administração")).toHaveCount(0)
+  await page.goto("/auth?perfil=assistido")
+  await expect(page.getByText(/demonstração|12345678/i)).toHaveCount(0)
+})
+
+test("a rota /administracao leva ao login da administração", async ({ page }) => {
+  await page.goto("/administracao")
+  await expect(page).toHaveURL(/perfil=admin/)
+})
+
+test("a demonstração abre cada portal pela rota escondida", async ({ page }) => {
   for (const [botao, url, texto] of [
-    ["Assistido", /\/painel$/, /Seu próximo compromisso|Nada marcado/],
-    ["Voluntário", /\/painel$/, /Todos os meus compromissos/],
-    ["Administração", /\/portal$/, /Agenda da semana/],
+    ["Entrar como assistido", /\/painel$/, /Seu próximo compromisso|Nada marcado/],
+    ["Entrar como voluntário", /\/painel$/, /Dia a dia/],
+    ["Entrar como administração", /\/portal$/, /Agenda da semana/],
   ] as const) {
-    await page.goto("/")
+    await page.goto("/demonstracao")
     await page.getByRole("button", { name: botao, exact: true }).click()
     await page.waitForURL(url)
     await expect(page.getByText(texto).first()).toBeVisible()
@@ -35,7 +49,7 @@ test("página inexistente mostra aviso amigável", async ({ page }) => {
 test("contas de teste entram pelo formulário de login", async ({ page }) => {
   for (const [perfil, email, url, texto] of [
     ["admin", "admin@admin.com", /\/portal$/, /Agenda da semana/],
-    ["voluntario", "voluntario@voluntario.com", /\/painel$/, /Todos os meus compromissos/],
+    ["voluntario", "voluntario@voluntario.com", /\/painel$/, /Dia a dia/],
     ["assistido", "assistido@assistido.com", /\/painel$/, /Olá, Ana/],
   ] as const) {
     await page.goto(`/auth?perfil=${perfil}`)

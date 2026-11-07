@@ -67,20 +67,49 @@ export async function promoverDaEspera(tipo: ItemTipo, itemId: string): Promise<
   return primeira.cliente_id
 }
 
-// --- Ficha do assistido e família --------------------------------------------
-export type Ficha = { id: string; telefone: string; nascimento: string; endereco: string; responsavel_legal: string; necessidades: string; observacoes: string }
-export const FICHA_VAZIA = { telefone: "", nascimento: "", endereco: "", responsavel_legal: "", necessidades: "", observacoes: "" }
+// --- Presença dia a dia --------------------------------------------------------
+export type StatusDia = "presente" | "ausente"
+export type Registro = { id: string; item_tipo: ItemTipo; item_id: string; data: string; cliente_id: string; status: StatusDia }
+
+export const listarRegistros = () => lista<Registro>("registros")
+export async function registrosDoItem(tipo: ItemTipo, itemId: string): Promise<Registro[]> {
+  return (await listarRegistros()).filter((r) => r.item_tipo === tipo && r.item_id === itemId)
+}
+export async function registrosDaPessoa(id: string): Promise<Registro[]> {
+  return (await listarRegistros()).filter((r) => r.cliente_id === id)
+}
+/** Marca presença ou falta de uma pessoa em um dia. `null` apaga a marcação. */
+export async function marcarDia(tipo: ItemTipo, itemId: string, data: string, clienteId: string, status: StatusDia | null) {
+  const atuais = (await registrosDoItem(tipo, itemId)).filter((r) => r.data === data && r.cliente_id === clienteId)
+  await Promise.all(atuais.map((r) => supabase.from("registros").delete().eq("id", r.id)))
+  if (status) await supabase.from("registros").insert([{ item_tipo: tipo, item_id: itemId, data, cliente_id: clienteId, status }])
+  // A situação geral da inscrição acompanha a última marcação.
+  if (status) await supabase.from("presencas").update({ status }).eq("item_id", itemId).eq("cliente_id", clienteId)
+}
+
+// --- Ficha da pessoa e família --------------------------------------------------
+export type Ficha = {
+  id: string; telefone: string; nascimento: string; endereco: string; bairro: string; responsavel_legal: string; contato_emergencia: string; autoriza_imagem: boolean
+  deficiencia: string; necessidades: string; saude: string; medicamentos: string; alergias: string; acessibilidade: string
+  beneficios: string[]; renda: string; moradia: string; escolaridade: string; trabalho: string; transporte: string; observacoes: string
+}
+export const FICHA_VAZIA: Omit<Ficha, "id"> = {
+  telefone: "", nascimento: "", endereco: "", bairro: "", responsavel_legal: "", contato_emergencia: "", autoriza_imagem: false,
+  deficiencia: "", necessidades: "", saude: "", medicamentos: "", alergias: "", acessibilidade: "",
+  beneficios: [], renda: "", moradia: "", escolaridade: "", trabalho: "", transporte: "", observacoes: "",
+}
 
 export async function buscarFicha(id: string): Promise<Ficha> {
   const { data } = await supabase.from("fichas").select("*").eq("id", id).maybeSingle()
-  return (data as Ficha | null) ?? { id, ...FICHA_VAZIA }
+  return { id, ...FICHA_VAZIA, ...((data as Partial<Ficha> | null) ?? {}) }
 }
+export const listarFichas = () => lista<Ficha>("fichas")
 export async function salvarFicha(f: Ficha) {
   const { error } = await supabase.from("fichas").upsert([f])
   if (error) { notify.error("Não foi possível salvar a ficha"); throw error }
 }
 
-export type Dependente = { id: string; responsavel_id: string; nome: string; nascimento: string; parentesco: string; atividade: string }
+export type Dependente = { id: string; responsavel_id: string; nome: string; nascimento: string; parentesco: string; atividade: string; mora_junto?: boolean; parente_id?: string | null; telefone?: string }
 export async function listarDependentes(responsavelId: string): Promise<Dependente[]> {
   return (await lista<Dependente>("dependentes", { col: "nome" })).filter((d) => d.responsavel_id === responsavelId)
 }
@@ -89,6 +118,15 @@ export async function salvarDependente(d: Omit<Dependente, "id">) {
 }
 export async function removerDependente(id: string) {
   await supabase.from("dependentes").delete().eq("id", id)
+}
+
+// --- Acompanhamento pela equipe ---------------------------------------------------
+export type NotaAcompanhamento = { id: string; pessoa_id: string; autor: string; tipo: string; texto: string; proximo_passo: string; created_at: string }
+export async function listarAcompanhamento(pessoaId: string): Promise<NotaAcompanhamento[]> {
+  return (await lista<NotaAcompanhamento>("acompanhamento", { col: "created_at", asc: false })).filter((n) => n.pessoa_id === pessoaId)
+}
+export async function salvarNota(n: Omit<NotaAcompanhamento, "id" | "created_at">) {
+  await supabase.from("acompanhamento").insert([n])
 }
 
 // --- Convites e pedidos de voluntariado --------------------------------------
@@ -111,10 +149,12 @@ export async function responderPedido(p: PedidoVoluntario, aprovado: boolean) {
   if (aprovado) await criarConvite(p.email, "responsavel")
 }
 
-export type Disponibilidade = { id: string; dias: string[]; periodo: string; observacoes: string }
+export const PERIODOS_DIA = ["Manhã", "Tarde", "Noite"] as const
+export const AREAS_AJUDA = ["Música", "Artes", "Esporte", "Educação", "Informática", "Cozinha", "Psicologia", "Assistência social", "Saúde", "Jurídico", "Fotografia", "Eventos", "Transporte"]
+export type Disponibilidade = { id: string; grade: Record<string, string[]>; telefone: string; areas: string[]; formacao: string; experiencia: string; observacoes: string }
 export async function buscarDisponibilidade(id: string): Promise<Disponibilidade> {
   const { data } = await supabase.from("disponibilidade").select("*").eq("id", id).maybeSingle()
-  return (data as Disponibilidade | null) ?? { id, dias: [], periodo: "", observacoes: "" }
+  return { id, grade: {}, telefone: "", areas: [], formacao: "", experiencia: "", observacoes: "", ...((data as Partial<Disponibilidade> | null) ?? {}) }
 }
 export async function salvarDisponibilidade(d: Disponibilidade) {
   await supabase.from("disponibilidade").upsert([d])

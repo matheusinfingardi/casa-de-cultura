@@ -2,7 +2,7 @@
 
 import { useParams } from "next/navigation"
 import AuthGuard from "@/components/auth/auth-guard"
-import GestaoPresenca from "@/components/comum/gestao-presenca"
+import PresencaPagina from "@/components/comum/presenca-pagina"
 import { isItemTipo } from "@/lib/services/presencas"
 
 export default function PresencaVoluntarioPage() {
@@ -10,7 +10,7 @@ export default function PresencaVoluntarioPage() {
   if (!isItemTipo(tipo)) return <p className="text-sm text-muted-foreground">Tipo inválido.</p>
   return (
     <AuthGuard allow={["responsavel"]} redirectTo="/painel">
-      <GestaoPresenca tipo={tipo} itemId={id} voltarHref="/painel" voltarLabel="Meus compromissos" />
+      <PresencaPagina tipo={tipo} itemId={id} voltarHref="/painel" voltarLabel="Meus compromissos" />
     </AuthGuard>
   )
 }

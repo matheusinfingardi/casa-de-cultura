@@ -20,7 +20,8 @@ import { CampoSelect } from "@/components/comum/campos"
 import { useDemo } from "@/hooks/use-demo"
 import { notify } from "@/lib/notify"
 import { dataBR, iniciais } from "@/lib/formatar"
-import { cancelarConvite, criarConvite, listarConvites, listarPedidos, responderPedido, type Convite, type PedidoVoluntario } from "@/lib/services/extras"
+import { calcularAssiduidade, idade, situacao, type Assiduidade } from "@/lib/assiduidade"
+import { cancelarConvite, criarConvite, listarConvites, listarFichas, listarPedidos, listarRegistros, responderPedido, type Convite, type Ficha, type PedidoVoluntario } from "@/lib/services/extras"
 import { contarInscricoesPorPessoa } from "@/lib/services/presencas"
 import { ROLES, ROLE_LABELS, atualizarRole, listarUsuarios, type Role, type Usuario } from "@/lib/services/usuarios"
 
@@ -34,7 +35,9 @@ const ABAS: { v: Aba; r: string; dica: string; soDemo?: boolean }[] = [
   { v: "convites", r: "Convites", dica: "Convites enviados por e-mail.", soDemo: true },
 ]
 
-function TabelaPessoas({ pessoas, inscricoes, euId, onPapel }: { pessoas: Usuario[]; inscricoes: Record<string, number>; euId?: string; onPapel: (u: Usuario, r: Role) => void }) {
+type Extra = { ass?: Assiduidade; ficha?: Ficha }
+
+function TabelaPessoas({ pessoas, inscricoes, euId, onPapel, extra, comCuidado }: { pessoas: Usuario[]; inscricoes: Record<string, number>; euId?: string; onPapel: (u: Usuario, r: Role) => void; extra: (id: string) => Extra; comCuidado: boolean }) {
   return (
     <Card className="gap-0 overflow-hidden p-0">
       <div className="overflow-x-auto">
@@ -42,30 +45,39 @@ function TabelaPessoas({ pessoas, inscricoes, euId, onPapel }: { pessoas: Usuari
           <thead className="bg-muted/50 text-left text-sm text-muted-foreground">
             <tr>
               <th scope="col" className="px-5 py-3 font-semibold">Pessoa</th>
-              <th scope="col" className="hidden px-3 py-3 font-semibold lg:table-cell">Desde</th>
+              {comCuidado && <th scope="col" className="hidden px-3 py-3 font-semibold lg:table-cell">Cuidados</th>}
+              {comCuidado && <th scope="col" className="hidden px-3 py-3 font-semibold md:table-cell">Assiduidade</th>}
+              {!comCuidado && <th scope="col" className="hidden px-3 py-3 font-semibold lg:table-cell">Desde</th>}
               <th scope="col" className="hidden px-3 py-3 text-right font-semibold sm:table-cell">Inscrições</th>
               <th scope="col" className="w-48 px-5 py-3 font-semibold">Papel</th>
             </tr>
           </thead>
           <tbody className="divide-y">
-            {pessoas.map((u) => (
+            {pessoas.map((u) => {
+              const { ass, ficha } = extra(u.id)
+              const st = ass ? situacao(ass) : null
+              const anos = idade(ficha?.nascimento)
+              return (
               <tr key={u.id} className="hover:bg-muted/30">
                 <td className="px-5 py-3">
                   <Link href={`/portal/usuarios/${u.id}`} className="group flex min-w-0 items-center gap-3">
                     <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-sm font-semibold text-primary" aria-hidden>{iniciais(u.nome)}</span>
                     <span className="min-w-0">
                       <span className="block truncate font-medium group-hover:underline">{u.nome ?? "Sem nome"}{u.id === euId && <Badge variant="outline" className="ml-2">você</Badge>}</span>
-                      <span className="block truncate text-sm text-muted-foreground">{u.email}</span>
+                      <span className="block truncate text-sm text-muted-foreground">{anos !== null ? `${anos} anos · ` : ""}{ficha?.bairro ? `${ficha.bairro} · ` : ""}{u.email}</span>
                     </span>
                   </Link>
                 </td>
-                <td className="hidden whitespace-nowrap px-3 py-3 text-muted-foreground lg:table-cell">{dataBR(u.created_at?.slice(0, 10))}</td>
+                {comCuidado && <td className="hidden px-3 py-3 text-sm lg:table-cell">{ficha?.deficiencia ? <span className="font-medium">{ficha.deficiencia}</span> : ficha?.necessidades ? <span className="text-muted-foreground">Tem necessidades anotadas</span> : <span className="text-muted-foreground">—</span>}</td>}
+                {comCuidado && <td className="hidden px-3 py-3 md:table-cell">{st && <span className={`whitespace-nowrap rounded-full px-2.5 py-1 text-sm font-medium ${st.classe}`}>{ass?.taxa !== null ? `${ass?.taxa}% · ` : ""}{st.rotulo}</span>}</td>}
+                {!comCuidado && <td className="hidden whitespace-nowrap px-3 py-3 text-muted-foreground lg:table-cell">{dataBR(u.created_at?.slice(0, 10))}</td>}
                 <td className="hidden px-3 py-3 text-right tabular-nums sm:table-cell">{inscricoes[u.id] ?? 0}</td>
                 <td className="px-5 py-2">
                   <CampoSelect aria-label={`Papel de ${u.nome ?? u.email}`} valor={u.role} desativado={u.id === euId} opcoes={ROLES.map((r) => ({ valor: r, label: ROLE_LABELS[r] }))} onChange={(r) => onPapel(u, r as Role)} />
                 </td>
               </tr>
-            ))}
+              )
+            })}
           </tbody>
         </table>
       </div>
@@ -89,13 +101,24 @@ export default function GestaoUsuarios() {
   const [convidando, setConvidando] = useState(false)
   const [conviteEmail, setConviteEmail] = useState("")
   const [convitePapel, setConvitePapel] = useState("responsavel")
+  const [fichas, setFichas] = useState<Ficha[]>([])
+  const [assiduidades, setAssiduidades] = useState<Record<string, Assiduidade>>({})
+  const [cuidado, setCuidado] = useState(params.get("filtro") ?? "todos")
 
   useEffect(() => {
     listarUsuarios().then(setUsuarios)
     contarInscricoesPorPessoa().then(setInscricoes)
   }, [])
   useEffect(() => {
-    if (demo) { listarConvites().then(setConvites); listarPedidos().then(setPedidos) }
+    if (!demo) return
+    listarConvites().then(setConvites)
+    listarPedidos().then(setPedidos)
+    listarFichas().then(setFichas)
+    listarRegistros().then((regs) => {
+      const porPessoa: Record<string, typeof regs> = {}
+      for (const r of regs) (porPessoa[r.cliente_id] ??= []).push(r)
+      setAssiduidades(Object.fromEntries(Object.entries(porPessoa).map(([id, l]) => [id, calcularAssiduidade(l)])))
+    })
   }, [demo])
 
   const contagem = useMemo(() => {
@@ -109,8 +132,17 @@ export default function GestaoUsuarios() {
   const ehPessoas = aba === "cliente" || aba === "responsavel" || aba === "admin"
   const filtradas = useMemo(() => {
     const t = busca.trim().toLowerCase()
-    return (usuarios ?? []).filter((u) => u.role === aba && (!t || `${u.nome ?? ""} ${u.email ?? ""}`.toLowerCase().includes(t)))
-  }, [usuarios, aba, busca])
+    return (usuarios ?? []).filter((u) => {
+      if (u.role !== aba || (t && !`${u.nome ?? ""} ${u.email ?? ""}`.toLowerCase().includes(t))) return false
+      if (aba !== "cliente" || cuidado === "todos") return true
+      const f = fichas.find((x) => x.id === u.id)
+      const a = assiduidades[u.id]
+      if (cuidado === "deficiencia") return !!f?.deficiencia
+      if (cuidado === "contato") return !!a && (a.faltasSeguidas >= 3 || (a.taxa ?? 100) < 50)
+      if (cuidado === "beneficio") return !!f?.beneficios?.length
+      return true
+    })
+  }, [usuarios, aba, busca, cuidado, fichas, assiduidades])
   const totalPaginas = Math.max(1, Math.ceil(filtradas.length / POR_PAGINA))
   const paginaAtual = Math.min(pagina, totalPaginas)
   const naPagina = filtradas.slice((paginaAtual - 1) * POR_PAGINA, paginaAtual * POR_PAGINA)
@@ -160,7 +192,7 @@ export default function GestaoUsuarios() {
     <div className="space-y-6">
       <PageHeader
         titulo="Usuários"
-        descricao="Encontre uma pessoa, veja a ficha dela e defina o que ela pode acessar."
+        descricao="Conheça e acompanhe cada pessoa: abra o nome para ver a ficha, a família e a participação."
         acoes={demo ? <Button onClick={() => setConvidando(true)}><MailPlus className="h-4 w-4" aria-hidden /> Convidar pessoa</Button> : undefined}
       />
 
@@ -183,9 +215,16 @@ export default function GestaoUsuarios() {
             <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" aria-hidden />
             <Input className="pl-10" placeholder="Buscar por nome ou e-mail" aria-label="Buscar usuário" value={busca} onChange={(e) => { setBusca(e.target.value); setPagina(1) }} />
           </div>
-          {naPagina.length === 0 ? <EstadoVazio icon={Users} titulo="Ninguém encontrado" texto="Tente outra busca." /> : (
+          {aba === "cliente" && demo && (
+            <div className="flex flex-wrap gap-2" role="group" aria-label="Filtrar assistidos">
+              {[["todos", "Todos"], ["contato", "Precisam de contato"], ["deficiencia", "Com deficiência"], ["beneficio", "Recebem benefício"]].map(([v, r]) => (
+                <Button key={v} size="sm" variant={cuidado === v ? "default" : "outline"} aria-pressed={cuidado === v} onClick={() => { setCuidado(v); setPagina(1) }}>{r}</Button>
+              ))}
+            </div>
+          )}
+          {naPagina.length === 0 ? <EstadoVazio icon={Users} titulo="Ninguém encontrado" texto="Tente outra busca ou outro filtro." /> : (
             <>
-              <TabelaPessoas pessoas={naPagina} inscricoes={inscricoes} euId={user?.id} onPapel={pedirTroca} />
+              <TabelaPessoas pessoas={naPagina} inscricoes={inscricoes} euId={user?.id} onPapel={pedirTroca} comCuidado={aba === "cliente" && demo} extra={(id) => ({ ass: assiduidades[id], ficha: fichas.find((f) => f.id === id) })} />
               <div className="flex items-center justify-between gap-3">
                 <p className="text-sm text-muted-foreground" aria-live="polite">{filtradas.length} {filtradas.length === 1 ? "pessoa" : "pessoas"}</p>
                 {totalPaginas > 1 && (

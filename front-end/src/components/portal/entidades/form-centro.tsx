@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation"
 import { Input } from "@/components/ui/input"
 import { Campo, Secao } from "@/components/comum/campo"
 import { CampoResponsavel } from "@/components/comum/campos"
-import CamposExtras, { extrasIniciais } from "@/components/comum/campos-extras"
+import CamposExtras, { erroFoto, extrasIniciais } from "@/components/comum/campos-extras"
 import FormShell from "@/components/comum/form-shell"
 import { useFormulario } from "@/components/comum/use-formulario"
 import { centrosApi } from "@/lib/services/entidades"
@@ -15,6 +15,7 @@ import type { Centro, CentroInput } from "@/lib/tipos"
 
 function validar(v: CentroInput): Erros<CentroInput> {
   return {
+    imagem_url: erroFoto(v),
     nome: obrigatorio(v.nome, "Dê um nome ao centro"),
     endereco: obrigatorio(v.endereco, "Informe o endereço"),
     telefone: validarTelefone(v.telefone),
@@ -67,7 +68,7 @@ export default function FormCentro({ item }: { item?: Centro }) {
         </Campo>
       </Secao>
 
-      <CamposExtras valores={v} definir={(c, x) => f.definir(c, x)} comUnidade={false} />
+      <CamposExtras erroImagem={erros.imagem_url} valores={v} definir={(c, x) => f.definir(c, x)} comUnidade={false} />
 
       <Secao titulo="Responsável">
         <CampoResponsavel valorId={v.responsavel_id ?? null} onChange={(id, nome) => { f.definir("responsavel_id", id); f.definir("responsavel", nome) }} />

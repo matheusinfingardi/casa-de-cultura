@@ -15,7 +15,8 @@ import PageHeader from "@/components/comum/page-header"
 import { useDemo } from "@/hooks/use-demo"
 import { dataExtenso, faixaHorario, iniciais } from "@/lib/formatar"
 import { baixarIcs } from "@/lib/ics"
-import { API_DO_TIPO, carregarItem, paraView, proximasDatas, rotaAdmin, type ItemView } from "@/lib/itens"
+import MapaLocal from "@/components/comum/mapa-local"
+import { API_DO_TIPO, carregarItem, enderecoDaUnidade, enderecoDoMapa, paraView, proximasDatas, rotaAdmin, type ItemView } from "@/lib/itens"
 import { notify } from "@/lib/notify"
 import { listarEspera, type Espera } from "@/lib/services/extras"
 import { ITEM_TIPO_LABELS, ITEM_TIPO_TABLE, PRESENCA_LABELS, listarPresencasDoItem, type ItemTipo, type PresencaDoItem, type PresencaStatus } from "@/lib/services/presencas"
@@ -46,6 +47,7 @@ export default function DetalheItem({ tipo, id }: { tipo: ItemTipo; id: string }
   const [usuarios, setUsuarios] = useState<Usuario[]>([])
   const [naUnidade, setNaUnidade] = useState<ItemView[]>([])
   const [excluindo, setExcluindo] = useState(false)
+  const [endUnidade, setEndUnidade] = useState<string | undefined>()
 
   useEffect(() => {
     let ativo = true
@@ -58,6 +60,7 @@ export default function DetalheItem({ tipo, id }: { tipo: ItemTipo; id: string }
 
   useEffect(() => {
     if (demo && item) listarEspera(tipo, id).then(setEspera)
+    if (item) enderecoDaUnidade(item).then(setEndUnidade)
     if (demo && item && tipo === "centro") {
       Promise.all((["evento", "atividade", "oficina", "assistencia"] as ItemTipo[]).map(async (t) => {
         const l = await API_DO_TIPO[t].listar()
@@ -94,7 +97,7 @@ export default function DetalheItem({ tipo, id }: { tipo: ItemTipo; id: string }
         migalhas={[{ label: GRUPO[tipo] }, { label: PLURAL[tipo], href: rotaAdmin(tipo) }, { label: item.nome }]}
         acoes={
           <>
-            <Button asChild><Link href={`/portal/presenca/${tipo}/${id}`}><ClipboardCheck className="h-4 w-4" aria-hidden /> Presença</Link></Button>
+            <Button asChild><Link href={`/portal/presenca/${tipo}/${id}`}><ClipboardCheck className="h-4 w-4" aria-hidden /> Chamada</Link></Button>
             <Button asChild variant="outline"><Link href={`${rotaAdmin(tipo, id)}/editar`}><Pencil className="h-4 w-4" aria-hidden /> Editar</Link></Button>
             {tipo !== "centro" && <Button variant="outline" onClick={duplicar}><Copy className="h-4 w-4" aria-hidden /> Duplicar</Button>}
             <Button variant="outline" className="text-red-700 dark:text-red-300" onClick={() => setExcluindo(true)}><Trash2 className="h-4 w-4" aria-hidden /> Excluir</Button>
@@ -105,7 +108,7 @@ export default function DetalheItem({ tipo, id }: { tipo: ItemTipo; id: string }
       <div className="grid items-start gap-6 lg:grid-cols-3">
         <div className="space-y-6 lg:col-span-2">
           <section className="overflow-hidden rounded-2xl border bg-card shadow-sm">
-            <CapaItem tipo={tipo} imagem={item.imagem_url} />
+            <CapaItem tipo={tipo} imagem={item.imagem_url} className="h-64" />
             <div className="space-y-4 p-5">
               <div className="flex flex-wrap items-center gap-2">
                 <Badge variant="secondary">{ITEM_TIPO_LABELS[tipo]}</Badge>
@@ -153,6 +156,8 @@ export default function DetalheItem({ tipo, id }: { tipo: ItemTipo; id: string }
               {datas.length > 5 && <p className="mt-2 text-sm text-muted-foreground">e mais {datas.length - 5} nos próximos dois meses.</p>}
             </Bloco>
           )}
+
+          <MapaLocal endereco={enderecoDoMapa(item, endUnidade)} />
 
           <Bloco titulo={`Inscritos (${inscritos.length})`} acao={<Button asChild size="sm" variant="outline"><Link href={`/portal/presenca/${tipo}/${id}`}>Gerenciar</Link></Button>}>
             {inscritos.length === 0 ? <p className="text-muted-foreground">Ninguém inscrito ainda.</p> : (

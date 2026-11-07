@@ -10,12 +10,30 @@ export type Novidade = {
 
 export const CHANGELOG: Novidade[] = [
   {
+    versao: "1.7.0",
+    data: "2026-11-07",
+    titulo: "Cuidado com cada pessoa, chamada por dia e fotos",
+    itens: [
+      "Cada assistido tem uma página com necessidades, saúde, condição social, família, assiduidade e histórico de acompanhamento.",
+      "Familiares podem ser ligados entre si: dá para ir da ficha de uma pessoa à de um parente.",
+      "A lista de assistidos mostra quem precisa de contato, quem tem deficiência e quem recebe benefício.",
+      "Ficha do voluntário: em quais dias e períodos pode ajudar, e de que forma.",
+      "Chamada por dia: o voluntário escolhe uma data que existe de fato e marca quem veio naquele dia.",
+      "O check-in por QR Code agora fica dentro da chamada de cada atividade e dia.",
+      "Compromissos do voluntário organizados dia a dia, com aviso de chamadas pendentes.",
+      "Agenda com a opção de ver só os meus compromissos ou todos da Casa.",
+      "Atividades da Casa: o assistido vê o que já faz e no que pode se inscrever, com fotos e filtro por dia.",
+      "Toda atividade agora tem foto obrigatória e mapa com o endereço.",
+      "Visão geral com quadro de eventos, atividades, oficinas e assistência; “Precisa de atenção” fica no final.",
+      "Relatórios com comparação ao período anterior, destaques, quem precisa de contato e perfil do público.",
+      "Novo certificado de participação, em formato de paisagem, com encontros e horas.",
+    ],
+  },
+  {
     versao: "1.6.0",
     data: "2026-11-07",
-    titulo: "Protótipo completo com demonstração",
+    titulo: "Agenda, páginas de cada item e novas áreas de gestão",
     itens: [
-      "Agora dá para conhecer os três portais sem senha, com dados de exemplo, pela página inicial.",
-      "Contas de teste no login: admin@admin.com, voluntario@voluntario.com e assistido@assistido.com (senha 12345678).",
       "Visão geral mais simples: o que acontece hoje, a semana e o que precisa de atenção.",
       "Nova Agenda com visão de mês, semana e lista, e arquivo para o calendário do celular.",
       "Cada evento, atividade, oficina, assistência e centro tem sua própria página.",
@@ -203,12 +221,12 @@ export const INTEGRACOES: Integracao[] = [
   },
   {
     nome: "Novas tabelas do banco",
-    para: "Fazer funcionar na conta real o que hoje só funciona na demonstração.",
+    para: "Fazer funcionar com dados reais as telas que ainda aparecem como “Em breve”.",
     status: "pendente",
     responsavel: "Back-end",
     precisa: [
-      "Criar as tabelas de avisos, lista de espera, ficha, família, convites, pedidos de voluntariado, metas, histórico, comunicados e consentimento.",
-      "Criar as colunas de descrição, foto e unidade nos cadastros.",
+      "Criar as tabelas de presença por dia, avisos, lista de espera, ficha, família, acompanhamento, convites, pedidos de voluntariado, metas, histórico, comunicados e consentimento.",
+      "Criar as colunas de descrição, foto, unidade e endereço do mapa nos cadastros, e um lugar para guardar as fotos.",
       "A lista completa está no PDF enviado à equipe de back-end.",
     ],
   },

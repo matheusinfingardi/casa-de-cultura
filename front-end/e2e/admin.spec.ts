@@ -17,6 +17,8 @@ test("cria um evento, valida horário e abre a página dele", async ({ page }) =
   await page.getByLabel(/^Local/).fill("Biblioteca")
   await page.getByRole("button", { name: "Criar evento" }).click()
   await expect(page.getByText("O término deve ser depois do início")).toBeVisible()
+  await expect(page.getByText("Escolha uma foto")).toBeVisible()
+  await page.getByLabel("Escolher foto").setInputFiles("public/icone-192.png")
 
   await page.getByLabel(/^Término/).fill("21:00")
   await page.getByRole("button", { name: "Criar evento" }).click()
@@ -33,6 +35,7 @@ test("atividade semanal grava todos os dias", async ({ page }) => {
   await page.locator('input[type="time"]').nth(0).fill("17:00")
   await page.locator('input[type="time"]').nth(1).fill("18:00")
   await page.getByRole("button", { name: /Usar o horário de terça/ }).click()
+  await page.getByLabel("Escolher foto").setInputFiles("public/icone-192.png")
   await page.getByRole("button", { name: "Criar atividade" }).click()
   await expect(page.getByText("Toda terça e quinta, 17:00 às 18:00").first()).toBeVisible()
 })
@@ -54,6 +57,7 @@ test("agenda troca de visão e relatório filtra", async ({ page }) => {
   await page.getByRole("button", { name: "Lista", exact: true }).click()
   await expect(page.getByText("Sarau de Poesia e Música").first()).toBeVisible()
   await page.goto("/portal/relatorios")
+  await page.getByRole("tab", { name: "Participação" }).click()
   await expect(page.getByRole("heading", { name: "Participação por item" })).toBeVisible()
   await page.getByLabel("Área").selectOption("oficina")
   await expect(page.locator("table").getByText("Festival de Cultura Popular")).toHaveCount(0)
@@ -65,4 +69,31 @@ test("aprovar pedido gera convite", async ({ page }) => {
   await page.getByRole("button", { name: "Aprovar e convidar" }).first().click()
   await page.getByRole("tab", { name: /Convites/ }).click()
   await expect(page.getByText("luciana.prates@email.com")).toBeVisible()
+})
+
+test("a Visão geral mostra o quadro de tipos e a atenção por último", async ({ page }) => {
+  await page.goto("/portal")
+  await expect(page.getByRole("heading", { name: "Programação e atendimento" })).toBeVisible()
+  const titulos = await page.locator("main h2").allTextContents()
+  expect(titulos).toEqual(["Agenda da semana", "Programação e atendimento", "Precisa de atenção"])
+})
+
+test("a ficha da pessoa mostra família, cuidados e assiduidade", async ({ page }) => {
+  await page.goto("/portal/usuarios/usr-ana")
+  await expect(page.getByRole("heading", { name: "Assiduidade" })).toBeVisible()
+  await page.getByRole("tab", { name: "Família" }).click()
+  await expect(page.getByText("Pedro Souza")).toBeVisible()
+  await page.getByRole("link", { name: /Também é assistido/ }).click()
+  await expect(page.getByRole("heading", { name: "Beatriz Lima" })).toBeVisible()
+  await page.goto("/portal/usuarios/usr-ana")
+  await page.getByRole("tab", { name: "Acompanhamento" }).click()
+  await page.getByLabel(/O que aconteceu/).fill("Ligação de acompanhamento")
+  await page.getByRole("button", { name: "Salvar registro" }).click()
+  await expect(page.getByText("Ligação de acompanhamento")).toBeVisible()
+})
+
+test("foto é mostrada e o mapa aparece no item", async ({ page }) => {
+  await page.goto("/portal/oficinas/ofi-info")
+  await expect(page.locator('img[src="/demo/ofi-info.jpg"]')).toBeVisible()
+  await expect(page.getByTitle(/Mapa:/)).toBeAttached()
 })

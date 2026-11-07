@@ -2,21 +2,13 @@
 
 import Image from "next/image"
 import Link from "next/link"
-import { ArrowRight, FlaskConical, HandHeart, HeartHandshake, ShieldCheck, type LucideIcon } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { iniciarSessaoDemo } from "@/lib/demo/cliente"
+import { ArrowRight, HandHeart, HeartHandshake, type LucideIcon } from "lucide-react"
 import { PERFIL_INFO, type Perfil } from "@/lib/perfis"
 
 const PORTAS: { perfil: Perfil; icon: LucideIcon; rota: string }[] = [
   { perfil: "assistido", icon: HeartHandshake, rota: "/painel" },
   { perfil: "voluntario", icon: HandHeart, rota: "/painel" },
-  { perfil: "admin", icon: ShieldCheck, rota: "/portal" },
 ]
-
-function abrirDemo(perfil: Perfil, rota: string) {
-  iniciarSessaoDemo(perfil)
-  window.location.assign(rota)
-}
 
 export default function Hero() {
   return (
@@ -52,23 +44,18 @@ export default function Hero() {
                 </Link>
               ))}
             </div>
-            <p className="text-center text-sm text-muted-foreground">
-              Primeira vez aqui?{" "}
-              <Link href="/auth?perfil=assistido&mode=register" className="font-medium text-primary hover:underline">Crie seu cadastro</Link>
-              {" · "}
-              <Link href="/quero-ser-voluntario" className="font-medium text-primary hover:underline">Quero ser voluntário</Link>
-            </p>
-          </div>
-
-          <div className="rounded-3xl border border-amber-300 bg-amber-50 p-5 text-amber-950 dark:border-amber-700 dark:bg-amber-950 dark:text-amber-50">
-            <p className="flex items-center gap-2 font-semibold"><FlaskConical className="h-5 w-5" aria-hidden /> Quer só conhecer o sistema?</p>
-            <p className="mb-3 mt-1 text-sm">Veja cada portal com dados de exemplo, sem precisar de senha.</p>
-            <div className="grid gap-2 sm:grid-cols-3">
-              {PORTAS.map(({ perfil, rota }) => (
-                <Button key={perfil} variant="outline" className="border-amber-400 bg-white text-amber-950 hover:bg-amber-100 dark:bg-amber-900 dark:text-amber-50" onClick={() => abrirDemo(perfil, rota)}>
-                  {PERFIL_INFO[perfil].titulo}
-                </Button>
-              ))}
+            <div className="border-t pt-5">
+              <h3 className="mb-3 text-center font-semibold">Ainda não tem conta?</h3>
+              <div className="grid gap-3 sm:grid-cols-2">
+                <Link href="/auth?perfil=assistido&mode=register" className="rounded-2xl bg-muted/60 p-3 text-center transition-colors hover:bg-muted">
+                  <span className="block font-semibold text-primary">Quero participar</span>
+                  <span className="block text-sm text-muted-foreground">Crie seu cadastro de assistido</span>
+                </Link>
+                <Link href="/quero-ser-voluntario" className="rounded-2xl bg-muted/60 p-3 text-center transition-colors hover:bg-muted">
+                  <span className="block font-semibold text-primary">Quero ajudar</span>
+                  <span className="block text-sm text-muted-foreground">Peça para ser voluntário</span>
+                </Link>
+              </div>
             </div>
           </div>
 

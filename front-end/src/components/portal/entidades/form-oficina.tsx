@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation"
 import { Input } from "@/components/ui/input"
 import { Campo, Secao } from "@/components/comum/campo"
 import { CampoHorarios, CampoResponsavel, CampoSelect } from "@/components/comum/campos"
-import CamposExtras, { extrasIniciais } from "@/components/comum/campos-extras"
+import CamposExtras, { erroFoto, extrasIniciais } from "@/components/comum/campos-extras"
 import FormShell from "@/components/comum/form-shell"
 import { useFormulario } from "@/components/comum/use-formulario"
 import { oficinasApi } from "@/lib/services/entidades"
@@ -22,6 +22,7 @@ export const NIVEIS = [
 function validar(v: OficinaInput): Erros<OficinaInput> {
   const h = validarHorarios(v.horarioInicio, v.horarioFim)
   return {
+    imagem_url: erroFoto(v),
     nome: obrigatorio(v.nome, "Dê um nome à oficina"),
     local: obrigatorio(v.local, "Informe onde acontece"),
     dia: obrigatorio(v.dia, "Escolha o dia da semana"),
@@ -95,7 +96,7 @@ export default function FormOficina({ item }: { item?: Oficina }) {
         </Campo>
       </Secao>
 
-      <CamposExtras valores={v} definir={(c, x) => f.definir(c, x)} />
+      <CamposExtras erroImagem={erros.imagem_url} valores={v} definir={(c, x) => f.definir(c, x)} />
 
       <Secao titulo="Responsável">
         <CampoResponsavel valorId={v.responsavel_id ?? null} onChange={(id, nome) => { f.definir("responsavel_id", id); f.definir("responsavel", nome) }} />

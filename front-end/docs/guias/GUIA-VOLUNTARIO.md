@@ -1,44 +1,45 @@
 # Guia do Voluntário
 
-Este guia é para quem conduz atividades, oficinas e eventos. Com o sistema você vê seus compromissos e registra quem participou.
+Este guia é para quem conduz atividades, oficinas e eventos. Com o sistema você vê seus compromissos dia a dia e faz a chamada de quem está inscrito.
 
 ## Como entrar
 
 Na página inicial, clique em **Sou voluntário** e entre com seu e-mail e senha.
 
-Ainda não é voluntário? Clique em **Quero ser voluntário** e envie seu pedido. Quem cria o acesso é a coordenação.
+Ainda não é voluntário? Em **Ainda não tem conta?**, clique em **Quero ajudar** e envie seu pedido. Quem cria o acesso é a coordenação.
 
-## Seus compromissos
+## Compromissos dia a dia
 
-A tela inicial mostra o que acontece hoje e tudo o que está sob sua responsabilidade.
+A tela inicial mostra só as datas que existem de fato: primeiro as chamadas pendentes, depois hoje e os próximos dias. Na opção **Por atividade**, você vê tudo agrupado.
 
 ![Compromissos](../img/voluntario-inicio.png)
 
 Não aparece nada? A coordenação precisa escolher você como responsável pelo item.
 
-## Como registrar a presença
+## Como fazer a chamada
 
 1. Clique no compromisso.
-2. Para cada pessoa, clique em **Presente** ou **Ausente**.
-3. Pronto. A marcação é salva na hora.
-
-![Registro de presença](../img/voluntario-presenca.png)
+2. Em **Escolha o dia**, confira a data. Cada dia mostra se a chamada está feita, pendente ou se ainda vai acontecer.
+3. Para cada pessoa, clique em **Presente** ou **Ausente**. Salva na hora.
 
 Dicas:
 
-- **Marcar todos como presentes:** depois é só corrigir quem faltou.
-- **Errou?** Clique na opção certa.
+- **Marcar os restantes como presentes:** depois é só corrigir quem faltou.
+- **Errou?** Clique na opção certa. Clicar de novo apaga a marcação.
 - **Alguém não está na lista?** Use **Adicionar assistido**, no fim da página.
 
-## Check-in por QR Code
+![Chamada do dia](../img/voluntario-presenca.png)
 
-1. Abra **Check-in**.
-2. Escolha o compromisso.
-3. Clique em **Ligar câmera** e aponte para o código da pessoa.
+## O que é o check-in
 
-Se a câmera não funcionar, digite o código que aparece abaixo do QR Code.
+É a forma mais rápida de marcar presença: **cada assistido inscrito tem um QR Code no celular** e mostra na chegada.
 
-![Check-in](../img/voluntario-checkin.png)
+Ele fica dentro da chamada, no quadro **Check-in de quem chegou**, e vale para a atividade e o dia que estão abertos.
+
+1. Clique em **Ler QR Code** e aponte a câmera para o código da pessoa.
+2. A presença é marcada e o nome aparece na tela.
+
+Se a câmera não funcionar, digite o código que aparece abaixo do QR Code. Se a pessoa não estiver inscrita, o sistema pergunta se você quer inscrevê-la e marcar a presença.
 
 ## Sem internet
 
@@ -50,9 +51,21 @@ O sistema foi feito para ser usado durante a atividade, no celular. Dá para ins
 
 ![No celular](../img/voluntario-celular.png)
 
-## Sua disponibilidade
+## Agenda
 
-Em **Disponibilidade**, marque os dias e horários em que pode ajudar. A coordenação usa essa informação para organizar a programação.
+Escolha entre **Só os meus** e **Todos da Casa**, em formato de mês, semana ou lista.
+
+## Minha ficha
+
+Conte quando e como pode ajudar:
+
+- os dias e períodos livres;
+- as áreas em que pode ajudar, como música ou reforço escolar;
+- sua formação e experiência.
+
+A coordenação usa essas informações para organizar a programação.
+
+![Minha ficha](../img/voluntario-ficha.png)
 
 ## Precisa de ajuda?
 

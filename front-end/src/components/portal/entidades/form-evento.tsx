@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation"
 import { Input } from "@/components/ui/input"
 import { Campo, Secao } from "@/components/comum/campo"
 import { CampoHorarios, CampoResponsavel, CampoSelect } from "@/components/comum/campos"
-import CamposExtras, { extrasIniciais } from "@/components/comum/campos-extras"
+import CamposExtras, { erroFoto, extrasIniciais } from "@/components/comum/campos-extras"
 import FormShell from "@/components/comum/form-shell"
 import { useFormulario } from "@/components/comum/use-formulario"
 import { eventosApi } from "@/lib/services/entidades"
@@ -22,6 +22,7 @@ export const TIPOS_EVENTO = [
 function validar(v: EventoInput): Erros<EventoInput> {
   const h = validarHorarios(v.horarioInicio, v.horarioFim)
   return {
+    imagem_url: erroFoto(v),
     nome: obrigatorio(v.nome, "Dê um nome ao evento"),
     tipo: obrigatorio(v.tipo, "Escolha o tipo do evento"),
     data: obrigatorio(v.data, "Informe a data"),
@@ -89,7 +90,7 @@ export default function FormEvento({ item }: { item?: Evento }) {
         </Campo>
       </Secao>
 
-      <CamposExtras valores={v} definir={(c, x) => f.definir(c, x)} />
+      <CamposExtras erroImagem={erros.imagem_url} valores={v} definir={(c, x) => f.definir(c, x)} />
 
       <Secao titulo="Responsável">
         <CampoResponsavel valorId={v.responsavel_id ?? null} onChange={(id, nome) => { f.definir("responsavel_id", id); f.definir("responsavel", nome) }} />

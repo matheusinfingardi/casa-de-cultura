@@ -12,16 +12,20 @@ import CapaItem from "@/components/comum/capa-item"
 import Confirmar from "@/components/comum/confirmar"
 import EstadoVazio from "@/components/comum/estado-vazio"
 import PageHeader from "@/components/comum/page-header"
+import { useAuth } from "@/components/auth/auth-provider"
+import MapaLocal from "@/components/comum/mapa-local"
 import { useAssistido } from "@/components/painel/use-assistido"
 import { dataExtenso, faixaHorario } from "@/lib/formatar"
 import { baixarIcs } from "@/lib/ics"
-import { carregarItem, proximasDatas, type ItemView } from "@/lib/itens"
+import { carregarItem, enderecoDaUnidade, enderecoDoMapa, proximasDatas, type ItemView } from "@/lib/itens"
 import { listarEspera } from "@/lib/services/extras"
 import { ITEM_TIPO_LABELS, PRESENCA_LABELS, isItemTipo, type ItemTipo } from "@/lib/services/presencas"
 
 export default function ItemAssistidoPage() {
   const { tipo, id } = useParams<{ tipo: string; id: string }>()
+  const { role } = useAuth()
   const a = useAssistido()
+  const [endUnidade, setEndUnidade] = useState<string | undefined>()
   const [item, setItem] = useState<ItemView | null | undefined>(undefined)
   const [posicao, setPosicao] = useState<number | null>(null)
   const [cancelando, setCancelando] = useState(false)
@@ -34,11 +38,15 @@ export default function ItemAssistidoPage() {
   const fila = item ? a.naEspera(item) : undefined
 
   useEffect(() => {
+    if (item) enderecoDaUnidade(item).then(setEndUnidade)
+  }, [item])
+
+  useEffect(() => {
     ;(fila && item ? listarEspera(item.tipo, item.id).then((l) => l.findIndex((e) => e.id === fila.id) + 1) : Promise.resolve(null)).then(setPosicao)
   }, [fila, item])
 
   if (item === undefined || a.loading) return <Skeleton className="h-96 rounded-2xl" />
-  if (!item) return <EstadoVazio icon={SearchX} titulo="Item não encontrado" acao={<Button asChild variant="outline"><Link href="/painel/explorar">Voltar para Explorar</Link></Button>} />
+  if (!item) return <EstadoVazio icon={SearchX} titulo="Item não encontrado" acao={<Button asChild variant="outline"><Link href="/painel/explorar">Voltar para as atividades</Link></Button>} />
 
   const datas = proximasDatas(item)
   const lotado = a.lotado(item)
@@ -46,11 +54,11 @@ export default function ItemAssistidoPage() {
 
   return (
     <div className="space-y-6">
-      <PageHeader titulo={item.nome} migalhas={[{ label: "Explorar", href: "/painel/explorar" }, { label: item.nome }]} />
+      <PageHeader titulo={item.nome} migalhas={[{ label: "Atividades da Casa", href: "/painel/explorar" }, { label: item.nome }]} />
       <div className="grid items-start gap-6 lg:grid-cols-3">
         <div className="space-y-6 lg:col-span-2">
           <section className="overflow-hidden rounded-2xl border bg-card shadow-sm">
-            <CapaItem tipo={item.tipo} imagem={item.imagem_url} />
+            <CapaItem tipo={item.tipo} imagem={item.imagem_url} className="h-64" />
             <div className="space-y-4 p-5">
               <Badge variant="secondary">{ITEM_TIPO_LABELS[item.tipo]}</Badge>
               {item.descricao && <p className="text-lg leading-relaxed">{item.descricao}</p>}
@@ -71,10 +79,18 @@ export default function ItemAssistidoPage() {
               </ul>
             </section>
           )}
+
+          <MapaLocal endereco={enderecoDoMapa(item, endUnidade)} />
         </div>
 
         <aside className="space-y-4 rounded-2xl border bg-card p-5 shadow-sm lg:sticky lg:top-6">
-          {minha ? (
+          {role === "responsavel" ? (
+            <>
+              <p className="text-lg font-semibold">Você é voluntário</p>
+              <p className="text-muted-foreground">Se este compromisso for seu, a chamada fica em Compromissos.</p>
+              <Button asChild variant="outline" className="w-full"><Link href={`/painel/presenca/${item.tipo}/${item.id}`}>Abrir chamada</Link></Button>
+            </>
+          ) : minha ? (
             <>
               <p className="flex items-center gap-2 text-lg font-semibold text-emerald-700 dark:text-emerald-300"><CheckCircle2 className="h-5 w-5" aria-hidden /> Você está inscrito</p>
               <p className="text-muted-foreground">Situação: {PRESENCA_LABELS[minha.status]}</p>

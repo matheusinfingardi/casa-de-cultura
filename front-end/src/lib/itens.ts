@@ -16,6 +16,7 @@ export type ItemView = {
   responsavel_id: string | null
   imagem_url: string
   centro_id: string
+  endereco_mapa: string
   fatos: { rotulo: string; valor: string }[]
   bruto: Evento | Atividade | Oficina | Centro | Assistencia
 }
@@ -36,7 +37,7 @@ function montar(tipo: ItemTipo, b: Record<string, unknown>): ItemView {
   const base = {
     tipo, id: s("id"), nome: s("nome") || "Sem nome", descricao: s("descricao"), local: s("local"), vagas: null as number | null,
     responsavel: s("responsavel"), responsavel_id: (b.responsavel_id as string | null) ?? null,
-    imagem_url: s("imagem_url"), centro_id: s("centro_id"), bruto: b as ItemView["bruto"],
+    imagem_url: s("imagem_url"), centro_id: s("centro_id"), endereco_mapa: s("endereco_mapa"), bruto: b as ItemView["bruto"],
   }
   if (tipo === "evento") {
     const quando = `${dataBR(s("data"))}, ${faixaHorario(s("horarioInicio"), s("horarioFim"))}`
@@ -83,4 +84,30 @@ export async function listarItensView(): Promise<ItemView[]> {
   const tipos: ItemTipo[] = ["evento", "atividade", "oficina", "assistencia", "centro"]
   const r = await Promise.all(tipos.map(async (t) => (await API_DO_TIPO[t].listar()).map((b) => paraView(t, b))))
   return r.flat()
+}
+
+/** Endereço usado no mapa: o do próprio item, o da unidade ou, por último, o local escrito. */
+export function enderecoDoMapa(v: ItemView, enderecoUnidade?: string): string {
+  if (v.endereco_mapa) return v.endereco_mapa
+  if (enderecoUnidade) return `${enderecoUnidade}, MG`
+  return v.local ? `${v.local}, Juiz de Fora - MG` : ""
+}
+
+export async function enderecoDaUnidade(v: ItemView): Promise<string | undefined> {
+  if (!v.centro_id) return undefined
+  return (await centrosApi.buscar(v.centro_id))?.endereco
+}
+
+/** Datas que existem de fato para o item, entre `diasAtras` e `diasFrente` a partir de hoje. */
+export function datasDoItem(v: ItemView, diasAtras = 30, diasFrente = 30): Ocorrencia[] {
+  const de = new Date(); de.setDate(de.getDate() - diasAtras)
+  const ate = new Date(); ate.setDate(ate.getDate() + diasFrente)
+  return ocorrenciasNoPeriodo(
+    {
+      eventos: v.tipo === "evento" ? [v.bruto as Evento] : [],
+      atividades: v.tipo === "atividade" ? [v.bruto as Atividade] : [],
+      oficinas: v.tipo === "oficina" ? [v.bruto as Oficina] : [],
+    },
+    de, ate
+  )
 }
