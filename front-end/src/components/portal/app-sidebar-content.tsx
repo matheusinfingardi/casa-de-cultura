@@ -14,7 +14,7 @@ import {
   Scissors,
   HeartHandshake,
   Building2,
-  Settings,
+  Megaphone,
   Users,
   LogOut,
   type LucideIcon,
@@ -40,7 +40,7 @@ const managementItems: NavItem[] = [
 
 const systemItems: NavItem[] = [
   { title: "Usuários", url: "/portal/usuarios", icon: Users },
-  { title: "Configurações", url: "/portal/settings", icon: Settings },
+  { title: "Atualizações", url: "/portal/atualizacoes", icon: Megaphone },
 ]
 
 function NavSection({ title, items }: { title: string; items: NavItem[] }) {

@@ -1,7 +1,14 @@
 import Image from "next/image"
-import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import Link from "next/link"
+import { ArrowRight, HandHeart, HeartHandshake, ShieldCheck, type LucideIcon } from "lucide-react"
+import { PERFIL_INFO, type Perfil } from "@/lib/perfis"
+
+const PORTAS: { perfil: Perfil; icon: LucideIcon }[] = [
+    { perfil: "assistido", icon: HeartHandshake },
+    { perfil: "voluntario", icon: HandHeart },
+    { perfil: "admin", icon: ShieldCheck },
+]
 
 export default function Hero() {
     return (
@@ -52,42 +59,45 @@ export default function Hero() {
                     </div>
                 </div>
                 <div className="flex justify-center lg:justify-end">
-                    <Card className="
-            w-full
-            max-w-md
-            p-8
-            rounded-3xl
-            shadow-soft
-            border-soft
-          ">
+                    <Card className="w-full max-w-md p-6 md:p-8 rounded-3xl shadow-soft border-soft">
                         <div className="space-y-6">
                             <div className="space-y-2 text-center">
-                                <h2 className="text-3xl font-bold">
-                                    Bem-vindo
-                                </h2>
+                                <h2 className="text-3xl font-bold">Bem-vindo</h2>
                                 <p className="text-muted-foreground">
-                                    Acesse sua conta ou crie um cadastro.
+                                    Como você quer entrar?
                                 </p>
                             </div>
-                            <div className="space-y-4">
-                                <Link href="/auth?mode=login">
-                                    <Button
-                                        className="w-full h-12 text-base cursor-pointer mb-5"
-                                        size="lg"
+                            <div className="space-y-3">
+                                {PORTAS.map(({ perfil, icon: Icon }) => (
+                                    <Link
+                                        key={perfil}
+                                        href={`/auth?perfil=${perfil}`}
+                                        className="group flex items-center gap-4 rounded-2xl border p-4 transition-colors hover:border-primary hover:bg-muted focus-visible:outline-2 focus-visible:outline-primary"
                                     >
-                                        Entrar
-                                    </Button>
-                                </Link>
-                                <Link href="/auth?mode=register">
-                                    <Button
-                                        variant="outline"
-                                        className="w-full h-12 text-base cursor-pointer"
-                                        size="lg"
-                                    >
-                                        Criar Conta
-                                    </Button>
-                                </Link>
+                                        <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                                            <Icon className="h-6 w-6" aria-hidden />
+                                        </span>
+                                        <span className="min-w-0 flex-1">
+                                            <span className="block font-semibold">
+                                                {PERFIL_INFO[perfil].entrada}
+                                            </span>
+                                            <span className="block text-sm text-muted-foreground leading-snug">
+                                                {PERFIL_INFO[perfil].descricao}
+                                            </span>
+                                        </span>
+                                        <ArrowRight className="h-5 w-5 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-1" aria-hidden />
+                                    </Link>
+                                ))}
                             </div>
+                            <p className="text-sm text-center text-muted-foreground">
+                                Primeira vez por aqui?{" "}
+                                <Link
+                                    href="/auth?perfil=assistido&mode=register"
+                                    className="font-medium text-primary hover:underline"
+                                >
+                                    Crie seu cadastro de assistido
+                                </Link>
+                            </p>
                             <div className="pt-4 border-t text-center">
                                 <p className="text-sm text-muted-foreground">
                                     Juiz de Fora • Minas Gerais

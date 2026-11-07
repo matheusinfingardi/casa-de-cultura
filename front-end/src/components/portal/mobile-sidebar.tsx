@@ -13,7 +13,8 @@ const pageLabels: Record<string, string> = {
   "/portal/oficinas":    "Oficinas",
   "/portal/assistencia": "Assistência",
   "/portal/centros":     "Centros",
-  "/portal/settings":    "Configurações",
+  "/portal/usuarios":    "Usuários",
+  "/portal/atualizacoes": "Atualizações",
 }
 
 export function MobileHeader() {

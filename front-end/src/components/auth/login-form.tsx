@@ -15,11 +15,19 @@ export default function LoginForm({ onSubmit, loading }: Props) {
   const [senha, setSenha] = useState("")
 
   return (
-    <div className="space-y-4">
+    <form
+      className="space-y-4"
+      onSubmit={(e) => {
+        e.preventDefault()
+        onSubmit(email, senha)
+      }}
+    >
       <div className="space-y-2">
         <Label>Email</Label>
         <Input
           type="email"
+          autoComplete="email"
+          required
           placeholder="Digite seu email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
@@ -29,6 +37,8 @@ export default function LoginForm({ onSubmit, loading }: Props) {
         <Label>Senha</Label>
         <Input
           type="password"
+          autoComplete="current-password"
+          required
           placeholder="Digite sua senha"
           value={senha}
           onChange={(e) => setSenha(e.target.value)}
@@ -36,11 +46,11 @@ export default function LoginForm({ onSubmit, loading }: Props) {
       </div>
       <Button
         className="w-full h-11 cursor-pointer"
-        onClick={() => onSubmit(email, senha)}
+        type="submit"
         disabled={loading}
       >
         {loading ? "Entrando..." : "Entrar"}
       </Button>
-    </div>
+    </form>
   )
 }

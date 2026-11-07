@@ -6,8 +6,8 @@ export type Role = "cliente" | "responsavel" | "admin"
 export const ROLES: Role[] = ["cliente", "responsavel", "admin"]
 
 export const ROLE_LABELS: Record<Role, string> = {
-  cliente: "Cliente",
-  responsavel: "Responsável",
+  cliente: "Assistido",
+  responsavel: "Voluntário",
   admin: "Admin",
 }
 

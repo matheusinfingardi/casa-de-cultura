@@ -10,6 +10,15 @@ import RegisterForm from "./register-form"
 import { cadastrar, entrar } from "@/lib/services/auth"
 import { buscarMeuPerfil } from "@/lib/services/usuarios"
 import { traduzirErro } from "./traduzir-erro"
+import { notify } from "@/lib/notify"
+import { ArrowLeft } from "lucide-react"
+import {
+  PERFIL_INFO,
+  ROLE_PERFIL,
+  isPerfil,
+  rotaInicial,
+  type Perfil,
+} from "@/lib/perfis"
 
 type Mode = "login" | "register"
 
@@ -20,14 +29,18 @@ export default function AuthContainer() {
   const [erro, setErro] = useState("")
   const [loading, setLoading] = useState(false)
 
+  const perfilParam = searchParams.get("perfil")
+  const perfil: Perfil = isPerfil(perfilParam) ? perfilParam : "assistido"
+  const info = PERFIL_INFO[perfil]
+
   useEffect(() => {
     const urlMode = searchParams.get("mode")
-    if (urlMode === "register") {
+    if (urlMode === "register" && PERFIL_INFO[perfil].podeCadastrar) {
       setMode("register")
     } else {
       setMode("login")
     }
-  }, [searchParams])
+  }, [searchParams, perfil])
 
   async function handleLogin(email: string, senha: string) {
     setErro("")
@@ -38,8 +51,14 @@ export default function AuthContainer() {
         setErro(traduzirErro(error.message))
         return
       }
-      const perfil = await buscarMeuPerfil()
-      router.push(perfil?.role === "admin" ? "/portal" : "/painel")
+      const perfilDoUsuario = await buscarMeuPerfil()
+      const papel = perfilDoUsuario?.role ?? null
+      if (papel && ROLE_PERFIL[papel] !== perfil) {
+        notify.success(
+          `Sua conta é de ${PERFIL_INFO[ROLE_PERFIL[papel]].titulo}. Levamos você para a área certa.`
+        )
+      }
+      router.push(rotaInicial(papel))
     } catch {
       setErro("Erro de conexão com o servidor")
     } finally {
@@ -78,12 +97,16 @@ export default function AuthContainer() {
           </Link>
         </div>
         <div className="text-center space-y-2">
-          <h1 className="text-2xl font-bold">Portal Administrativo</h1>
-          <p className="text-muted-foreground text-sm">
-            Casa de Cultura Evailton Vilela
+          <p className="text-xs font-semibold uppercase tracking-wider text-primary">
+            {info.titulo}
           </p>
+          <h1 className="text-2xl font-bold">
+            {mode === "register" ? "Criar cadastro" : "Entrar"}
+          </h1>
+          <p className="text-muted-foreground text-sm">{info.boasVindas}</p>
         </div>
 
+        {info.podeCadastrar && (
         <div className="grid grid-cols-2 gap-2">
           <Button
             className="cursor-pointer"
@@ -100,11 +123,11 @@ export default function AuthContainer() {
             Cadastrar
           </Button>
         </div>
+        )}
 
         {mode === "register" && (
           <p className="text-xs text-center text-muted-foreground">
-            O cadastro cria uma conta de <strong>Cliente</strong>. Responsáveis e
-            administradores apenas fazem login.
+            O cadastro cria uma conta de <strong>Assistido</strong>.
           </p>
         )}
 
@@ -119,6 +142,20 @@ export default function AuthContainer() {
         ) : (
           <RegisterForm onSubmit={handleRegister} loading={loading} />
         )}
+
+        {!info.podeCadastrar && (
+          <p className="text-xs text-center text-muted-foreground">
+            O acesso de {info.titulo.toLowerCase()} é criado pela equipe da Casa de Cultura.
+          </p>
+        )}
+
+        <Link
+          href="/"
+          className="flex items-center justify-center gap-1 text-sm text-muted-foreground hover:text-foreground"
+        >
+          <ArrowLeft className="h-4 w-4" aria-hidden />
+          Escolher outro tipo de acesso
+        </Link>
       </Card>
     </div>
   )

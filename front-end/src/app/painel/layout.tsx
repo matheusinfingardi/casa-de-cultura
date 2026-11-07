@@ -8,8 +8,9 @@ import AuthGuard from "@/components/auth/auth-guard"
 import { useAuth } from "@/components/auth/auth-provider"
 import { sair } from "@/lib/services/auth"
 import { ROLE_LABELS } from "@/lib/services/usuarios"
+import NavPainel from "@/components/painel/nav-painel"
 
-function Header() {
+function Cabecalho() {
   const { user, role } = useAuth()
   const router = useRouter()
 
@@ -17,7 +18,7 @@ function Header() {
 
   async function handleSair() {
     await sair()
-    router.push("/auth?mode=login")
+    router.push("/")
   }
 
   return (
@@ -52,19 +53,23 @@ function Header() {
   )
 }
 
-export default function PainelLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+function Corpo({ children }: { children: React.ReactNode }) {
+  const { role } = useAuth()
   return (
-    <AuthGuard allow={["cliente", "responsavel"]} redirectTo="/portal">
-      <div className="min-h-screen flex flex-col bg-background">
-        <Header />
+    <div className="min-h-screen flex flex-col bg-background">
+        <Cabecalho />
+        <NavPainel role={role} />
         <main className="flex-1 p-4 md:p-10 max-w-4xl w-full mx-auto">
           {children}
         </main>
-      </div>
+    </div>
+  )
+}
+
+export default function PainelLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <AuthGuard allow={["cliente", "responsavel"]} redirectTo="/portal">
+      <Corpo>{children}</Corpo>
     </AuthGuard>
   )
 }

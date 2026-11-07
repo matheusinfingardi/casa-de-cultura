@@ -2,157 +2,101 @@
 
 import { useEffect, useState } from "react"
 import Link from "next/link"
+import { ArrowRight, CheckCircle2, ClipboardList, Search } from "lucide-react"
 
 import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
 import { useAuth } from "@/components/auth/auth-provider"
+import { useAssistido } from "@/components/painel/use-assistido"
+import { Carregando, VazioCard, CartaoInscricao } from "@/components/painel/cartoes"
 import {
-  listarMinhasPresencas,
   listarItensDoResponsavel,
-  listarTodosItens,
-  inscreverMe,
-  removerPresenca,
-  PRESENCA_LABELS,
   ITEM_TIPO_LABELS,
-  type MinhaPresenca,
   type ItemResponsavel,
-  type PresencaStatus,
 } from "@/lib/services/presencas"
 
-const STATUS_BADGE: Record<PresencaStatus, "default" | "secondary" | "outline" | "destructive"> = {
-  presente: "default",
-  marcada: "secondary",
-  ausente: "destructive",
+function Resumo({
+  icon: Icon,
+  valor,
+  titulo,
+  href,
+}: {
+  icon: typeof Search
+  valor: number
+  titulo: string
+  href: string
+}) {
+  return (
+    <Link href={href}>
+      <Card className="p-4 flex items-center gap-4 hover:bg-muted/40 transition-colors">
+        <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-primary/10 text-primary">
+          <Icon className="h-5 w-5" aria-hidden />
+        </span>
+        <div>
+          <p className="text-2xl font-bold leading-none">{valor}</p>
+          <p className="text-sm text-muted-foreground mt-1">{titulo}</p>
+        </div>
+      </Card>
+    </Link>
+  )
 }
 
-// --- Cliente -----------------------------------------------------------------
-function PainelCliente() {
-  const [minhas, setMinhas] = useState<MinhaPresenca[]>([])
-  const [itens, setItens] = useState<ItemResponsavel[]>([])
-  const [loading, setLoading] = useState(true)
-  const [acao, setAcao] = useState<string | null>(null)
-
-  async function carregar() {
-    const [m, i] = await Promise.all([listarMinhasPresencas(), listarTodosItens()])
-    setMinhas(m)
-    setItens(i)
-    setLoading(false)
-  }
-
-  useEffect(() => {
-    carregar()
-  }, [])
-
-  const inscritos = new Set(minhas.map((p) => `${p.item_tipo}-${p.item_id}`))
-  const disponiveis = itens.filter((i) => !inscritos.has(`${i.tipo}-${i.id}`))
-
-  async function handleInscrever(i: ItemResponsavel) {
-    setAcao(`${i.tipo}-${i.id}`)
-    try {
-      await inscreverMe(i.tipo, i.id, i.nome)
-      await carregar()
-    } catch {
-      // erro exibido via toast
-    } finally {
-      setAcao(null)
-    }
-  }
-
-  async function handleCancelar(p: MinhaPresenca) {
-    if (!window.confirm("Cancelar esta inscrição?")) return
-    setAcao(p.id)
-    try {
-      await removerPresenca(p.id)
-      setMinhas((prev) => prev.filter((x) => x.id !== p.id))
-    } catch {
-      // erro exibido via toast
-    } finally {
-      setAcao(null)
-    }
-  }
-
-  if (loading) {
-    return <p className="text-sm text-muted-foreground">Carregando...</p>
-  }
+// --- Assistido ---------------------------------------------------------------
+function InicioAssistido({ nome }: { nome: string }) {
+  const { minhas, disponiveis, loading, acao, cancelar } = useAssistido()
+  const presencas = minhas.filter((p) => p.status === "presente").length
 
   return (
     <div className="space-y-8">
-      {/* Minhas inscrições */}
-      <section className="space-y-3">
-        <h2 className="text-lg font-semibold">Minhas inscrições</h2>
-        {!minhas.length ? (
-          <Card className="p-6 text-center text-muted-foreground">
-            Você ainda não está inscrito em nada.
-          </Card>
-        ) : (
-          <div className="flex flex-col gap-3">
-            {minhas.map((p) => (
-              <Card key={p.id} className="p-4 flex items-center justify-between gap-3">
-                <div className="min-w-0">
-                  <p className="font-medium truncate">{p.item_nome ?? "Item"}</p>
-                  <Badge variant="outline" className="mt-1">
-                    {ITEM_TIPO_LABELS[p.item_tipo]}
-                  </Badge>
-                </div>
-                <div className="flex items-center gap-3">
-                  <Badge variant={STATUS_BADGE[p.status]}>{PRESENCA_LABELS[p.status]}</Badge>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => handleCancelar(p)}
-                    disabled={acao === p.id}
-                  >
-                    Cancelar
-                  </Button>
-                </div>
-              </Card>
-            ))}
-          </div>
-        )}
-      </section>
+      <div>
+        <h1 className="text-2xl font-bold">Olá, {nome}!</h1>
+        <p className="text-muted-foreground text-sm">
+          Aqui você acompanha o que está inscrito e descobre novidades.
+        </p>
+      </div>
 
-      {/* Disponíveis para inscrição */}
-      <section className="space-y-3">
-        <h2 className="text-lg font-semibold">Disponíveis para inscrição</h2>
-        {!disponiveis.length ? (
-          <Card className="p-6 text-center text-muted-foreground">
-            Nenhum item disponível no momento.
-          </Card>
-        ) : (
-          <div className="flex flex-col gap-3">
-            {disponiveis.map((i) => (
-              <Card
-                key={`${i.tipo}-${i.id}`}
-                className="p-4 flex items-center justify-between gap-3"
-              >
-                <div className="min-w-0">
-                  <p className="font-medium truncate">{i.nome ?? "Item"}</p>
-                  <div className="flex items-center gap-2 mt-1">
-                    <Badge variant="outline">{ITEM_TIPO_LABELS[i.tipo]}</Badge>
-                    {i.local && (
-                      <span className="text-sm text-muted-foreground truncate">{i.local}</span>
-                    )}
-                  </div>
-                </div>
-                <Button
-                  size="sm"
-                  onClick={() => handleInscrever(i)}
-                  disabled={acao === `${i.tipo}-${i.id}`}
-                >
-                  Inscrever-se
-                </Button>
-              </Card>
-            ))}
+      {loading ? (
+        <Carregando />
+      ) : (
+        <>
+          <div className="grid gap-3 sm:grid-cols-3">
+            <Resumo icon={ClipboardList} valor={minhas.length} titulo="Inscrições" href="/painel/inscricoes" />
+            <Resumo icon={CheckCircle2} valor={presencas} titulo="Presenças confirmadas" href="/painel/inscricoes" />
+            <Resumo icon={Search} valor={disponiveis.length} titulo="Disponíveis para você" href="/painel/explorar" />
           </div>
-        )}
-      </section>
+
+          <section className="space-y-3">
+            <div className="flex items-center justify-between">
+              <h2 className="text-lg font-semibold">Minhas inscrições</h2>
+              {minhas.length > 3 && (
+                <Link href="/painel/inscricoes" className="text-sm text-primary font-medium hover:underline">
+                  Ver todas
+                </Link>
+              )}
+            </div>
+            {!minhas.length ? (
+              <VazioCard>
+                Você ainda não está inscrito em nada.{" "}
+                <Link href="/painel/explorar" className="text-primary font-medium hover:underline">
+                  Ver o que está disponível
+                </Link>
+              </VazioCard>
+            ) : (
+              <div className="flex flex-col gap-3">
+                {minhas.slice(0, 3).map((p) => (
+                  <CartaoInscricao key={p.id} p={p} ocupado={acao === p.id} onCancelar={cancelar} />
+                ))}
+              </div>
+            )}
+          </section>
+        </>
+      )}
     </div>
   )
 }
 
-// --- Responsável -------------------------------------------------------------
-function MeusItens() {
+// --- Voluntário --------------------------------------------------------------
+function InicioVoluntario({ nome }: { nome: string }) {
   const [data, setData] = useState<ItemResponsavel[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -163,59 +107,52 @@ function MeusItens() {
     })
   }, [])
 
-  if (loading) {
-    return <p className="text-sm text-muted-foreground">Carregando...</p>
-  }
-
-  if (!data.length) {
-    return (
-      <Card className="p-6 text-center text-muted-foreground">
-        Você ainda não é responsável por nada.
-      </Card>
-    )
-  }
-
   return (
-    <div className="flex flex-col gap-4">
-      {data.map((item) => (
-        <Link key={`${item.tipo}-${item.id}`} href={`/painel/presenca/${item.tipo}/${item.id}`}>
-          <Card className="p-4 flex items-center justify-between gap-4 hover:bg-muted/40 transition-colors cursor-pointer">
-            <div className="min-w-0">
-              <p className="font-medium truncate">{item.nome ?? "Item"}</p>
-              <div className="flex items-center gap-2 mt-1">
-                <Badge variant="outline">{ITEM_TIPO_LABELS[item.tipo]}</Badge>
-                {item.local && (
-                  <span className="text-sm text-muted-foreground truncate">{item.local}</span>
-                )}
-              </div>
-            </div>
-            <span className="text-sm text-blue-600 font-medium whitespace-nowrap">
-              Gerenciar presença →
-            </span>
-          </Card>
-        </Link>
-      ))}
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-2xl font-bold">Olá, {nome}!</h1>
+        <p className="text-muted-foreground text-sm">
+          Estes são os compromissos sob sua responsabilidade. Toque em um deles para registrar a presença.
+        </p>
+      </div>
+
+      {loading ? (
+        <Carregando />
+      ) : !data.length ? (
+        <VazioCard>
+          Você ainda não foi designado para nenhuma atividade. Quando a administração
+          atribuir algo a você, aparecerá aqui.
+        </VazioCard>
+      ) : (
+        <div className="flex flex-col gap-3">
+          {data.map((item) => (
+            <Link key={`${item.tipo}-${item.id}`} href={`/painel/presenca/${item.tipo}/${item.id}`}>
+              <Card className="p-4 flex items-center justify-between gap-4 hover:bg-muted/40 transition-colors">
+                <div className="min-w-0">
+                  <p className="font-medium truncate">{item.nome ?? "Item"}</p>
+                  <div className="flex items-center gap-2 mt-1">
+                    <Badge variant="outline">{ITEM_TIPO_LABELS[item.tipo]}</Badge>
+                    {item.local && (
+                      <span className="text-sm text-muted-foreground truncate">{item.local}</span>
+                    )}
+                  </div>
+                </div>
+                <span className="flex items-center gap-1 text-sm text-primary font-medium whitespace-nowrap">
+                  Registrar presença <ArrowRight className="h-4 w-4" aria-hidden />
+                </span>
+              </Card>
+            </Link>
+          ))}
+        </div>
+      )}
     </div>
   )
 }
 
 export default function PainelPage() {
-  const { role } = useAuth()
+  const { role, user } = useAuth()
+  const completo = (user?.user_metadata?.nome as string | undefined) ?? user?.email ?? ""
+  const nome = completo.split(" ")[0] || "bem-vindo"
 
-  return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold">
-          {role === "responsavel" ? "Sob minha responsabilidade" : "Meu Painel"}
-        </h1>
-        <p className="text-muted-foreground text-sm">
-          {role === "responsavel"
-            ? "Atividades, eventos, oficinas, centros e assistências que você ministra. Clique para registrar a presença."
-            : "Inscreva-se nas atividades, eventos, oficinas, centros e assistências e acompanhe sua presença."}
-        </p>
-      </div>
-
-      {role === "responsavel" ? <MeusItens /> : <PainelCliente />}
-    </div>
-  )
+  return role === "responsavel" ? <InicioVoluntario nome={nome} /> : <InicioAssistido nome={nome} />
 }

@@ -16,7 +16,13 @@ export default function RegisterForm({ onSubmit, loading }: Props) {
   const [senha, setSenha] = useState("")
 
   return (
-    <div className="space-y-4">
+    <form
+      className="space-y-4"
+      onSubmit={(e) => {
+        e.preventDefault()
+        onSubmit(nome, email, senha)
+      }}
+    >
       <div className="space-y-2">
         <Label>Nome</Label>
         <Input
@@ -29,6 +35,8 @@ export default function RegisterForm({ onSubmit, loading }: Props) {
         <Label>Email</Label>
         <Input
           type="email"
+          autoComplete="email"
+          required
           placeholder="Digite seu email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
@@ -38,6 +46,8 @@ export default function RegisterForm({ onSubmit, loading }: Props) {
         <Label>Senha</Label>
         <Input
           type="password"
+          autoComplete="new-password"
+          required
           placeholder="Crie uma senha"
           value={senha}
           onChange={(e) => setSenha(e.target.value)}
@@ -45,11 +55,11 @@ export default function RegisterForm({ onSubmit, loading }: Props) {
       </div>
       <Button
         className="w-full h-11 cursor-pointer"
-        onClick={() => onSubmit(nome, email, senha)}
+        type="submit"
         disabled={loading}
       >
         {loading ? "Cadastrando..." : "Criar Conta"}
       </Button>
-    </div>
+    </form>
   )
 }
