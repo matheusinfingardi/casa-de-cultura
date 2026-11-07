@@ -49,3 +49,15 @@ export async function sair() {
   const { error } = await supabase.auth.signOut();
   return { error };
 }
+
+/** Usuário da sessão atual (ou null). */
+export async function obterSessaoUsuario() {
+  const { data } = await supabase.auth.getSession()
+  return data.session?.user ?? null
+}
+
+/** Avisa quando o usuário entra, sai ou a sessão expira. Retorna a função para cancelar. */
+export function aoMudarSessao(cb: (user: import("@supabase/supabase-js").User | null) => void) {
+  const { data } = supabase.auth.onAuthStateChange((_evento, session) => cb(session?.user ?? null))
+  return () => data.subscription.unsubscribe()
+}

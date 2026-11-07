@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { useSearchParams, useRouter } from "next/navigation"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -25,7 +25,7 @@ type Mode = "login" | "register"
 export default function AuthContainer() {
   const searchParams = useSearchParams()
   const router = useRouter()
-  const [mode, setMode] = useState<Mode>("login")
+  const [modoLocal, setMode] = useState<Mode | null>(null)
   const [erro, setErro] = useState("")
   const [loading, setLoading] = useState(false)
 
@@ -33,14 +33,8 @@ export default function AuthContainer() {
   const perfil: Perfil = isPerfil(perfilParam) ? perfilParam : "assistido"
   const info = PERFIL_INFO[perfil]
 
-  useEffect(() => {
-    const urlMode = searchParams.get("mode")
-    if (urlMode === "register" && PERFIL_INFO[perfil].podeCadastrar) {
-      setMode("register")
-    } else {
-      setMode("login")
-    }
-  }, [searchParams, perfil])
+  const mode: Mode =
+    modoLocal ?? (searchParams.get("mode") === "register" && info.podeCadastrar ? "register" : "login")
 
   async function handleLogin(email: string, senha: string) {
     setErro("")

@@ -1,67 +1,15 @@
 "use client"
 
-import { useEffect, useState } from "react"
-import { useParams, useRouter } from "next/navigation"
+import { useParams } from "next/navigation"
+import CarregarItem from "@/components/portal/entidades/carregar-item"
+import FormAssistencia from "@/components/portal/entidades/form-assistencia"
+import { assistenciaApi } from "@/lib/services/entidades"
 
-import FormAssistencia from "@/components/portal/formularios/form-assistencia"
-
-import {
-  buscarAssistenciaPorId,
-  atualizarAssistencia,
-} from "@/lib/services/assistencia"
-
-export default function EditarAssistenciaPage() {
-  const params = useParams()
-  const router = useRouter()
-
-  const [assistencia, setAssistencia] = useState<any>(null)
-
-  useEffect(() => {
-    async function carregarAssistencia() {
-      try {
-        const data = await buscarAssistenciaPorId(
-          params.id as string
-        )
-
-        setAssistencia(data)
-      } catch (error) {
-        console.error(
-          "Erro ao carregar assistência:",
-          error
-        )
-      }
-    }
-
-    carregarAssistencia()
-  }, [params.id])
-
-  async function handleSubmit(data: any) {
-    try {
-      await atualizarAssistencia(
-        params.id as string,
-        data
-      )
-
-      router.push("/portal/assistencia")
-      router.refresh()
-    } catch (error) {
-      console.error(
-        "Erro ao atualizar assistência:",
-        error
-      )
-
-      // erro exibido via toast
-    }
-  }
-
-  if (!assistencia) {
-    return <p>Carregando...</p>
-  }
-
+export default function Page() {
+  const { id } = useParams<{ id: string }>()
   return (
-    <FormAssistencia
-      initialData={assistencia}
-      onSubmit={handleSubmit}
-    />
+    <CarregarItem buscar={() => assistenciaApi.buscar(id)} voltarHref="/portal/assistencia" rotulo="Assistência">
+      {(item) => <FormAssistencia item={item} />}
+    </CarregarItem>
   )
 }

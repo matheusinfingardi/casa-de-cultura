@@ -22,7 +22,7 @@ function Cabecalho() {
   }
 
   return (
-    <header className="flex items-center justify-between border-b bg-background px-4 md:px-8 h-16">
+    <header className="border-b bg-background"><div className="mx-auto flex h-16 max-w-4xl items-center justify-between px-4 md:px-10">
       <Link href="/painel" className="flex items-center gap-3">
         <img
           src="/logo-evailton.png"
@@ -49,7 +49,7 @@ function Cabecalho() {
           Sair
         </button>
       </div>
-    </header>
+    </div></header>
   )
 }
 
@@ -59,7 +59,7 @@ function Corpo({ children }: { children: React.ReactNode }) {
     <div className="min-h-screen flex flex-col bg-background">
         <Cabecalho />
         <NavPainel role={role} />
-        <main className="flex-1 p-4 md:p-10 max-w-4xl w-full mx-auto">
+        <main className="mx-auto w-full max-w-4xl flex-1 px-4 py-6 md:px-10 md:py-10">
           {children}
         </main>
     </div>

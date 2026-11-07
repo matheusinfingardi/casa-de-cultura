@@ -5,22 +5,12 @@ import { useSidebar } from "@/components/ui/sidebar"
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet"
 import { Menu } from "lucide-react"
 import AppSidebarContent from "./app-sidebar-content"
-
-const pageLabels: Record<string, string> = {
-  "/portal":             "Dashboard",
-  "/portal/eventos":     "Eventos",
-  "/portal/atividades":  "Atividades",
-  "/portal/oficinas":    "Oficinas",
-  "/portal/assistencia": "Assistência",
-  "/portal/centros":     "Centros",
-  "/portal/usuarios":    "Usuários",
-  "/portal/atualizacoes": "Atualizações",
-}
+import { tituloDaRota } from "@/lib/nav"
 
 export function MobileHeader() {
   const pathname = usePathname()
   const { openMobile, setOpenMobile } = useSidebar()
-  const label = pageLabels[pathname] ?? "Portal"
+  const label = tituloDaRota(pathname)
 
   return (
     <>

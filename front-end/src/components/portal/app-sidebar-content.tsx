@@ -7,41 +7,8 @@ import { Separator } from "@/components/ui/separator"
 import { useAuth } from "@/components/auth/auth-provider"
 import { sair } from "@/lib/services/auth"
 
-import {
-  LayoutDashboard,
-  Calendar,
-  Sparkles,
-  Scissors,
-  HeartHandshake,
-  Building2,
-  Megaphone,
-  Users,
-  LogOut,
-  type LucideIcon,
-} from "lucide-react"
-
-type NavItem = {
-  title: string
-  url: string
-  icon: LucideIcon
-}
-
-const mainItems: NavItem[] = [
-  { title: "Dashboard", url: "/portal", icon: LayoutDashboard },
-]
-
-const managementItems: NavItem[] = [
-  { title: "Eventos",     url: "/portal/eventos",     icon: Calendar       },
-  { title: "Atividades",  url: "/portal/atividades",  icon: Sparkles       },
-  { title: "Oficinas",    url: "/portal/oficinas",    icon: Scissors       },
-  { title: "Assistência", url: "/portal/assistencia", icon: HeartHandshake },
-  { title: "Centros",     url: "/portal/centros",     icon: Building2      },
-]
-
-const systemItems: NavItem[] = [
-  { title: "Usuários", url: "/portal/usuarios", icon: Users },
-  { title: "Atualizações", url: "/portal/atualizacoes", icon: Megaphone },
-]
+import { LogOut } from "lucide-react"
+import { NAV_ADMIN, rotaAtiva, type NavItem } from "@/lib/nav"
 
 function NavSection({ title, items }: { title: string; items: NavItem[] }) {
   const pathname = usePathname()
@@ -54,16 +21,17 @@ function NavSection({ title, items }: { title: string; items: NavItem[] }) {
       </p>
       <div className="flex flex-col gap-1">
         {items.map((item) => {
-          const active = pathname === item.url
+          const active = rotaAtiva(pathname, item.url)
           return (
             <Link
               key={item.title}
               href={item.url}
+              aria-current={active ? "page" : undefined}
               onClick={() => setOpenMobile(false)}
               className={`
-                flex items-center gap-3 px-3 h-12 rounded-xl text-sm font-medium transition-all
+                flex items-center gap-3 px-3 h-10 rounded-xl text-sm font-medium transition-all
                 ${active
-                  ? "bg-blue-600 text-white"
+                  ? "bg-primary text-primary-foreground"
                   : "text-foreground hover:bg-muted"
                 }
               `}
@@ -88,11 +56,11 @@ function UserFooter() {
   async function handleSair() {
     await sair()
     setOpenMobile(false)
-    router.push("/auth?mode=login")
+    router.push("/")
   }
 
   return (
-    <div className="mt-auto px-2">
+    <div className="mt-auto px-2 pt-2">
       <Separator className="mb-3" />
       <div className="px-3 mb-2">
         <p className="text-sm font-medium truncate">{nome}</p>
@@ -113,7 +81,7 @@ function UserFooter() {
 
 export default function AppSidebarContent() {
   return (
-    <div className="flex flex-col py-3 gap-4 h-full overflow-y-auto">
+    <div className="flex flex-col py-3 gap-3 h-full overflow-y-auto">
       <div className="px-5 py-2">
         <Link href="/portal">
           <div className="rounded-2xl overflow-hidden border bg-white shadow-sm w-fit">
@@ -125,17 +93,15 @@ export default function AppSidebarContent() {
           </div>
           <div className="mt-4">
             <h2 className="text-sm font-semibold">Casa de Cultura</h2>
-            <p className="text-xs text-muted-foreground mt-1">Portal Administrativo</p>
+            <p className="text-xs text-muted-foreground mt-1">Administração</p>
           </div>
         </Link>
       </div>
 
       <Separator />
-      <NavSection title="Visão Geral" items={mainItems} />
-      <Separator />
-      <NavSection title="Gestão" items={managementItems} />
-      <Separator />
-      <NavSection title="Sistema" items={systemItems} />
+      {NAV_ADMIN.map((g) => (
+        <NavSection key={g.titulo} title={g.titulo} items={g.itens} />
+      ))}
 
       <UserFooter />
     </div>

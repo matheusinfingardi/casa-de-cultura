@@ -19,16 +19,25 @@ export function useAssistido() {
   const [loading, setLoading] = useState(true)
   const [acao, setAcao] = useState<string | null>(null)
 
+  const buscar = useCallback(() => Promise.all([listarMinhasPresencas(), listarTodosItens()]), [])
+
   const carregar = useCallback(async () => {
-    const [m, i] = await Promise.all([listarMinhasPresencas(), listarTodosItens()])
+    const [m, i] = await buscar()
     setMinhas(m)
     setItens(i)
     setLoading(false)
-  }, [])
+  }, [buscar])
 
   useEffect(() => {
-    carregar()
-  }, [carregar])
+    let ativo = true
+    buscar().then(([m, i]) => {
+      if (!ativo) return
+      setMinhas(m)
+      setItens(i)
+      setLoading(false)
+    })
+    return () => { ativo = false }
+  }, [buscar])
 
   const inscritos = new Set(minhas.map((p) => `${p.item_tipo}-${p.item_id}`))
   const disponiveis = itens.filter((i) => !inscritos.has(`${i.tipo}-${i.id}`))

@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useEffect, useState } from "react"
 import type { User } from "@supabase/supabase-js"
-import { supabase } from "@/lib/supabase"
+import { aoMudarSessao, obterSessaoUsuario } from "@/lib/services/auth"
 import { buscarMeuPerfil, type Role } from "@/lib/services/usuarios"
 
 type AuthContextValue = {
@@ -41,20 +41,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setLoading(false)
     }
 
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      resolver(session?.user ?? null)
-    })
+    obterSessaoUsuario().then((u) => resolver(u))
 
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
+    const cancelar = aoMudarSessao((u) => {
       setLoading(true)
-      resolver(session?.user ?? null)
+      resolver(u)
     })
 
     return () => {
       ativo = false
-      subscription.unsubscribe()
+      cancelar()
     }
   }, [])
 

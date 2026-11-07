@@ -110,7 +110,7 @@ export async function listarItensDoResponsavel(): Promise<ItemResponsavel[]> {
         return []
       }
 
-      return (data ?? []).map((item: any) => ({
+      return ((data ?? []) as unknown as { id: string; nome?: string | null; local?: string | null }[]).map((item) => ({
         tipo,
         id: item.id,
         nome: item.nome ?? null,
@@ -138,7 +138,7 @@ export async function listarTodosItens(): Promise<ItemResponsavel[]> {
         return []
       }
 
-      return (data ?? []).map((item: any) => ({
+      return ((data ?? []) as unknown as { id: string; nome?: string | null; local?: string | null }[]).map((item) => ({
         tipo,
         id: item.id,
         nome: item.nome ?? null,
@@ -274,4 +274,44 @@ export async function removerPresenca(id: string) {
     notify.error("Erro ao remover presença")
     throw error
   }
+}
+
+// --- Admin: contagem de inscritos por item -----------------------------------
+export type ContagemItem = { total: number; presentes: number }
+
+/** Mapa "tipo-id" -> { total, presentes }. Usado nas listas e no dashboard. */
+export async function contarInscritos(): Promise<Record<string, ContagemItem>> {
+  const { data, error } = await supabase.from("presencas").select("item_tipo, item_id, status")
+  if (error) {
+    console.error("Erro ao contar inscritos:", error)
+    return {}
+  }
+  const mapa: Record<string, ContagemItem> = {}
+  for (const p of (data ?? []) as { item_tipo: string; item_id: string; status: PresencaStatus }[]) {
+    const k = `${p.item_tipo}-${p.item_id}`
+    mapa[k] ??= { total: 0, presentes: 0 }
+    mapa[k].total++
+    if (p.status === "presente") mapa[k].presentes++
+  }
+  return mapa
+}
+
+// --- Admin: visão geral das presenças (dashboard) ----------------------------
+export type PresencaResumo = {
+  item_tipo: ItemTipo
+  item_id: string
+  status: PresencaStatus
+  cliente_id: string
+  created_at: string
+}
+
+export async function listarResumoPresencas(): Promise<PresencaResumo[]> {
+  const { data, error } = await supabase
+    .from("presencas")
+    .select("item_tipo, item_id, status, cliente_id, created_at")
+  if (error) {
+    console.error("Erro ao carregar presenças:", error)
+    return []
+  }
+  return (data ?? []) as PresencaResumo[]
 }
