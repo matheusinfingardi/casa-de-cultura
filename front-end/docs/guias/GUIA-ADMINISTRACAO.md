@@ -97,7 +97,7 @@ Em **Gestão > Voluntários** você vê o que cada um conduz e quando pode ajuda
 
 ## Usuários
 
-Em **Suporte > Usuários** ficam as contas de acesso: mude o papel de uma pessoa e envie convites.
+Em **Suporte > Usuários** ficam as contas de acesso: mude o papel de uma pessoa e envie convites. Só um administrador pode transformar outra pessoa em administrador.
 
 ## Tabela ou cartões
 

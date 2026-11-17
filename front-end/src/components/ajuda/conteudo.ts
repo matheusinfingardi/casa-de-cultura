@@ -75,6 +75,7 @@ export const TEMAS: Record<Perfil, Tema[]> = {
     ] },
     { id: "pessoas", titulo: "Pessoas", perguntas: [
       { p: "Como torno alguém voluntário?", r: "Em Suporte > Usuários, mude o papel da pessoa para Voluntário. Depois escolha-a como responsável no cadastro do item." },
+      { p: "Como torno alguém administrador?", r: "Em Suporte > Usuários, mude o papel da pessoa para Admin e confirme. Só quem já é administrador consegue fazer isso." },
       { p: "Como respondo quem quer ser voluntário?", r: "Em Gestão > Voluntários, na aba Pedidos, clique em “Aprovar e convidar” ou “Recusar”." },
       { p: "Como é calculada a assiduidade?", r: "Presenças divididas pelos encontros em que houve chamada. Na página da pessoa, clique em uma barra para ver cada dia. Frequente é quem veio a 75% ou mais; irregular, de 50% a 74%; precisa de contato, quem veio a menos de 50% ou faltou 3 vezes seguidas." },
       { p: "Como inscrevo um dependente em uma atividade?", r: "Na página da pessoa, abra Dependentes e use “Inscrever em”. Ele entra na chamada e ocupa vaga." },

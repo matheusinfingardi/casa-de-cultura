@@ -1,7 +1,15 @@
 -- ============================================================================
 -- Casa de Cultura — Papéis (cliente/responsavel/admin) + presença em atividades
 -- Rode no Supabase: Dashboard > SQL Editor > New query > Run.
--- Idempotente (seguro rodar mais de uma vez). Para desfazer: db/rollback.sql
+--
+-- QUANDO RODAR
+--   * Só na PRIMEIRA configuração de um banco novo.
+--   * NÃO rode de novo no banco que já está em uso: a seção 4 faz
+--     "drop table presencas" e APAGA todas as presenças registradas.
+--   * Para mudanças pontuais no banco em uso, há arquivos próprios
+--     (ex.: db/fechar-cadastro-admin.sql).
+--   * Para desfazer tudo o que este arquivo cria: db/rollback.sql
+--     (para desfazer só a regra do gatilho de cadastro, veja a seção 8).
 -- ============================================================================
 
 -- 1. Enums ---------------------------------------------------------------------
@@ -165,11 +173,13 @@ begin
 end $$;
 
 -- 8. Trigger: cria o perfil automaticamente no cadastro ------------------------
--- Default = 'cliente'. Honra role = 'admin' vindo do user_metadata (usado pela
--- rota aberta /admin-signup). 'responsavel' NÃO é honrado aqui — só por promoção.
--- ⚠️ TODO segurança: o signup é público, então é possível forjar role='admin'.
--- Intencional por enquanto (cadastro de admin fácil). Travar depois (Edge Function
--- com service_role, ou remover o honra-role abaixo).
+-- Todo cadastro nasce como 'cliente', mesmo que alguém envie outro papel nos dados
+-- do cadastro (o signup é público, então esses dados não são confiáveis).
+-- Papéis só mudam pelo portal, em Suporte > Usuários, feito por um administrador
+-- (policy profiles_update_admin, seção 6).
+-- Banco novo, sem nenhum administrador: promova o primeiro pelo SQL Editor
+-- (troque o e-mail) e os próximos pelo portal:
+--   update public.profiles set role = 'admin' where email = 'pessoa@exemplo.com';
 create or replace function public.handle_new_user()
 returns trigger
 language plpgsql
@@ -182,14 +192,41 @@ begin
     new.id,
     new.raw_user_meta_data->>'nome',
     new.email,
-    case when new.raw_user_meta_data->>'role' = 'admin'
-         then 'admin'::public.user_role
-         else 'cliente'::public.user_role end
+    'cliente'::public.user_role
   )
   on conflict (id) do nothing;
   return new;
 end;
 $$;
+
+-- Para voltar ao comportamento antigo deste gatilho (antes da v1.7.1), só se for
+-- realmente necessário: copie o bloco abaixo para uma nova query, tire os "-- " do
+-- início de cada linha e rode só ele (NÃO o arquivo inteiro).
+-- ⚠️ Isso REABRE a brecha: o cadastro volta a aceitar role='admin' enviado pelo
+-- navegador, ou seja, qualquer pessoa consegue se cadastrar como administrador.
+-- Também não rebaixa ninguém promovido nesse meio-tempo.
+-- Para fechar de novo: db/fechar-cadastro-admin.sql.
+--
+-- create or replace function public.handle_new_user()
+-- returns trigger
+-- language plpgsql
+-- security definer
+-- set search_path = public
+-- as $$
+-- begin
+--   insert into public.profiles (id, nome, email, role)
+--   values (
+--     new.id,
+--     new.raw_user_meta_data->>'nome',
+--     new.email,
+--     case when new.raw_user_meta_data->>'role' = 'admin'
+--          then 'admin'::public.user_role
+--          else 'cliente'::public.user_role end
+--   )
+--   on conflict (id) do nothing;
+--   return new;
+-- end;
+-- $$;
 
 drop trigger if exists on_auth_user_created on auth.users;
 create trigger on_auth_user_created

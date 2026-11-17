@@ -10,6 +10,15 @@ export type Novidade = {
 
 export const CHANGELOG: Novidade[] = [
   {
+    versao: "1.7.1",
+    data: "2026-11-15",
+    titulo: "Mais segurança no acesso da administração",
+    itens: [
+      "A página que deixava qualquer pessoa criar uma conta de administrador foi removida.",
+      "Para dar acesso de administração a alguém, um administrador muda o papel da pessoa em Suporte > Usuários.",
+    ],
+  },
+  {
     versao: "1.7.0",
     data: "2026-11-07",
     titulo: "Cuidado com cada pessoa, chamada por dia e fotos",
@@ -164,7 +173,7 @@ export const INTEGRACOES: Integracao[] = [
     status: "atencao",
     responsavel: "Back-end",
     precisa: [
-      "Fechar a criação de administradores: hoje a página /admin-signup é aberta a qualquer pessoa. Deve virar convite feito pela administração.",
+      "Rodar no banco o arquivo db/fechar-cadastro-admin.sql. Depois disso ninguém cria conta de administrador pelo cadastro: só um administrador promove outra pessoa, em Suporte > Usuários.",
       "Ativar o fluxo “Esqueci minha senha” e configurar o texto do e-mail.",
       "Conferir a URL do site nas configurações do login para que o link do e-mail de confirmação funcione em produção.",
     ],
